@@ -38,9 +38,9 @@ spec:
             - playground
             {{- else }}
             - agent
-            - -bucketURL {{ .Values.config.bucketURL }}
-            - -apiKey {{ .Values.config.apiKey }}
-            - -defaultVirtualClusterID {{ .Values.config.virtualClusterID }}
+            - -bucketURL={{ .Values.config.bucketURL }}
+            - -apiKey={{ .Values.config.apiKey }}
+            - -defaultVirtualClusterID={{ .Values.config.virtualClusterID }}
             {{- end }}
             {{- range .Values.extraArgs }}
             - {{ . }}
