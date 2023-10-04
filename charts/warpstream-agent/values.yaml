@@ -35,6 +35,7 @@ config:
   # bucketURL: "mem://mem_bucket"
   # apiKey: "YOUR_API_KEY"
   # virtualClusterID: "YOUR_VIRTUAL_CLUSTER_ID"
+  # agentPoolName: "apn_default"
 
 extraEnv: []
 # Add additional environment settings to the pod. Can be useful in proxy
