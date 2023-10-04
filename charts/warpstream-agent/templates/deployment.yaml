@@ -43,10 +43,11 @@ spec:
             - {{ . }}
             {{- end }}
           readinessProbe:
-            exec:
-              command:
-                - /bin/true
+            httpGet:
+              path: /v1/status
+              port: http
             initialDelaySeconds: 10
+            periodSeconds: 5
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           env:
