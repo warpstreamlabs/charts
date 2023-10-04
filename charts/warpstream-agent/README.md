@@ -16,10 +16,13 @@ This chart requires Helm v3.6 or later.
 helm repo add warpstream https://warpstreamlabs.github.io/charts
 helm repo update
 helm upgrade --install warpstream-agent warpstream/warpstream-agent \
-    --set config.bucketURL="mem://mem_bucket" \
+    --set config.bucketURL="$YOUR_OBJECT_STORE" \
     --set config.apiKey="$YOUR_API_KEY" \
     --set config.virtualClusterID="$YOUR_VIRTUAL_CLUSTER_ID"
 ```
+
+To learn what values to set for those config variables, look at our documentation
+for [configuring the WarpStream Agents for production](https://docs.warpstream.com/warpstream/how-to/configure-the-warpstream-agent-for-production).
 
 ### Upgrade an existing release
 
@@ -38,7 +41,7 @@ See [`values.yaml`](./values.yaml).
 git clone https://github.com/warpstreamlabs/charts
 cd charts/warpstream-agent
 helm upgrade --install warpstream-agent . \
-    --set config.bucketURL="mem://mem_bucket" \
+    --set config.bucketURL="$YOUR_OBJECT_STORE" \
     --set config.apiKey="$YOUR_API_KEY" \
     --set config.virtualClusterID="$YOUR_VIRTUAL_CLUSTER_ID"
 ```
