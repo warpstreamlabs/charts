@@ -39,7 +39,6 @@ spec:
             {{- else }}
             - agent
             - -bucketURL={{ .Values.config.bucketURL }}
-            - -apiKey={{ .Values.config.apiKey }}
             - -defaultVirtualClusterID={{ .Values.config.virtualClusterID }}
             {{- end }}
             {{- range .Values.extraArgs }}
@@ -53,6 +52,11 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           env:
+            - name: WARPSTREAM_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "warpstream-agent.secretName" . }}
+                  key: apikey
           {{- if .Values.extraEnv }}
             {{- toYaml .Values.extraEnv | nindent 12 }}
           {{- end }}
