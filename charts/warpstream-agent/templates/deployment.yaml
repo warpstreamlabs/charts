@@ -27,6 +27,7 @@ spec:
       {{- if .Values.priorityClassName }}
       priorityClassName: {{ .Values.priorityClassName | quote }}
       {{- end }}
+      terminationGracePeriodSeconds: 300
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
