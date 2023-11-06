@@ -63,6 +63,12 @@ affinity: {}
 
 priorityClassName: ""
 
+# Optional disruption budget
+pdb:
+  create: false
+  minAvailable: 1
+  maxUnavailable: ""
+
 ## list of hosts and IPs that will be injected into the pod's hosts file
 hostAliases: []
   # - ip: "127.0.0.1"
