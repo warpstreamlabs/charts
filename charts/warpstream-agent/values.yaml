@@ -65,7 +65,7 @@ priorityClassName: ""
 
 # Optional disruption budget
 pdb:
-  create: true
+  create: false
   # minimum number of pods that must still be available after the eviction (both integers and percentages are supported)
   minAvailable: "50%"
   # maximum number of pods that can be unavailable after the eviction (both integers and percentages are supported)
