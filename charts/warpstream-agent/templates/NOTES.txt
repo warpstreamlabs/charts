@@ -7,3 +7,4 @@ Your release is named {{ .Release.Name }}.
 ## 0.8.0
 
 - The default replica count has been increased from 1 to 3. You can pass `--set replicas=1` to restore the previous behavior.
+- Pod Disruption Budget is now supported. Pass `--set pdb.create=true` to enable it.
