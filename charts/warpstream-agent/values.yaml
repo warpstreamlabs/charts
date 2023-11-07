@@ -65,11 +65,11 @@ priorityClassName: ""
 
 # Optional disruption budget
 pdb:
-  create: false
-  # minimum number of pods that must still be available after the eviction
-  minAvailable: 1
-  # maximum number of pods that can be unavailable after the eviction
-  maxUnavailable: ""
+  create: true
+  # minimum number of pods that must still be available after the eviction (both integers and percentages are supported)
+  minAvailable: "50%"
+  # maximum number of pods that can be unavailable after the eviction (both integers and percentages are supported)
+  maxUnavailable: 1
 
 ## list of hosts and IPs that will be injected into the pod's hosts file
 hostAliases: []
