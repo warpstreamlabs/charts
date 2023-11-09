@@ -2,6 +2,20 @@ apiVersion: v1
 entries:
   warpstream-agent:
   - apiVersion: v2
+    appVersion: "520"
+    created: "2023-11-09T05:49:48.674223859Z"
+    description: WarpStream Agent for Kubernetes.
+    digest: a1d4baaa8c40d718866c3f53001f2fbe59093141bdf7a122fb686ee217395599
+    home: https://docs.warpstream.com/warpstream/
+    icon: https://avatars.githubusercontent.com/u/132156278
+    name: warpstream-agent
+    sources:
+    - https://github.com/warpstreamlabs/charts/warpstream-agent
+    type: application
+    urls:
+    - https://github.com/warpstreamlabs/charts/releases/download/warpstream-agent-0.8.2/warpstream-agent-0.8.2.tgz
+    version: 0.8.2
+  - apiVersion: v2
     appVersion: v518
     created: "2023-11-08T08:02:07.640493848Z"
     description: WarpStream Agent for Kubernetes.
@@ -239,4 +253,4 @@ entries:
     urls:
     - https://github.com/warpstreamlabs/charts/releases/download/warpstream-agent-0.1.0/warpstream-agent-0.1.0.tgz
     version: 0.1.0
-generated: "2023-11-08T08:02:07.640703454Z"
+generated: "2023-11-09T05:49:48.674347861Z"
