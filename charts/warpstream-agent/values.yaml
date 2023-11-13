@@ -1,5 +1,5 @@
 image:
-  repository: "public.ecr.aws/warpstream-labs/warpstream_agent_linux_amd64"
+  repository: "public.ecr.aws/warpstream-labs/warpstream_agent"
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
