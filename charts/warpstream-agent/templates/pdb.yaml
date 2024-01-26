@@ -1,5 +1,5 @@
 {{- if .Values.pdb.create }}
-apiVersion: policy/v1
+apiVersion: {{ include "warpstream-agent.pdb.apiVersion" . }}
 kind: PodDisruptionBudget
 metadata:
   name: {{ include "warpstream-agent.fullname" . }}

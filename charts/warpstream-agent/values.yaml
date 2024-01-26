@@ -63,13 +63,39 @@ affinity: {}
 
 priorityClassName: ""
 
+# Optional horizontal pod autoscaler
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 5
+  targetCPU: "60"
+  targetMemory: ""
+  behavior: {}
+
 # Optional disruption budget
 pdb:
   create: false
+  # apiVersion: ""
   # minimum number of pods that must still be available after the eviction (both integers and percentages are supported)
   minAvailable: "50%"
   # maximum number of pods that can be unavailable after the eviction (both integers and percentages are supported)
   maxUnavailable: 1
+
+serviceMonitor:
+  ## If true, a ServiceMonitor CRD is created for a prometheus operator
+  ## https://github.com/coreos/prometheus-operator
+  ##
+  enabled: false
+  path: /metrics
+  labels: {}
+  interval: 30s
+  scheme: http
+  tlsConfig: {}
+  scrapeTimeout: 30s
+  relabelings: []
+  metricRelabelings: []
+  targetLabels: []
+  honorLabels: true
 
 ## list of hosts and IPs that will be injected into the pod's hosts file
 hostAliases: []
