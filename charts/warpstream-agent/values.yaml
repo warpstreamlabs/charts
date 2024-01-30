@@ -30,6 +30,9 @@ service:
   port: 9092
   httpPort: 8080
 
+headlessService:
+  enabled: true
+
 config:
   playground: false
   ## To learn what values to set for the config variables, look at our documentation
