@@ -18,7 +18,7 @@ spec:
       labels:
         {{- include "warpstream-agent.selectorLabels" . | nindent 8 }}
     spec:
-      automountServiceAccountToken: false
+      automountServiceAccountToken: true
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
@@ -52,6 +52,16 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.namespace
             - name: WARPSTREAM_API_KEY
               valueFrom:
                 secretKeyRef:
