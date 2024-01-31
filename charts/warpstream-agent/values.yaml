@@ -30,6 +30,9 @@ service:
   port: 9092
   httpPort: 8080
 
+rbac:
+  create: true
+
 headlessService:
   enabled: true
 
