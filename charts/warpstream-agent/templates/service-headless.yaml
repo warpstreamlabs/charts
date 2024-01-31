@@ -1,15 +1,17 @@
+{{- if .Values.headlessService.enabled }}
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "warpstream-agent.fullname" . }}
+  name: {{ include "warpstream-agent.fullname" . }}-headless
   labels:
     {{- include "warpstream-agent.labels" . | nindent 4 }}
-  {{- with .Values.service.annotations }}
+  {{- with .Values.headlessService.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
-  type: {{ .Values.service.type }}
+  type: ClusterIP
+  clusterIP: None
   ports:
     - port: {{ .Values.service.port }}
       targetPort: kafka
@@ -21,3 +23,4 @@ spec:
       name: http
   selector:
     {{- include "warpstream-agent.selectorLabels" . | nindent 4 }}
+{{- end }}
