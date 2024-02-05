@@ -5,7 +5,9 @@ metadata:
   labels:
     {{- include "warpstream-agent.labels" . | nindent 4 }}
 spec:
+  {{- if and (not .Values.autoscaling.enabled) (.Values.replicas) }}
   replicas: {{ .Values.replicas }}
+  {{- end }}
   selector:
     matchLabels:
       {{- include "warpstream-agent.selectorLabels" . | nindent 6 }}
