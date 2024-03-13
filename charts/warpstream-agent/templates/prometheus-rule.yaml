@@ -1,0 +1,17 @@
+{{- if .Values.prometheusRule.enabled }}
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: {{ include "warpstream-agent.fullname" . }}
+  labels:
+    {{- include "warpstream-agent.labels" . | nindent 4 }}
+    {{- with .Values.prometheusRule.labels }}
+    {{- tpl (toYaml . | nindent 4) $ }}
+    {{- end }}
+spec:
+  groups:
+  {{- with .Values.prometheusRule.groups }}
+    {{- toYaml . | nindent 2 }}
+  {{- end }}
+{{- end }}

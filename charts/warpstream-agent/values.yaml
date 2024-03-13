@@ -103,6 +103,24 @@ serviceMonitor:
   targetLabels: []
   honorLabels: true
 
+prometheusRule:
+  ## If true, a PrometheusRule CRD is created for a prometheus operator
+  ## https://github.com/coreos/prometheus-operator
+  ##
+  enabled: false
+  labels: {}
+  groups:
+    - name: groupName
+      rules:
+      - alert: alertName
+        expr: 'alert expression'
+        for: 5m
+        labels:
+          severity: high
+        annotations:
+          identifier: 'Alert identifier.'
+          msg: Alert message.
+
 ## list of hosts and IPs that will be injected into the pod's hosts file
 hostAliases: []
   # - ip: "127.0.0.1"
