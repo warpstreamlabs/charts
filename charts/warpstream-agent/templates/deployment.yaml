@@ -22,7 +22,6 @@ spec:
       labels:
         {{- include "warpstream-agent.selectorLabels" . | nindent 8 }}
     spec:
-      automountServiceAccountToken: true
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}

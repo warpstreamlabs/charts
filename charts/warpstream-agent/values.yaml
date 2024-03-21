@@ -13,6 +13,8 @@ replicas: 3
 serviceAccount:
   # Specifies whether a service account should be created
   create: true
+  # Specifies whether a service token should be mounted on pod
+  automountServiceAccountToken: true
   # Annotations to add to the service account
   annotations: {}
   # The name of the service account to use.

@@ -8,7 +8,6 @@ metadata:
   annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
-automountServiceAccountToken: true
 spec:
   type: {{ .Values.service.type }}
   ports:
