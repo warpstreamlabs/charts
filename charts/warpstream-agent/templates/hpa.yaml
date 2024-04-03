@@ -3,8 +3,7 @@ apiVersion: {{ include "warpstream-agent.hpa.apiVersion" . }}
 kind: HorizontalPodAutoscaler
 metadata:
   name: {{ include "warpstream-agent.fullname" . }}
-  labels:
-    {{ include "warpstream-agent.labels" . }}
+  labels: {{ include "warpstream-agent.labels" . | nindent 4 }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
