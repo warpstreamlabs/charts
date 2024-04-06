@@ -76,7 +76,7 @@ autoscaling:
   enabled: false
   minReplicas: 1
   maxReplicas: 5
-  targetCPU: "50"
+  targetCPU: "60"
   targetMemory: ""
   behavior: {}
 
