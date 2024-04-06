@@ -7,4 +7,4 @@ metadata:
 data:
   WARPSTREAM_BUCKET_URL: {{ .Values.config.bucketURL | quote }}
   WARPSTREAM_DEFAULT_VIRTUAL_CLUSTER_ID: {{ .Values.config.virtualClusterID | quote }}
-  WARPSTREAM_REGION: {{ .Values.config.region | quote }}
+  WARPSTREAM_AGENT_POOL_NAME: {{ .Values.config.agentPoolName | quote }}
