@@ -8,3 +8,13 @@ Your release is named {{ .Release.Name }}.
 
 - The default replica count has been increased from 1 to 3. You can pass `--set replicas=1` to restore the previous behavior.
 - Pod Disruption Budget is now supported. Pass `--set pdb.create=true` to enable it.
+
+## 0.11.0
+
+- Config variable `agentPoolName` exposing `WARPSTREAM_AGENT_POOL_NAME` is removed.
+- Config variable `region` exposing `WARPSTREAM_REGION` is added.
+
+## 0.12.0
+
+- Compute resources are specified. Each Agent replica requests 2 vCPUs and 8 GiB of memory.
+- The recommendation is to have at least 4 GiB of dedicated RAM per vCPU.
