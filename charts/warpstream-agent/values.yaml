@@ -72,10 +72,10 @@ resources:
   limits:
     memory: 8Gi
 
-extraEnv: [
-  # Add additional environment settings to the pod.
-  "GOMAXPROCS=2",
-]
+# Add additional environment settings to the pod.
+extraEnv:
+  - name: GOMAXPROCS
+    value: "2"
 
 extraArgs: []
 # Add additional args settings to the pod.
