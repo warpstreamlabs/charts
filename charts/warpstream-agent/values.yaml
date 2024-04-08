@@ -48,30 +48,37 @@ config:
   # virtualClusterID: "YOUR_VIRTUAL_CLUSTER_ID"
   # region: "us-east-1"
 
-extraEnv: []
-# Add additional environment settings to the pod. Can be useful in proxy
-# environments
-
-extraArgs: []
-# Add additional args settings to the pod.
-
 resources:
   # Recommendations:
-  #   1. At least 2 dedicated vCPUs per Agent, and only use whole numbers for CPUs.
-  #   2. At least 4GiB of RAM per vCPU.
-  #   3. Run on dedicated network optimized instances (m6in class in AWS) for high volume
+  #   1. At least 2 requests vCPUs per Agent, and only use whole numbers for CPUs.
+  #   2. Set GOMAXPROCS (in extraEnv below) to the value of requested CPUs. This is
+  #      important because the Agents use the value of GOMAXPROCS to determine how many
+  #      cores they have, (to avoid throttling) and size caches and other data structures
+  #      in accordance with the number of available cores (which is assumed to scale
+  #      linearly with the amount of available ram with a ratio of at least 4GiB of RAM
+  #      per vCPU. Setting GOMAXPROCS lower than the number of requested CPUs will prevent
+  #      the Agents from utilizing all of the available resources. Setting the value
+  #      higher may lead to OOMs as the Agents try to use more RAM than they actually
+  #      have available.
+  #   3. At least 4GiB of RAM per vCPU.
+  #   4. Run on dedicated network optimized instances (m6in class in AWS) for high volume
   #      use-cases.
-  #   4. Keep memory requests and limits the same.
-  #   5. Set GOMAXPROCS (in extraEnv below) to the value of requested CPUs. This is important
-  #      because the Agents use the value of GOMAXPROCS to determine how many cores they have,
-  #      (to avoid throttling) and size caches and other data structures in accordance with the
-  #      number of available cores (which is assumed to scale linearly with the amount of
-  #      available ram with a ratio of at least 4GiB of RAM per vCPU).
+  #   5. Keep memory requests and limits the same.
+  
   requests:
+    # Update GOMAXPROCS below to match when changing this value.
     cpu: 2
     memory: 8Gi
   limits:
     memory: 8Gi
+
+extraEnv: [
+  # Add additional environment settings to the pod.
+  "GOMAXPROCS=2",
+]
+
+extraArgs: []
+# Add additional args settings to the pod.
 
 nodeSelector: {}
 
