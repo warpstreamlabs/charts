@@ -17,4 +17,5 @@ Your release is named {{ .Release.Name }}.
 ## 0.12.0
 
 - Compute resources are specified. Each Agent replica requests 2 vCPUs and 8 GiB of memory.
+- `GOMAXPROCS`, used by the Agents to determine how many cores they have, is set to the requested number of vCPUs.
 - The recommendation is to have at least 4 GiB of dedicated RAM per vCPU.
