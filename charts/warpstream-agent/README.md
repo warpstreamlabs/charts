@@ -64,7 +64,7 @@ Or manually diagnose connection with
 ```shell
 kubectl port-forward svc/warpstream-agent 9092 &
 docker run --net=host public.ecr.aws/warpstream-labs/warpstream_agent_linux_amd64 \
-    kcmd -bootstrap-host localhost -type diagnose-connection
+    cli -bootstrap-host localhost -type diagnose-connection
 ```
 
 [kind]: https://kind.sigs.k8s.io/
