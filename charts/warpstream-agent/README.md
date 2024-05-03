@@ -18,7 +18,7 @@ helm repo update
 helm upgrade --install warpstream-agent warpstream/warpstream-agent \
     --set config.bucketURL="$YOUR_OBJECT_STORE" \
     --set config.apiKey="$YOUR_API_KEY" \
-    --set config.region="$YOUR_CONTROL_PLANE_REGION"
+    --set config.region="$YOUR_CONTROL_PLANE_REGION" \
     --set config.virtualClusterID="$YOUR_VIRTUAL_CLUSTER_ID"
 ```
 
