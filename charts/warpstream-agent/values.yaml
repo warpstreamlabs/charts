@@ -8,7 +8,12 @@ imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
+revisionHistoryLimit: 10
+
 replicas: 3
+
+deploymentStrategy:
+  type: RollingUpdate
 
 serviceAccount:
   # Specifies whether a service account should be created
@@ -82,6 +87,8 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+topologySpreadConstraints: []
 
 priorityClassName: ""
 
