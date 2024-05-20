@@ -1,0 +1,39 @@
+{{- if .Values.verticalAutoscaling.enabled }}
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: {{ include "warpstream-agent.fullname" . }}
+  labels:
+    {{- include "warpstream-agent.labels" . | nindent 4 }}
+spec:
+  {{- with .Values.verticalAutoscaling.recommenders }}
+  recommenders:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  resourcePolicy:
+    containerPolicies:
+    - containerName: {{ .Chart.Name }}
+      {{- with .Values.verticalAutoscaling.controlledResources }}
+      controlledResources:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.verticalAutoscaling.controlledValues }}
+      controlledValues: {{ .Values.verticalAutoscaling.controlledValues }}
+      {{- end }}
+      {{- if .Values.verticalAutoscaling.maxAllowed }}
+      maxAllowed:
+        {{ toYaml .Values.verticalAutoscaling.maxAllowed | nindent 8 }}
+      {{- end }}
+      {{- if .Values.verticalAutoscaling.minAllowed }}
+      minAllowed:
+        {{ toYaml .Values.verticalAutoscaling.minAllowed | nindent 8 }}
+      {{- end }}
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "warpstream-agent.fullname" . }}
+  {{- with .Values.verticalAutoscaling.updatePolicy }}
+  updatePolicy:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+{{- end }}
