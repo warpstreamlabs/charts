@@ -8,7 +8,12 @@ imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
+revisionHistoryLimit: 10
+
 replicas: 3
+
+deploymentStrategy:
+  type: RollingUpdate
 
 serviceAccount:
   # Specifies whether a service account should be created
@@ -83,6 +88,10 @@ tolerations: []
 
 affinity: {}
 
+## Topology Spread Constraints
+## ref: https://kubernetes.io/docs/concepts/workloads/pods/pod-topology-spread-constraints/
+topologySpreadConstraints: []
+
 priorityClassName: ""
 
 # Optional horizontal pod autoscaler
@@ -149,3 +158,8 @@ podLabels: {}
 
 # Optional initContainers definition
 initContainers: []
+
+## Use an alternate scheduler
+## ref: https://kubernetes.io/docs/tasks/administer-cluster/configure-multiple-schedulers/
+##
+# schedulerName: default-scheduler
