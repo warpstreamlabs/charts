@@ -88,6 +88,8 @@ tolerations: []
 
 affinity: {}
 
+## Topology Spread Constraints
+## ref: https://kubernetes.io/docs/concepts/workloads/pods/pod-topology-spread-constraints/
 topologySpreadConstraints: []
 
 priorityClassName: ""
@@ -156,3 +158,8 @@ podLabels: {}
 
 # Optional initContainers definition
 initContainers: []
+
+## Use an alternate scheduler
+## ref: https://kubernetes.io/docs/tasks/administer-cluster/configure-multiple-schedulers/
+##
+# schedulerName: default-scheduler
