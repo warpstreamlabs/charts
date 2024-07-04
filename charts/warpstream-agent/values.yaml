@@ -81,6 +81,9 @@ extraEnv: []
 # Add additional environment settings to the pod. Can be useful in proxy
 # environments
 
+volumeMounts: []
+# Add any volumeMounts to the pod.
+
 extraArgs: []
 # Add additional args settings to the pod.
 
@@ -160,6 +163,9 @@ podLabels: {}
 
 # Optional initContainers definition
 initContainers: []
+
+# Optional volume definition
+volumes: []
 
 ## Use an alternate scheduler
 ## ref: https://kubernetes.io/docs/tasks/administer-cluster/configure-multiple-schedulers/
