@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.13.3] - 2024-07-11
+
+### Added
+
+- Make podLabels optional, from version 1.13.1 it it failed if it wasn't set at least one label.
+
 ## [0.13.2] - 2024-07-05
 
 ### Added

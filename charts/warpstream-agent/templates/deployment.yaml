@@ -26,7 +26,9 @@ spec:
       {{- end }}
       labels:
         {{- include "warpstream-agent.selectorLabels" . | nindent 8 }}
-        {{- toYaml .Values.podLabels | nindent 8 }}
+        {{- if not (empty .Values.podLabels) }}
+          {{- toYaml .Values.podLabels | nindent 8 }}
+        {{- end }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
