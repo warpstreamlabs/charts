@@ -77,6 +77,8 @@ resources:
   limits:
     memory: 8Gi
 
+goMaxProcs: null
+
 extraEnv: []
 # Add additional environment settings to the pod. Can be useful in proxy
 # environments

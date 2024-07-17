@@ -81,7 +81,7 @@ spec:
                 secretKeyRef:
                   name: {{ include "warpstream-agent.secretName" . }}
                   key: apikey
-            {{- if .Values.resources }}
+            {{- if and .Values.resources (not .Values.goMaxProcs) }}
             {{- if .Values.resources.requests }}
             {{- if not (regexMatch "^[0-9]+$" (toString .Values.resources.requests.cpu)) }}
               {{- fail "Only use whole numbers for cpu request because we are using it to set GOMAXPROCS." }}
@@ -89,6 +89,10 @@ spec:
             - name: GOMAXPROCS
               value: {{ .Values.resources.requests.cpu | quote }}
             {{- end }}
+            {{- end }}
+            {{- if .Values.goMaxProcs }}
+            - name: GOMAXPROCS
+              value: {{ .Values.goMaxProcs | quote }}
             {{- end }}
           {{- if .Values.extraEnv }}
             {{- toYaml .Values.extraEnv | nindent 12 }}
