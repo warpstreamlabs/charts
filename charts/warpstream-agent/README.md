@@ -58,6 +58,7 @@ Bootstrap a Kubernetes cluster locally, for example with [kind][].
 helm upgrade --install warpstream-agent . --set config.playground=true
 helm test warpstream-agent
 kubectl logs warpstream-agent-diagnose-connection
+kubectl logs deployment/warpstream-agent
 ```
 
 Or manually diagnose connection with

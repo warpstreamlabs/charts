@@ -5,7 +5,7 @@ metadata:
   labels:
     {{- include "warpstream-agent.labels" . | nindent 4 }}
 spec:
-  {{- if and (not .Values.autoscaling.enabled) (.Values.replicas) }}
+  {{- if and (not .Values.autoscaling.enabled) (.Values.replicas) (not .Values.config.playground) }}
   replicas: {{ .Values.replicas }}
   {{- end }}
   revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
@@ -76,11 +76,13 @@ spec:
                 fieldRef:
                   apiVersion: v1
                   fieldPath: metadata.namespace
+            {{- if not .Values.config.playground }}
             - name: WARPSTREAM_API_KEY
               valueFrom:
                 secretKeyRef:
                   name: {{ include "warpstream-agent.secretName" . }}
                   key: apikey
+            {{- end }}
             {{- if and .Values.resources (not .Values.goMaxProcs) }}
             {{- if .Values.resources.requests }}
             {{- if not (regexMatch "^[0-9]+$" (toString .Values.resources.requests.cpu)) }}
