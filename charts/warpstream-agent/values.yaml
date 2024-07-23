@@ -51,7 +51,7 @@ config:
   ## for configuring the WarpStream Agents for production.
   ## https://docs.warpstream.com/warpstream/how-to/configure-the-warpstream-agent-for-production
   # bucketURL: "mem://mem_bucket"
-  # apiKey: "YOUR_API_KEY"
+  # agentKey: "YOUR_AGENT_KEY"
   # virtualClusterID: "YOUR_VIRTUAL_CLUSTER_ID"
   # region: "us-east-1"
 
