@@ -18,40 +18,6 @@ helm repo update
 Helm v3.6 or later.
 
 
-## Deployment Considerations
-
-Before installing, consider:
-- **Networking**: How will your clients communicate with your WarpStream cluster?
-- **Scaling**: How will your cluster adapt to changes in load?
-- **Object Storage Access**: How will your pods authenticate requests to your object storage?
-- **Authentication**: How will your clients securely connect with your WarpStream cluster?
-
-### Networking
-As with any Kubernetes deployment, there are a variety of network topologies available, but two will be highlighted here.
-1. **Direct Route** - a network route exists for clients to connect directly with each pod
-
-In this scenario, the deployment utilizes the built-in load-balancing provided by the WarpStream Service Discovery to round-robin client connections to the available pods. Learn more about WarpStream's custom service discovery in the [Service Discovery](https://docs.warpstream.com/warpstream/overview/architecture/service-discovery#kafka-service-discovery) documentation. In this configuration, each pod will need to be reachable from the clients via the internal IP which it advertises as part of the Service Discovery process.
-
-2. **Load Balancer/Proxy** - clients connect to the agents via a traditional network load balancer or proxy
-
-In this scenario, because the WarpStream agents are entirely stateless, they can be deployed behind a network load balancer. This means clients only need to be able to reach the load balancer. The key to this configuration is that all agents need to advertise the hostname or IP of the load balancer instead of their local IP. Read more about this option [here](https://docs.warpstream.com/warpstream/byoc/advanced-agent-deployment-options/configure-warpstream-agent-within-a-container-or-behind-a-proxy).
-
-
-### Scaling
-WarpStream clusters can auto-scale easily due to the stateless nature of agents. The recommendation is to auto-scale based on CPU usage with a 50% average usage target. Auto-scaling is disabled by default in the Helm chart (3 replicas are used instead). See `autoscaling` in [values.yaml](values.yaml) for the available options.
-
-### Object Storage Access
-WarpStream agents rely on object storage as opposed to local disks. This means each pod needs permissions to access your object storage bucket. Configuration varies depending on your cloud provider. See [Object Storage Configuration](https://docs.warpstream.com/warpstream/byoc/deploy/different-object-stores) for more details.
-
-Other useful references:
-- https://docs.aws.amazon.com/eks/latest/userguide/service-accounts.html
-- https://azure.github.io/azure-workload-identity/docs/introduction.html
-- https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity
-
-### Authentication
-WarpStream supports secure authentication and encryption via SASL and TLS. Authentication is not enabled by default in the Helm chart. Enabling it is highly recommended, especially if agents are exposed outside your VPC. See the [Authentication](https://docs.warpstream.com/warpstream/byoc/advanced-agent-deployment-options/enable-agent-auth) documentation for more details.
-
-
 ## Quickstart
 
 By default, the WarpStream deployment runs as a ClusterIP Service with auto-scaling and authentication disabled and requires additional steps to grant the pods permission to access object storage.
@@ -111,6 +77,42 @@ helm uninstall warpstream-agent
 This command removes all the Kubernetes components associated with the chart and deletes the release.
 
 
+## Deployment Considerations
+
+Before installing, consider:
+- **Networking**: How will your clients communicate with your WarpStream cluster?
+- **Scaling**: How will your cluster adapt to changes in load?
+- **Object Storage Access**: How will your pods authenticate requests to your object storage?
+- **Authentication**: How will your clients securely connect with your WarpStream cluster?
+
+### Networking
+As with any Kubernetes deployment, there are a variety of network topologies available, but two will be highlighted here.
+1. **Direct Route** (recommended) - a network route exists for clients to connect directly with each pod
+
+In this scenario, the deployment utilizes the built-in load-balancing provided by the WarpStream Service Discovery to round-robin client connections to the available pods. Learn more about WarpStream's custom service discovery in the [Service Discovery](https://docs.warpstream.com/warpstream/overview/architecture/service-discovery#kafka-service-discovery) documentation. In this configuration, each pod will need to be reachable from the clients via the internal IP which it advertises as part of the Service Discovery process.
+
+2. **Load Balancer/Proxy** - clients connect to the agents via a traditional network load balancer or proxy
+
+In this scenario, because the WarpStream agents are entirely stateless, they can be deployed behind a network load balancer. This means clients only need to be able to reach the load balancer. The key to this configuration is that all agents need to advertise the hostname or IP of the load balancer instead of their local IP. Read more about this option [here](https://docs.warpstream.com/warpstream/byoc/advanced-agent-deployment-options/configure-warpstream-agent-within-a-container-or-behind-a-proxy).
+
+
+### Scaling
+WarpStream clusters can auto-scale easily due to the stateless nature of agents. The recommendation is to auto-scale based on CPU usage with a 50% average usage target. Auto-scaling is disabled by default in the Helm chart (3 replicas are used instead). See `autoscaling` in [values.yaml](values.yaml) for the available options.
+
+### Object Storage Access
+WarpStream agents rely on object storage as opposed to local disks. This means each pod needs permissions to access your object storage bucket. Configuration varies depending on your cloud provider. See [Object Storage Configuration](https://docs.warpstream.com/warpstream/byoc/deploy/different-object-stores) for more details.
+
+Other useful references:
+- https://docs.aws.amazon.com/eks/latest/userguide/service-accounts.html
+- https://azure.github.io/azure-workload-identity/docs/introduction.html
+- https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity
+
+### Authentication
+WarpStream supports secure authentication and encryption via SASL and TLS, although neither is enabled by default. 
+
+If you plan to expose the WarpStream Agents outside your VPC (I.E to the public internet), enabling both is highly recommended. See the [Authentication](https://docs.warpstream.com/warpstream/byoc/advanced-agent-deployment-options/enable-agent-auth) documentation for more details.
+
+
 ## Other Deployment Options
 
 ### LoadBalancer Service
@@ -129,7 +131,8 @@ extraEnv:
 
 Follow your cloud provider's load balancer documentation to complete the configuration.
 
-**Note:** If your load balancer is exposed to the internet, enabling authentication on the WarpStream agents is highly recommended. See [Authentication](https://docs.warpstream.com/warpstream/byoc/advanced-agent-deployment-options/enable-agent-auth) for more details, including how to create the client credentials in the WarpStream console.
+**Note**
+If your load balancer is exposed to the internet, enabling authentication on the WarpStream agents is highly recommended. See [Authentication](https://docs.warpstream.com/warpstream/byoc/advanced-agent-deployment-options/enable-agent-auth) for more details, including how to create the client credentials in the WarpStream console.
 
 Enable authentication by setting the `WARPSTREAM_REQUIRE_AUTHENTICATION` variable:
 
@@ -152,6 +155,9 @@ Playground mode can also be used for testing the WarpStream Kubernetes deploymen
 [kind]: https://kind.sigs.k8s.io/
 [minikube]: https://minikube.sigs.k8s.io/docs/
 [Rancher Desktop]: https://rancherdesktop.io/
+
+**Warning**
+In playground mode the agent is configured to store all data in memory. This means, if the pod is restarted for any reason, the data will be lost.
 
 Run in playground mode:
 ```shell
