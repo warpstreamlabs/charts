@@ -110,13 +110,12 @@ autoscaling:
   targetMemory: ""
   behavior: {}
 
-# Optional disruption budget
+# Optional disruption budget. Enabled by default to minimize disruption during deploys.
 pdb:
-  create: false
-  # apiVersion: ""
-  # minimum number of pods that must still be available after the eviction (both integers and percentages are supported)
-  minAvailable: "50%"
-  # maximum number of pods that can be unavailable after the eviction (both integers and percentages are supported)
+  create: true
+  # This *could* be replaced with minAvailable: "90%" for large deployments, however,
+  # that can be problematic if az-aware routing is enabled because the PDB is not
+  # az-aware and a 10% disruption could mean a loss of 30% capacity in a single zone.
   maxUnavailable: 1
 
 serviceMonitor:
