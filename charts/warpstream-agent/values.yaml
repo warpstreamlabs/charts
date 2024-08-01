@@ -14,6 +14,11 @@ replicas: 3
 
 deploymentStrategy:
   type: RollingUpdate
+  rollingUpdate:
+    # The number of pods that can be created above the desired amount of pods during an update (both integers and percentages are supported)
+    maxSurge: 1
+    # The number of pods that can be unavailable during the update process (both integers and percentages are supported)
+    maxUnavailable: 1
 
 terminationGracePeriodSeconds: 300
 
