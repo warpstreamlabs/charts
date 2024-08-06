@@ -33,7 +33,7 @@ spec:
     metricRelabelings:
       {{- toYaml . | nindent 6 }}
     {{- end }}
-  jobLabel: "{{ .Release.Name }}"
+  jobLabel: app.kubernetes.io/name
   selector:
     matchLabels:
       {{- include "warpstream-agent.selectorLabels" . | nindent 6 }}
