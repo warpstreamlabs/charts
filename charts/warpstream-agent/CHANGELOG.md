@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.13.12] - 2024-08-07
+
+### Added
+
+- Request 100MiB of ephemeral storage on each agent (because kubernetes counts some logs it emits
+  about the agent container against its ephemeral storage).
+
 ## [0.13.11] - 2024-08-06
 
 ### Added
@@ -87,7 +94,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- make `terminationGracePeriodSeconds` customizable 
+- make `terminationGracePeriodSeconds` customizable
 
 ## [0.12.24] - 2024-06-19
 
@@ -148,7 +155,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - update warpstream agent version to v558
-- 
+
 ## [0.12.13] - 2024-05-09
 
 ### Added
