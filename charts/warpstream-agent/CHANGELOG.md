@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.13.12] - 2024-08-14
+
+### Added
+
+- Request 100MiB of ephemeral storage on each agent (because kubernetes counts some logs it emits
+  about the agent container against its ephemeral storage).
+- Upgrade WarpStream Agent version to v573
+
 ## [0.13.12] - 2024-08-07
 
 ### Added
