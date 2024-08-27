@@ -10,6 +10,7 @@ fullnameOverride: ""
 
 revisionHistoryLimit: 10
 
+# Ignored if auto-scaling is enabled (which it is by default).
 replicas: 3
 
 deploymentStrategy:
@@ -111,13 +112,12 @@ topologySpreadConstraints: []
 
 priorityClassName: ""
 
-# Optional horizontal pod autoscaler
+# Optional horizontal pod autoscaler.
 autoscaling:
-  enabled: false
-  minReplicas: 1
-  maxReplicas: 5
+  enabled: true
+  minReplicas: 3
+  maxReplicas: 30
   targetCPU: "60"
-  targetMemory: ""
   behavior: {}
 
 # Optional disruption budget. Enabled by default to minimize disruption during deploys.
