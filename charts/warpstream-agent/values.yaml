@@ -88,8 +88,6 @@ resources:
     memory: 8Gi
     ephemeral-storage: "100Mi"
 
-goMaxProcs: null
-
 extraEnv: []
 # Add additional environment settings to the pod. Can be useful in proxy
 # environments

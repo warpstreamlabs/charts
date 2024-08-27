@@ -97,3 +97,24 @@ Return the appropriate apiVersion for podDisruptionBudget.
 {{- print "policy/v1beta1" }}
 {{- end }}
 {{- end }}
+
+{{/*
+Convert units like 4GiB and 2000MiB to bytes.
+*/}}
+{{- define "convertToBytes" -}}
+{{- $memory := . | upper | trimSuffix "I" | trimSuffix "B" -}}
+{{- $bytes := 0}}
+{{- if hasSuffix "G" $memory -}}
+{{- $value := trimSuffix "G" $memory | int -}}
+{{- $bytes = mul $value 1073741824 -}}
+{{- else if hasSuffix "M" $memory -}}
+{{- $value := trimSuffix "M" $memory | int -}}
+{{- $bytes = mul $value 1048576 -}}
+{{- else if hasSuffix "K" $memory -}}
+{{- $value := trimSuffix "K" $memory | int -}}
+{{- $bytes = mul $value 1024 -}}
+{{- else -}}
+{{- $bytes = . | int -}}
+{{- end -}}
+{{- $bytes -}}
+{{- end -}}
