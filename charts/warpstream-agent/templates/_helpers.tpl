@@ -102,7 +102,7 @@ Return the appropriate apiVersion for podDisruptionBudget.
 Convert units like 4GiB and 2000MiB to bytes.
 */}}
 {{- define "convertToBytes" -}}
-{{- $memory := . | upper | trimSuffix "I" | trimSuffix "B" -}}
+{{- $memory := . | upper | trimSuffix "B" | trimSuffix "I" -}}
 {{- $bytes := 0}}
 {{- if hasSuffix "G" $memory -}}
 {{- $value := trimSuffix "G" $memory | int -}}
