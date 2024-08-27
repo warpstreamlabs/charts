@@ -61,6 +61,10 @@ config:
   # virtualClusterID: "YOUR_VIRTUAL_CLUSTER_ID"
   # region: "us-east-1"
 
+# Ensures that the Agents are configured with the recommended resources for production
+# usage. We recommend that you do not set this to false except for in staging/dev
+# environments.
+enforceProductionResourceRequirements: true
 resources:
   # Recommendations:
   #   1. At least 2 requests vCPUs per Agent, and only use whole numbers for CPUs
@@ -87,8 +91,6 @@ resources:
   limits:
     memory: 8Gi
     ephemeral-storage: "100Mi"
-
-goMaxProcs: null
 
 extraEnv: []
 # Add additional environment settings to the pod. Can be useful in proxy
