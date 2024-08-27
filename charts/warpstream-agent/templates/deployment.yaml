@@ -64,12 +64,14 @@ spec:
             initialDelaySeconds: 10
             periodSeconds: 5
           resources:
+            {{- if .Values.enforceProductionResourceRequirements}}
             {{- $cpuRequest := .Values.resources.requests.cpu | int -}}
             {{- $memoryRequest := .Values.resources.requests.memory | include "convertToBytes" -}}
             {{- $memoryPerCpu := div $memoryRequest $cpuRequest -}}
             {{- $minMemoryPerCpu := 4000000000 -}}
             {{- if lt $memoryPerCpu $minMemoryPerCpu -}}
             {{ fail (printf "Memory request per CPU (%.2f GiB) is less than the required 4 GiB per CPU. Please increase the memory request." (divf $memoryPerCpu 1073741824)) }}
+            {{- end -}}
             {{- end -}}
             {{- toYaml .Values.resources | nindent 12 }}
           env:
