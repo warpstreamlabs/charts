@@ -118,6 +118,7 @@ autoscaling:
   minReplicas: 3
   maxReplicas: 30
   targetCPU: "60"
+  targetMemory: ""
   behavior: {}
 
 # Optional disruption budget. Enabled by default to minimize disruption during deploys.
