@@ -5,6 +5,15 @@ metadata:
   labels:
     {{- include "warpstream-agent.labels" . | nindent 4 }}
 data:
+  {{- if not .Values.config.bucketURL }}
+    {{- fail "bucketURL configuration value must be set" }}
+  {{- end }}
   WARPSTREAM_BUCKET_URL: {{ .Values.config.bucketURL | quote }}
+  {{- if not .Values.config.virtualClusterID }}
+    {{- fail "virtualClusterID configuration value must be set" }}
+  {{- end }}
   WARPSTREAM_DEFAULT_VIRTUAL_CLUSTER_ID: {{ .Values.config.virtualClusterID | quote }}
+  {{- if not .Values.config.region }}
+    {{- fail "region configuration value must be set" }}
+  {{- end }}
   WARPSTREAM_REGION: {{ .Values.config.region | quote }}
