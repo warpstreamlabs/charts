@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Update WarpStream Agent to v588.
+- Update WarpStream Agent to v578.
 
 ## [0.13.20] - 2024-08-27
 
