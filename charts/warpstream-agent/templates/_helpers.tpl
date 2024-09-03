@@ -118,3 +118,18 @@ Convert units like 4GiB and 2000MiB to bytes.
 {{- end -}}
 {{- $bytes -}}
 {{- end -}}
+{{/*
+
+Convert CPU requests to millicores integers like 1/2000m to 1000/2000.
+*/}}
+{{- define "convertToMillicores" -}}
+{{- $cpu := . -}}
+{{- $cpuMillicores := 0}}
+{{- if hasSuffix "m" $cpu -}}
+{{- $value := trimSuffix "m" $cpu | int -}}
+{{- $cpuMillicores = $value -}}
+{{- else -}}
+{{- $cpuMillicores = mul . 1000 | int -}}
+{{- end -}}
+{{- $cpuMillicores -}}
+{{- end -}}
