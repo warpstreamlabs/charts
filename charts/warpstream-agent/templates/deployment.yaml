@@ -65,7 +65,6 @@ spec:
             periodSeconds: 5
           resources:
             {{- $cpuMillicoresRequest := .Values.resources.requests.cpu | include "convertToMillicores" -}}
-            {{- $cpuMillicoresRequest := .Values.resources.requests.cpu | include "convertToMillicores" -}}
             {{- $goMaxProcs := divf $cpuMillicoresRequest 1000 -}}
             {{- $goMaxProcs := ceil $goMaxProcs -}}
             {{- if .Values.enforceProductionResourceRequirements}}
