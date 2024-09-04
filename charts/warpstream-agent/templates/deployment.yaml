@@ -63,6 +63,12 @@ spec:
               port: http
             initialDelaySeconds: 10
             periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /v1/status
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 5
           resources:
             {{- $cpuMillicoresRequest := .Values.resources.requests.cpu | include "convertToMillicores" -}}
             {{- $goMaxProcs := divf $cpuMillicoresRequest 1000 -}}
