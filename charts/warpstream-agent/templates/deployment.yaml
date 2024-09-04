@@ -68,6 +68,7 @@ spec:
               path: /v1/status
               port: http
             initialDelaySeconds: 10
+            failureThreshold: 5
             periodSeconds: 5
           resources:
             {{- $cpuMillicoresRequest := .Values.resources.requests.cpu | include "convertToMillicores" -}}
