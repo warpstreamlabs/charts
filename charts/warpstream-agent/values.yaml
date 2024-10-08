@@ -67,7 +67,7 @@ config:
 enforceProductionResourceRequirements: true
 resources:
   # Recommendations:
-  #   1. At least 2 requests vCPUs per Agent, and only use whole numbers for CPUs
+  #   1. At least 4 requests vCPUs per Agent, and only use whole numbers for CPUs
   #      because we set GOMAXPROCS to the value of requested CPUs.
   #      The Agents use the value of GOMAXPROCS to determine how many cores they have,
   #      (to avoid throttling) and size caches and other data structures in accordance
@@ -82,14 +82,14 @@ resources:
   #      use-cases.
   #   4. Keep memory requests and limits the same.
   requests:
-    cpu: 2
-    memory: 8Gi
+    cpu: 4
+    memory: 16Gi
     # we do not need the disk space, but Kubernetes will count some logs that it emits
     # about our containers towards our containers ephemeral usage and if we requested
     # 0 storage we could end up getting evicted unnecessarily when the node is under disk pressure.
     ephemeral-storage: "100Mi"
   limits:
-    memory: 8Gi
+    memory: 16Gi
     ephemeral-storage: "100Mi"
 
 extraEnv: []
