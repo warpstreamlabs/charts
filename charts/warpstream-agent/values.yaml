@@ -90,7 +90,8 @@ resources:
     ephemeral-storage: "100Mi"
   limits:
     memory: 16Gi
-    ephemeral-storage: "100Mi"
+    # We don't limit ephemeral-storage because its coorelated with how many logs the
+    # Agents are emitting which is impossible to predict.
 
 extraEnv: []
 # Add additional environment settings to the pod. Can be useful in proxy
