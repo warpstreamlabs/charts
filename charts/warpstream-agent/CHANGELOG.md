@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+<<<<<<< Updated upstream
+=======
+## [0.13.36] - 2024-10-22
+
+### Added
+
+- Update WarpStream Agent to v591.
+
+## [0.13.36] - 2024-10-19
+
+### Added
+
+- Remove limit on ephemeral storage in chart as its unnecessary.
+
+>>>>>>> Stashed changes
 ## [0.13.36] - 2024-10-17
 
 ### Added
