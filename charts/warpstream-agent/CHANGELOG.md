@@ -5,7 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.13.41] - 2024-10-28
+## [0.13.44] - 2024-10-29
+
+### Added
+
+- Make sure there is only one replica in playground mode.
+
+## [0.13.43] - 2024-10-29
+
+### Added
+
+- Remove need for unnecessary configuration options in playground mode.
+
+## [0.13.42] - 2024-10-28
 
 ### Added
 
