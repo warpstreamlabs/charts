@@ -52,6 +52,7 @@ headlessService:
   enabled: true
 
 config:
+  enabled: true
   playground: false
   ## To learn what values to set for the config variables, look at our documentation
   ## for configuring the WarpStream Agents for production.
