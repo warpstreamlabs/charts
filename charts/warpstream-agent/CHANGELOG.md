@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Update WarpStream Agent to v594.
 
+## [0.13.41] - 2024-10-29
+
+### Added
+
+- Fix bug where unnecessary configuration was required in playground mode.
+
 ## [0.13.40] - 2024-10-27
 
 ### Added
