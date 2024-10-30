@@ -5,7 +5,7 @@ metadata:
   labels:
     {{- include "warpstream-agent.labels" . | nindent 4 }}
 spec:
-  {{- if .Values.config.playground}}
+  {{- if .Values.config.playground }}
   replicas: 1
   {{- else if and (not .Values.autoscaling.enabled) (.Values.replicas) }}
   replicas: {{ .Values.replicas }}
