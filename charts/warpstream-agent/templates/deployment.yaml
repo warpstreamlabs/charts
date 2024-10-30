@@ -7,8 +7,7 @@ metadata:
 spec:
   {{- if .Values.config.playground}}
   replicas: 1
-  {{- else }}
-  {{- if and (not .Values.autoscaling.enabled) (.Values.replicas) }}
+  {{- else if and (not .Values.autoscaling.enabled) (.Values.replicas) }}
   replicas: {{ .Values.replicas }}
   {{- end }}
   revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
