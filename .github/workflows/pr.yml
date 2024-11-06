@@ -1,6 +1,6 @@
 name: Lint & Test Charts
 
-on: pull_request_target
+on: pull_request
 
 jobs:
   pull_request:
