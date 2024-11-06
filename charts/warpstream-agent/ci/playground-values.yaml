@@ -1,9 +1,9 @@
 config:
   playground: true
-  
+
 deploymentStrategy:
   type: RollingUpdate
-  rollingUpdate: null # setting rollingUpdate to null so helm will fail if pod doesn't start
+  rollingUpdate: null  # setting rollingUpdate to null so helm will fail if pod doesn't start
 
 # overriding resources so it fits on a runner
 resources:
