@@ -16,3 +16,7 @@ resources:
     ephemeral-storage: "100Mi"
   limits:
     memory: 4Gi
+
+extraEnv:
+  - name: WARPSTREAM_ADVERTISE_HOSTNAME_STRATEGY
+    value: auto-ip4 # playground mode defaults to local so we need to override it for tests to pass
