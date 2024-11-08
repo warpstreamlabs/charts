@@ -1,5 +1,5 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: {{ .Values.deploymentKind }}
 metadata:
   name: {{ include "warpstream-agent.fullname" . }}
   labels:
@@ -10,13 +10,27 @@ spec:
   {{- else if and (not .Values.autoscaling.enabled) (.Values.replicas) }}
   replicas: {{ .Values.replicas }}
   {{- end }}
+  {{- if eq .Values.deploymentKind "StatefulSet" }}
+  serviceName: {{ include "warpstream-agent.fullname" . }}-headless
+  {{- end }}
+  {{- if eq .Values.deploymentKind "Deployment" }}
   revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
+  {{- end }}
   selector:
     matchLabels:
       {{- include "warpstream-agent.selectorLabels" . | nindent 6 }}
+  {{- if eq .Values.deploymentKind "Deployment" }}
   {{- with .Values.deploymentStrategy }}
   strategy:
     {{- toYaml . | trim | nindent 4 }}
+  {{- end }}
+  {{- end }}
+  {{- if eq .Values.deploymentKind "StatefulSet" }}
+  podManagementPolicy: {{ .Values.statefulSetConfig.podManagementPolicy }}
+  {{- with .Values.statefulSetConfig.updateStrategy }}
+  updateStrategy:
+    {{- toYaml . | trim | nindent 4 }}
+  {{- end }}
   {{- end }}
   template:
     metadata:
@@ -87,6 +101,14 @@ spec:
             {{- end -}}
             {{- toYaml .Values.resources | nindent 12 }}
           env:
+            - name: MY_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            {{ if eq .Values.deploymentKind "StatefulSet" }}
+            - name: WARPSTREAM_DISCOVERY_KAFKA_HOSTNAME_OVERRIDE
+              value: $(MY_POD_NAME).{{ include "warpstream-agent.fullname" . }}-headless.{{ .Release.Namespace }}.svc.{{ .Values.statefulSetConfig.clusterDomain }}
+            {{ end -}}
             - name: POD_NAME
               valueFrom:
                 fieldRef:
