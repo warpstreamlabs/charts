@@ -7,7 +7,7 @@ metadata:
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
-    kind: {{ .Values.deploymentKind }}
+    kind: {{ include "warpstream-agent.deploymentKind" . }}
     name: {{ include "warpstream-agent.fullname" . }}
   minReplicas: {{ .Values.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.autoscaling.maxReplicas }}

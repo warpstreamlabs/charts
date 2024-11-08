@@ -1,5 +1,5 @@
 apiVersion: apps/v1
-kind: {{ .Values.deploymentKind }}
+kind: {{ include "warpstream-agent.deploymentKind" . }}
 metadata:
   name: {{ include "warpstream-agent.fullname" . }}
   labels:
@@ -10,22 +10,22 @@ spec:
   {{- else if and (not .Values.autoscaling.enabled) (.Values.replicas) }}
   replicas: {{ .Values.replicas }}
   {{- end }}
-  {{- if eq .Values.deploymentKind "StatefulSet" }}
+  {{- if eq (include "warpstream-agent.deploymentKind" .) "StatefulSet" }}
   serviceName: {{ include "warpstream-agent.fullname" . }}-headless
   {{- end }}
-  {{- if eq .Values.deploymentKind "Deployment" }}
+  {{- if eq (include "warpstream-agent.deploymentKind" .) "Deployment" }}
   revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
   {{- end }}
   selector:
     matchLabels:
       {{- include "warpstream-agent.selectorLabels" . | nindent 6 }}
-  {{- if eq .Values.deploymentKind "Deployment" }}
+  {{- if eq (include "warpstream-agent.deploymentKind" .) "Deployment" }}
   {{- with .Values.deploymentStrategy }}
   strategy:
     {{- toYaml . | trim | nindent 4 }}
   {{- end }}
   {{- end }}
-  {{- if eq .Values.deploymentKind "StatefulSet" }}
+  {{- if eq (include "warpstream-agent.deploymentKind" .) "StatefulSet" }}
   podManagementPolicy: {{ .Values.statefulSetConfig.podManagementPolicy }}
   {{- with .Values.statefulSetConfig.updateStrategy }}
   updateStrategy:
@@ -105,7 +105,7 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
-            {{ if eq .Values.deploymentKind "StatefulSet" }}
+            {{ if eq (include "warpstream-agent.deploymentKind" .) "StatefulSet" }}
             - name: WARPSTREAM_DISCOVERY_KAFKA_HOSTNAME_OVERRIDE
               value: $(MY_POD_NAME).{{ include "warpstream-agent.fullname" . }}-headless.{{ .Release.Namespace }}.svc.{{ .Values.statefulSetConfig.clusterDomain }}
             {{ end -}}
