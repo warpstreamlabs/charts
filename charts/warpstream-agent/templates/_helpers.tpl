@@ -137,3 +137,14 @@ Let's take a few examples:
 {{- end -}}
 {{- $cpuMillicores -}}
 {{- end -}}
+
+{{/*
+Return the deployment kind to use
+*/}}
+{{- define "warpstream-agent.deploymentKind" -}}
+{{- if $.Values.deploymentKind }}
+{{- print $.Values.deploymentKind }}
+{{- else }}
+{{- print "Deployment" }}
+{{- end }}
+{{- end }}

@@ -8,10 +8,14 @@ imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
-revisionHistoryLimit: 10
-
 # Ignored if auto-scaling is enabled (which it is by default).
 replicas: 3
+
+# Only use StatefulSet when TLS is needed for an easier time managing certificates due to stable hostnames
+deploymentKind: Deployment  # or StatefulSet
+
+# Only used in Deployments
+revisionHistoryLimit: 10
 
 deploymentStrategy:
   type: RollingUpdate
@@ -20,6 +24,13 @@ deploymentStrategy:
     maxSurge: 1
     # The number of pods that can be unavailable during the update process (both integers and percentages are supported)
     maxUnavailable: 1
+
+statefulSetConfig:
+  clusterDomain: cluster.local
+  podManagementPolicy: Parallel  # or OrderedReady, see https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#pod-management-policies
+  updateStrategy:
+    # see https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
+    type: RollingUpdate
 
 terminationGracePeriodSeconds: 300
 
