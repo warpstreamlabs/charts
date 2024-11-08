@@ -12,7 +12,7 @@ fullnameOverride: ""
 replicas: 3
 
 # Recommend using StatefulSet when using TLS for an easier time making certificates
-deploymentKind: Deployment # or StatefulSet
+deploymentKind: Deployment  # or StatefulSet
 
 # Only used in Deployments
 revisionHistoryLimit: 10
@@ -27,7 +27,7 @@ deploymentStrategy:
 
 statefulSetConfig:
   clusterDomain: cluster.local
-  podManagementPolicy: OrderedReady # or Parallel, see https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#pod-management-policies
+  podManagementPolicy: OrderedReady  # or Parallel, see https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#pod-management-policies
   updateStrategy:
     # see https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
     type: RollingUpdate
