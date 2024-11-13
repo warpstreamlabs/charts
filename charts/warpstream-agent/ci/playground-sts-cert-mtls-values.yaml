@@ -9,7 +9,7 @@ deploymentKind: StatefulSet
 certificate:
   # Set to true to enable TLS termination on the WarpStream agent
   # see TLS documentation for details TODO:
-  enableTLS: true 
+  enableTLS: true
 
   secretName: "ci-certificate"
 
@@ -18,7 +18,7 @@ certificate:
 
     certificateAuthoritySecretKeyRef:
       name: "ci-certificate-ca"
-      key: "ca.crt" 
+      key: "ca.crt"
 
 # overriding resources so it fits on a runner
 resources:
