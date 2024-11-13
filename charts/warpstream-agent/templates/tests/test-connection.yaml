@@ -15,7 +15,6 @@ spec:
         - kcmd
         - -bootstrap-host
         - '{{ include "warpstream-agent.fullname" . }}.default.svc.cluster.local'
-        - -type
         {{- with .Values.certificate }}
         {{- if .enableTLS }}
         - -tls
@@ -26,6 +25,7 @@ spec:
         - -tlsClientPrivateKeyFile=/etc/private/ssl/agent-mtls/tls.key
         {{- end }}
         {{- end }}
+        - -type
         - diagnose-connection
       {{- if .Values.certificate }}
       volumeMounts:
