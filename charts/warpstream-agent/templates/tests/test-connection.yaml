@@ -43,3 +43,4 @@ spec:
           secretName: ci-certificate-ca
     {{- end }}
     {{- end }}
+  {{- end }}
