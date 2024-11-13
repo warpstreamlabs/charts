@@ -77,7 +77,7 @@ spec:
             - -kafkaTLS
             - -tlsServerCertFile=/etc/private/ssl/agent/tls.crt
             - -tlsServerPrivateKeyFile=/etc/private/ssl/agent/tls.key
-            {{- if .Values..mtls.enabled }}
+            {{- if .Values.certificate.mtls.enabled }}
             - -requireMTLSAuthentication
             {{- if .Values.certificate.mtls.certificateAuthoritySecretKeyRef.name }}
             - -tlsClientCACertFile=/etc/private/ssl/agent-mtls/{{ .Values.certificate.mtls.certificateAuthoritySecretKeyRef.key }}
