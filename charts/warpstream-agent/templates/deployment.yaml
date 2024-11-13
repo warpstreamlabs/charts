@@ -73,14 +73,16 @@ spec:
             {{- range .Values.extraArgs }}
             - {{ . }}
             {{- end }}
-            {{- if .Values.certificate.enableTLS }}
+            {{- with .Values.certificate }}
+            {{- if .enableTLS }}
             - -kafkaTLS
             - -tlsServerCertFile=/etc/private/ssl/agent/tls.crt
             - -tlsServerPrivateKeyFile=/etc/private/ssl/agent/tls.key
-            {{- if .Values.certificate.mtls.enabled }}
+            {{- if .mtls.enabled }}
             - -requireMTLSAuthentication
-            {{- if .Values.certificate.mtls.certificateAuthoritySecretKeyRef.name }}
-            - -tlsClientCACertFile=/etc/private/ssl/agent-mtls/{{ .Values.certificate.mtls.certificateAuthoritySecretKeyRef.key }}
+            {{- if .mtls.certificateAuthoritySecretKeyRef.name }}
+            - -tlsClientCACertFile=/etc/private/ssl/agent-mtls/{{ .mtls.certificateAuthoritySecretKeyRef.key }}
+            {{- end }}
             {{- end }}
             {{- end }}
             {{- end }}
@@ -162,14 +164,16 @@ spec:
               protocol: TCP
           {{- with .Values.volumeMounts }}
           volumeMounts:
-            {{- if .Values.certificate.enableTLS }}
+            {{- with .Values.certificate }}
+            {{- if .enableTLS }}
             - mountPath: "/etc/private/ssl/agent"
               name: agent-certs
               readOnly: true
-            {{- if .Values.certificates.mtls.certificateAuthoritySecretKeyRef.name }}
+            {{- if .mtls.certificateAuthoritySecretKeyRef.name }}
             - mountPath: "/etc/private/ssl/agent-mtls"
               name: agent-mtls-certs
               readOnly: true
+            {{- end }}
             {{- end }}
             {{- end }}
             {{- toYaml . | nindent 12 }}
@@ -200,14 +204,16 @@ spec:
       {{- end }}
       {{- with .Values.volumes }}
       volumes:
-        {{- if .Values.certificate.enableTLS }}
+        {{- with .Values.certificate }}
+        {{- if .enableTLS }}
           - name: agent-certs
             secret:
-              secretName: {{ .Values.certificate.secretName }}
-        {{- if .Values.certificate.mtls.certificateAuthoritySecretKeyRef.name }}
+              secretName: {{ .secretName }}
+        {{- if .mtls.certificateAuthoritySecretKeyRef.name }}
           - name: agent-mtls-certs
             secret:
-              secretName: {{ .Values.certificate.mtls.certificateAuthoritySecretKeyRef.name }}
+              secretName: {{ .mtls.certificateAuthoritySecretKeyRef.name }}
+        {{- end }}
         {{- end }}
         {{- end }}
         {{- toYaml . | nindent 8 }}
