@@ -79,7 +79,7 @@ spec:
             - -tlsServerCertFile=/etc/private/ssl/agent/tls.crt
             - -tlsServerPrivateKeyFile=/etc/private/ssl/agent/tls.key
             {{- if .mtls.enabled }}
-            - -requireMTLSAuthentication
+            - -tlsVerifyClientCert # change this to -requireMTLSAuthentication once playground mode is updated with the newer flags
             {{- if .mtls.certificateAuthoritySecretKeyRef.name }}
             - -tlsClientCACertFile=/etc/private/ssl/agent-mtls/{{ .mtls.certificateAuthoritySecretKeyRef.key }}
             {{- end }}
