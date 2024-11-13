@@ -16,5 +16,30 @@ spec:
         - -bootstrap-host
         - '{{ include "warpstream-agent.fullname" . }}'
         - -type
+        {{- with .Values.certificate }}
+        {{- if .enableTLS }}
+        - -tls
+        - -tlsServerCACertFile=/etc/private/ssl/agent/ca.crt
+        {{- end }}
+        {{- end }}
         - diagnose-connection
+      {{- if .Values.certificate }}
+      volumeMounts:
+        {{- with .Values.certificate }}
+        {{- if .enableTLS }}
+        - mountPath: "/etc/private/ssl/agent"
+          name: agent-ca
+          readOnly: true
+        {{- end }}
+        {{- end }}
+      {{- end }}
   restartPolicy: Never
+  {{- if .Values.certificate }}
+  volumes:
+    {{- with .Values.certificate }}
+    {{- if .enableTLS }}
+      - name: agent-ca
+        secret:
+          secretName: ci-certificate-ca
+    {{- end }}
+    {{- end }}
