@@ -77,10 +77,10 @@ spec:
             - -kafkaTLS
             - -tlsServerCertFile=/etc/private/ssl/agent/tls.crt
             - -tlsServerPrivateKeyFile=/etc/private/ssl/agent/tls.key
-            {{- if .Values.certificates.mtls.enabled }}
+            {{- if .Values..mtls.enabled }}
             - -requireMTLSAuthentication
-            {{- if .Values.certificates.mtls.certificateAuthoritySecretKeyRef.name }}
-            - -tlsClientCACertFile=/etc/private/ssl/agent-mtls/{{ .Values.certificates.mtls.certificateAuthoritySecretKeyRef.key }}
+            {{- if .Values.certificate.mtls.certificateAuthoritySecretKeyRef.name }}
+            - -tlsClientCACertFile=/etc/private/ssl/agent-mtls/{{ .Values.certificate.mtls.certificateAuthoritySecretKeyRef.key }}
             {{- end }}
             {{- end }}
             {{- end }}
@@ -204,10 +204,10 @@ spec:
           - name: agent-certs
             secret:
               secretName: {{ .Values.certificate.secretName }}
-        {{- if .Values.certificates.mtls.certificateAuthoritySecretKeyRef.name }}
+        {{- if .Values.certificate.mtls.certificateAuthoritySecretKeyRef.name }}
           - name: agent-mtls-certs
             secret:
-              secretName: {{ .Values.certificates.mtls.certificateAuthoritySecretKeyRef.name }}
+              secretName: {{ .Values.certificate.mtls.certificateAuthoritySecretKeyRef.name }}
         {{- end }}
         {{- end }}
         {{- toYaml . | nindent 8 }}
