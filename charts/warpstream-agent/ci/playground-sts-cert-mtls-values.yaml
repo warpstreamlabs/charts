@@ -1,4 +1,4 @@
-fullNameOverride: "playground-sts-cert"
+fullnameOverride: "playground-sts-cert"
 
 config:
   playground: true
