@@ -73,6 +73,17 @@ spec:
             {{- range .Values.extraArgs }}
             - {{ . }}
             {{- end }}
+            {{- if .Values.certificate.enableTLS }}
+            - -kafkaTLS
+            - -tlsServerCertFile=/etc/private/ssl/agent/tls.crt
+            - -tlsServerPrivateKeyFile=/etc/private/ssl/agent/tls.key
+            {{- if .Values.certificates.mtls.enabled }}
+            - -requireMTLSAuthentication
+            {{- if .Values.certificates.mtls.certificateAuthoritySecretKeyRef.name }}
+            - -tlsClientCACertFile=/etc/private/ssl/agent-mtls/{{ .Values.certificates.mtls.certificateAuthoritySecretKeyRef.key }}
+            {{- end }}
+            {{- end }}
+            {{- end }}
           readinessProbe:
             httpGet:
               path: /v1/status
@@ -151,6 +162,16 @@ spec:
               protocol: TCP
           {{- with .Values.volumeMounts }}
           volumeMounts:
+            {{- if .Values.certificate.enableTLS }}
+            - mountPath: "/etc/private/ssl/agent"
+              name: agent-certs
+              readOnly: true
+            {{- if .Values.certificates.mtls.certificateAuthoritySecretKeyRef.name }}
+            - mountPath: "/etc/private/ssl/agent-mtls"
+              name: agent-mtls-certs
+              readOnly: true
+            {{- end }}
+            {{- end }}
             {{- toYaml . | nindent 12 }}
           {{- end }}
       {{- with .Values.initContainers }}
@@ -179,5 +200,15 @@ spec:
       {{- end }}
       {{- with .Values.volumes }}
       volumes:
+        {{- if .Values.certificate.enableTLS }}
+          - name: agent-certs
+            secret:
+              secretName: {{ .Values.certificate.secretName }}
+        {{- if .Values.certificates.mtls.certificateAuthoritySecretKeyRef.name }}
+          - name: agent-mtls-certs
+            secret:
+              secretName: {{ .Values.certificates.mtls.certificateAuthoritySecretKeyRef.name }}
+        {{- end }}
+        {{- end }}
         {{- toYaml . | nindent 8 }}
       {{- end }}

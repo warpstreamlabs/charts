@@ -1,0 +1,32 @@
+fullNameOverride: "playground-sts-cert"
+
+config:
+  playground: true
+
+# testing with statefulset
+deploymentKind: StatefulSet
+
+certificate:
+  # Set to true to enable TLS termination on the WarpStream agent
+  # see TLS documentation for details TODO:
+  enableTLS: true 
+
+  # The Kubernetes TLS secret that contains a certificate and private key
+  # see https://kubernetes.io/docs/concepts/configuration/secret/#tls-secrets
+  secretName: "ci-certificate"
+
+# overriding resources so it fits on a runner
+resources:
+  requests:
+    cpu: 1
+    memory: 4Gi
+    # we do not need the disk space, but Kubernetes will count some logs that it emits
+    # about our containers towards our containers ephemeral usage and if we requested
+    # 0 storage we could end up getting evicted unnecessarily when the node is under disk pressure.
+    ephemeral-storage: "100Mi"
+  limits:
+    memory: 4Gi
+
+extraEnv:
+  - name: WARPSTREAM_ADVERTISE_HOSTNAME_STRATEGY
+    value: auto-ip4  # playground mode defaults to local so we need to override it for tests to pass

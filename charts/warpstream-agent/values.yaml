@@ -32,6 +32,28 @@ statefulSetConfig:
     # see https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
     type: RollingUpdate
 
+certificate:
+  # Set to true to enable TLS termination on the WarpStream agent
+  # see TLS documentation for details TODO:
+  enableTLS: false 
+
+  # The Kubernetes TLS secret that contains a certificate and private key
+  # see https://kubernetes.io/docs/concepts/configuration/secret/#tls-secrets
+  secretName: ""
+
+  mtls:
+    # Set to true to enable mutual TLS on the WarpStream agent, requires enableTLS set to true
+    # see mTLS documentation for details TODO:
+    enabled: false
+
+    # The secret key reference for the certificate authority public key
+    # If not set, the container's root certificate pool will be used for mtls client certificate verification
+    # It is recommend to always set this to your CA's public key and not rely on the root certificate pool
+    # see mTLS documentation for details on why using the root certificate pool is not recommended
+    certificateAuthoritySecretKeyRef:
+      name: ""
+      key: "" 
+
 terminationGracePeriodSeconds: 300
 
 serviceAccount:

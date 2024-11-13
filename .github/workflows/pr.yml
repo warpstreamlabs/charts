@@ -14,6 +14,9 @@ jobs:
       - name: Set up Helm
         uses: azure/setup-helm@v4
 
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v4
+
       - uses: actions/setup-python@v5
         with:
           python-version: 3.13
@@ -37,6 +40,37 @@ jobs:
         if: steps.list-changed.outputs.changed == 'true'
         uses: helm/kind-action@v1
 
+      - name: Generate Certificate for TLS testing
+        run: |
+          mkdir /tmp/certificates
+          cd /tmp/certificates
+
+          mkdir -p ca/private
+          chmod 700 ca/private
+          
+          # Generate CA
+          openssl req -x509 -nodes -days 3650 -newkey rsa:4096 -keyout ca/private/ca_key.pem -out ca/ca_cert.pem -subj "/C=US/ST=Acme State/L=Acme City/O=Acme Inc./CN=example.com"
+
+          # Create server private key and certificate request
+          mkdir -p server/private
+          chmod 700 ca/private
+          openssl genrsa -out server/private/server_key.pem 4096
+          openssl req -new -key server/private/server_key.pem -out server/server.csr -subj "/C=US/ST=Acme State/L=Acme City/O=Acme Inc./CN=WarpStream Agent" -addext 'subjectAltName = DNS:playground-sts-cert.default.cluster.local, DNS:*.playground-sts-cert.default.cluster.local'
+
+          # Create client private key and certificate request
+          mkdir -p client/private
+          chmod 700 client/private
+          openssl genrsa -out client/private/client_key.pem 4096
+          openssl req -new -key client/private/client_key.pem -out client/client.csr -subj "/C=US/ST=Acme State/L=Acme City/O=Acme Inc./CN=WarpStream Client"
+
+          # Generate certificates
+          openssl x509 -req -days 1460 -in server/server.csr -CA ca/ca_cert.pem -CAkey ca/private/ca_key.pem -CAcreateserial -out server/server_cert.pem
+          openssl x509 -req -days 1460 -in client/client.csr -CA ca/ca_cert.pem -CAkey ca/private/ca_key.pem -CAcreateserial -out client/client_cert.pem
+
+          kubectl create secret tls ci-certificate --cert=server/server_cert.pem --key=server/private/server_key.pem
+          kubectl create secret tls ci-certificate-client --cert=client/client_cert.pem --key=client/private/client_key.pem
+          kubectl create secret generic ci-certificate-ca --from-file=ca.crt=ca/ca_cert.pem
+
       - name: Run chart-testing (install)
         if: steps.list-changed.outputs.changed == 'true'
-        run: ct install --target-branch ${{ github.event.repository.default_branch }} --upgrade --skip-missing-values
+        run: ct install --namespace default --target-branch ${{ github.event.repository.default_branch }} --upgrade --skip-missing-values
