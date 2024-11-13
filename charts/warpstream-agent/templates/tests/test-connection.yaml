@@ -52,7 +52,7 @@ spec:
           secretName: ci-certificate-ca
     {{- end }}
     {{- if .mtls.enabled }}
-      - name: agent-ca
+      - name: agent-mtls
         secret:
           secretName: ci-certificate-client
     {{- end }}
