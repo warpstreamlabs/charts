@@ -73,6 +73,19 @@ spec:
             {{- range .Values.extraArgs }}
             - {{ . }}
             {{- end }}
+            {{- with .Values.certificate }}
+            {{- if .enableTLS }}
+            - -kafkaTLS
+            - -tlsServerCertFile=/etc/private/ssl/agent/tls.crt
+            - -tlsServerPrivateKeyFile=/etc/private/ssl/agent/tls.key
+            {{- if .mtls.enabled }}
+            - -tlsVerifyClientCert # change this to -requireMTLSAuthentication once playground mode is updated with the newer flags
+            {{- if .mtls.certificateAuthoritySecretKeyRef.name }}
+            - -tlsClientCACertFile=/etc/private/ssl/agent-mtls/{{ .mtls.certificateAuthoritySecretKeyRef.key }}
+            {{- end }}
+            {{- end }}
+            {{- end }}
+            {{- end }}
           readinessProbe:
             httpGet:
               path: /v1/status
@@ -149,9 +162,23 @@ spec:
             - name: http
               containerPort: 8080
               protocol: TCP
-          {{- with .Values.volumeMounts }}
+          {{- if or .Values.volumeMounts .Values.certificate }}
           volumeMounts:
+            {{- with .Values.certificate }}
+            {{- if .enableTLS }}
+            - mountPath: "/etc/private/ssl/agent"
+              name: agent-certs
+              readOnly: true
+            {{- if .mtls.certificateAuthoritySecretKeyRef.name }}
+            - mountPath: "/etc/private/ssl/agent-mtls"
+              name: agent-mtls-certs
+              readOnly: true
+            {{- end }}
+            {{- end }}
+            {{- end }}
+            {{- with .Values.volumeMounts }}
             {{- toYaml . | nindent 12 }}
+            {{- end }}
           {{- end }}
       {{- with .Values.initContainers }}
       initContainers:
@@ -177,7 +204,21 @@ spec:
       topologySpreadConstraints:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.volumes }}
+      {{- if or .Values.volumes .Values.certificate }}
       volumes:
+        {{- with .Values.certificate }}
+        {{- if .enableTLS }}
+          - name: agent-certs
+            secret:
+              secretName: {{ .secretName }}
+        {{- if .mtls.certificateAuthoritySecretKeyRef.name }}
+          - name: agent-mtls-certs
+            secret:
+              secretName: {{ .mtls.certificateAuthoritySecretKeyRef.name }}
+        {{- end }}
+        {{- end }}
+        {{- end }}
+        {{- with .Values.volumes }}
         {{- toYaml . | nindent 8 }}
+        {{- end }}
       {{- end }}

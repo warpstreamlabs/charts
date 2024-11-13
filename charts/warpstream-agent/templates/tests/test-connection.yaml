@@ -14,7 +14,47 @@ spec:
       args:
         - kcmd
         - -bootstrap-host
-        - '{{ include "warpstream-agent.fullname" . }}'
+        - '{{ include "warpstream-agent.fullname" . }}.default.svc.cluster.local'
+        {{- with .Values.certificate }}
+        {{- if .enableTLS }}
+        - -tls
+        - -tlsServerCACertFile=/etc/private/ssl/agent/ca.crt
+        {{- end }}
+        {{- if .mtls.enabled }}
+        - -tlsClientCertFile=/etc/private/ssl/agent-mtls/tls.crt
+        - -tlsClientPrivateKeyFile=/etc/private/ssl/agent-mtls/tls.key
+        {{- end }}
+        {{- end }}
         - -type
         - diagnose-connection
+      {{- if .Values.certificate }}
+      volumeMounts:
+        {{- with .Values.certificate }}
+        {{- if .enableTLS }}
+        - mountPath: "/etc/private/ssl/agent"
+          name: agent-ca
+          readOnly: true
+        {{- end }}
+        {{- if .mtls.enabled }}
+        - mountPath: "/etc/private/ssl/agent-mtls"
+          name: agent-mtls
+          readOnly: true
+        {{- end }}
+        {{- end }}
+      {{- end }}
   restartPolicy: Never
+  {{- if .Values.certificate }}
+  volumes:
+    {{- with .Values.certificate }}
+    {{- if .enableTLS }}
+      - name: agent-ca
+        secret:
+          secretName: ci-certificate-ca
+    {{- end }}
+    {{- if .mtls.enabled }}
+      - name: agent-mtls
+        secret:
+          secretName: ci-certificate-client
+    {{- end }}
+    {{- end }}
+  {{- end }}
