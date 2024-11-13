@@ -14,7 +14,7 @@ spec:
       args:
         - kcmd
         - -bootstrap-host
-        - '{{ include "warpstream-agent.fullname" . }}.default.cluster.local'
+        - '{{ include "warpstream-agent.fullname" . }}.svc.default.cluster.local'
         - -type
         {{- with .Values.certificate }}
         {{- if .enableTLS }}
