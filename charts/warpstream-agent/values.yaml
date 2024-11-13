@@ -35,7 +35,7 @@ statefulSetConfig:
 certificate:
   # Set to true to enable TLS termination on the WarpStream agent
   # see TLS documentation for details TODO:
-  enableTLS: false 
+  enableTLS: false
 
   # The Kubernetes TLS secret that contains a certificate and private key
   # see https://kubernetes.io/docs/concepts/configuration/secret/#tls-secrets
@@ -52,7 +52,7 @@ certificate:
     # see mTLS documentation for details on why using the root certificate pool is not recommended
     certificateAuthoritySecretKeyRef:
       name: ""
-      key: "" 
+      key: ""
 
 terminationGracePeriodSeconds: 300
 
