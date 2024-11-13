@@ -64,8 +64,8 @@ jobs:
           openssl req -new -key client/private/client_key.pem -out client/client.csr -subj "/C=US/ST=Acme State/L=Acme City/O=Acme Inc./CN=WarpStream Client"
 
           # Generate certificates
-          openssl x509 -req -days 1460 -in server/server.csr -CA ca/ca_cert.pem -CAkey ca/private/ca_key.pem -CAcreateserial -out server/server_cert.pem
-          openssl x509 -req -days 1460 -in client/client.csr -CA ca/ca_cert.pem -CAkey ca/private/ca_key.pem -CAcreateserial -out client/client_cert.pem
+          openssl x509 -req -days 1460 -in server/server.csr -CA ca/ca_cert.pem -CAkey ca/private/ca_key.pem -CAcreateserial -out server/server_cert.pem -copy_extensions copyall
+          openssl x509 -req -days 1460 -in client/client.csr -CA ca/ca_cert.pem -CAkey ca/private/ca_key.pem -CAcreateserial -out client/client_cert.pem -copy_extensions copyall
 
           kubectl create secret tls ci-certificate --cert=server/server_cert.pem --key=server/private/server_key.pem
           kubectl create secret tls ci-certificate-client --cert=client/client_cert.pem --key=client/private/client_key.pem
