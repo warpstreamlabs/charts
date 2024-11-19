@@ -13,7 +13,7 @@ spec:
   type: ClusterIP
   clusterIP: None
   ports:
-    {{- if not hasPrefix "vci_sr_" .Values.config.virtualClusterID }}
+    {{- if not (hasPrefix "vci_sr_" .Values.config.virtualClusterID) }}
     - port: {{ .Values.service.port }}
       targetPort: kafka
       protocol: TCP
@@ -25,9 +25,9 @@ spec:
       name: http
     {{- if hasPrefix "vci_sr_" .Values.config.virtualClusterID }}
     - port: {{ .Values.service.schemaRegistryPort }}
-      targetPort: kafka
+      targetPort: schema-registry
       protocol: TCP
-      name: kafka
+      name: schema-registry
     {{- end }}
   selector:
     {{- include "warpstream-agent.selectorLabels" . | nindent 4 }}
