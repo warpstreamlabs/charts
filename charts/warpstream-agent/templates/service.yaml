@@ -11,13 +11,21 @@ metadata:
 spec:
   type: {{ .Values.service.type }}
   ports:
+    {{- if or (.Values.config.playground) (not (hasPrefix "vci_sr_" .Values.config.virtualClusterID)) }}
     - port: {{ .Values.service.port }}
       targetPort: kafka
       protocol: TCP
       name: kafka
+    {{- end }}
     - port: {{ .Values.service.httpPort }}
       targetPort: http
       protocol: TCP
       name: http
+    {{- if or (.Values.config.playground) (hasPrefix "vci_sr_" .Values.config.virtualClusterID) }}
+    - port: {{ .Values.service.schemaRegistryPort | default 9094 }}
+      targetPort: schema-registry
+      protocol: TCP
+      name: schema-registry
+    {{- end }}
   selector:
     {{- include "warpstream-agent.selectorLabels" . | nindent 4 }}

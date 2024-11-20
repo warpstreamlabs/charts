@@ -149,6 +149,9 @@ spec:
             - name: http
               containerPort: 8080
               protocol: TCP
+            - name: schema-registry
+              containerPort: 9094
+              protocol: TCP
           {{- with .Values.volumeMounts }}
           volumeMounts:
             {{- toYaml . | nindent 12 }}
