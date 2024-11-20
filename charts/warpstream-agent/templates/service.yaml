@@ -22,7 +22,7 @@ spec:
       protocol: TCP
       name: http
     {{- if or (.Values.config.playground) (hasPrefix "vci_sr_" .Values.config.virtualClusterID) }}
-    - port: {{ .Values.service.schemaRegistryPort }}
+    - port: {{ .Values.service.schemaRegistryPort | default 9094 }}
       targetPort: schema-registry
       protocol: TCP
       name: schema-registry
