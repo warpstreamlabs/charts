@@ -5,11 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+<<<<<<< HEAD
 ## [0.13.53] - 2024-11-8
 
 ### Added
 
 - Expose port 9094 for Schema Registry.
+=======
+## [0.13.53] - 2024-11-20
+
+### Added
+
+- Update WarpStream Agent to v600.
+>>>>>>> main
 
 ## [0.13.52] - 2024-11-8
 
