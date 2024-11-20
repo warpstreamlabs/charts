@@ -11,7 +11,7 @@ metadata:
 spec:
   type: {{ .Values.service.type }}
   ports:
-    {{- if not (hasPrefix "vci_sr_" .Values.config.virtualClusterID) }}
+    {{- if or (.Values.config.playground) (not (hasPrefix "vci_sr_" .Values.config.virtualClusterID)) }}
     - port: {{ .Values.service.port }}
       targetPort: kafka
       protocol: TCP
@@ -21,7 +21,7 @@ spec:
       targetPort: http
       protocol: TCP
       name: http
-    {{- if hasPrefix "vci_sr_" .Values.config.virtualClusterID }}
+    {{- if or (.Values.config.playground) (hasPrefix "vci_sr_" .Values.config.virtualClusterID) }}
     - port: {{ .Values.service.schemaRegistryPort }}
       targetPort: schema-registry
       protocol: TCP
