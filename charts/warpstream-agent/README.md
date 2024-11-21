@@ -129,6 +129,9 @@ extraEnv:
     value: <LOAD_BALANCER_DNS HOSTNAME>
 ```
 
+Note that the `WARPSTREAM_DISCOVERY_KAFKA_HOSTNAME_OVERRIDE` environemnt variable is not necessary for
+schema registry clusters.
+
 Follow your cloud provider's load balancer documentation to complete the configuration.
 
 **Note**
