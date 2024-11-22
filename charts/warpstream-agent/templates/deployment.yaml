@@ -140,8 +140,13 @@ spec:
             {{- toYaml .Values.extraEnv | nindent 12 }}
           {{- end }}
           envFrom:
+          {{- if ne .Values.config.configMapEnabled false }}
             - configMapRef:
                 name: {{ include "warpstream-agent.fullname" . }}
+          {{- else }}
+            - secretRef:
+                name: {{ include "warpstream-agent.secretName" . }}
+          {{- end }}
           ports:
             - name: kafka
               containerPort: 9092
