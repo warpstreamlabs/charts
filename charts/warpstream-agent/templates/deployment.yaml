@@ -140,7 +140,7 @@ spec:
             {{- toYaml .Values.extraEnv | nindent 12 }}
           {{- end }}
           envFrom:
-          {{- if .Values.config.configMapEnabled | default true }}
+          {{- if ne .Values.config.configMapEnabled false }}
             - configMapRef:
                 name: {{ include "warpstream-agent.fullname" . }}
           {{- else }}
