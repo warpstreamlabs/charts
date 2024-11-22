@@ -1,4 +1,5 @@
 config:
+  configMapEnabled: true
   playground: true
 
 # testing with statefulset
