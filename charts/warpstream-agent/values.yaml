@@ -65,7 +65,7 @@ headlessService:
 
 config:
    # If set to false, configmap will not be created and secrets will be referenced in the deployemnt
-  cmEnabled: true
+  configMapEnabled: true
   playground: false
   ## To learn what values to set for the config variables, look at our documentation
   ## for configuring the WarpStream Agents for production.
