@@ -12,14 +12,14 @@ fullnameOverride: ""
 replicas: 3
 
 # Only use StatefulSet when TLS is needed for an easier time managing certificates due to stable hostnames.
-# 
+#
 # *Note* that if you switch to using StatefulSet you should stop using WarpStream's convenience bootstrap
 # URL in your Kafka clients, and switch to the Kubernetes service name instead. The reason for this is that
 # when you switch to StatefulSet, the Agents will begin advertising their stable pod names in the Kafka
 # protocol as their hostname, instead of their internal IP addresses. When this happens, WarpStream's DNS
 # server will start returning CNAME's for the convience bootstrap URL for each Agent, but your application
 # may not be able to resolve the CNAMEs due to limitations in things like CoreDNS.
-# 
+#
 # In general, we always recommend using the Kubernetes service name as the bootstrap URL for your clients
 # when the Agents are deployed in Kubernetes to avoid issues like this.
 deploymentKind: Deployment  # or StatefulSet
