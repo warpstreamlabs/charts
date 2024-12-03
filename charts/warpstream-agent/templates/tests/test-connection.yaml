@@ -50,7 +50,5 @@ spec:
   affinity:
     {{- toYaml . | nindent 8 }}
   {{- end }}
-{{- if .Values.kafkaService }}
-{{- if .Values.kafkaService.enabled }}
 {{- end}}
 {{- end}}
