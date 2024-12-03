@@ -1,3 +1,4 @@
+---
 apiVersion: v1
 kind: Pod
 metadata:
@@ -22,3 +23,34 @@ spec:
   affinity:
     {{- toYaml . | nindent 8 }}
   {{- end }}
+{{- if .Values.kafkaService }}
+{{- if .Values.kafkaService.enabled }}
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "warpstream-agent.fullname" . }}-diagnose-connection-kafka-svc"
+  labels:
+    {{- include "warpstream-agent.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+    - name: diagnose
+      image: {{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}
+      command: ['/warpstream']
+      args:
+        - kcmd
+        - -bootstrap-host
+        - '{{ include "warpstream-agent.fullname" . }}-kafka'
+        - -type
+        - diagnose-connection
+  restartPolicy: Never
+  {{- with .Values.affinity }}
+  affinity:
+    {{- toYaml . | nindent 8 }}
+  {{- end }}
+{{- if .Values.kafkaService }}
+{{- if .Values.kafkaService.enabled }}
+{{- end}}
+{{- end}}
