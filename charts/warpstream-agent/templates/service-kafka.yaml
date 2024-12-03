@@ -1,0 +1,21 @@
+{{- if .Values.kafkaService.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "warpstream-agent.fullname" . }}-kafka
+  labels:
+    {{- include "warpstream-agent.labels" . | nindent 4 }}
+  {{- with .Values.kafkaService.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.kafkaService.type }}
+  ports:
+    - port: {{ .Values.kafkaService.port }}
+      targetPort: kafka
+      protocol: TCP
+      name: kafka
+  selector:
+    {{- include "warpstream-agent.selectorLabels" . | nindent 4 }}
+{{- end}}

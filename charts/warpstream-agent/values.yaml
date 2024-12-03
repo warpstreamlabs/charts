@@ -67,6 +67,13 @@ service:
   httpPort: 8080
   schemaRegistryPort: 9094
 
+# A service that only contains the Kafka TCP port
+# Typically used to help with exposing only Kafka via a Load Balancer
+kafkaService:
+  enabled: false
+  type: ClusterIP
+  port: 9092
+
 rbac:
   create: true
 

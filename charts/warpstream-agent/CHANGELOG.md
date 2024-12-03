@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.13.60] - 2024-12-02
+
+### Added
+
+- Added an optional dedicated Kafka service to make it easier to expose only Kafka externally.
+
 ## [0.13.59] - 2024-12-02
 
 ### Added
