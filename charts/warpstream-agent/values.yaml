@@ -66,6 +66,7 @@ service:
   port: 9092
   httpPort: 8080
   schemaRegistryPort: 9094
+  labels: {}
 
 # A service that only contains the Kafka TCP port
 # Typically used to help with exposing only Kafka via a Load Balancer
