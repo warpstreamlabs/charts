@@ -21,6 +21,20 @@ jobs:
       - name: Set up chart-testing
         uses: helm/chart-testing-action@v2.6.1
 
+      - name: Create Playground Account for Tests
+        run: |
+          playground_account_raw=`curl https://api.prod.us-east-1.warpstream.com/api/v1/signup -X POST -d '{"primary_user_first_name": "chart-ci", "primary_user_last_name": "Account", "tenant_name": "chart-ci-organization-'$(uuidgen)'", "primary_user_email": "chart-ci-email@'$(uuidgen)'", "primary_user_password": "chart-ci-password-'$(uuidgen)'", "is_demo": true}'`
+
+          export DefaultVirtualClusterID=`echo ${playground_account_raw} | jq -r .DefaultVirtualClusterID`
+          export DefaultVirtualClusterAgentKeySecret=`echo ${playground_account_raw} | jq -r .DefaultVirtualClusterAgentKeySecret`
+
+          echo "DefaultVirtualClusterID=${DefaultVirtualClusterID}" >> $GITHUB_ENV
+          echo "DefaultVirtualClusterAgentKeySecret=${DefaultVirtualClusterAgentKeySecret}" >> $GITHUB_ENV
+
+      - name: Generate Tests
+        run: |
+          ./hack/ci/scripts/generate-tests.sh
+
       - name: Run chart-testing (list-changed)
         id: list-changed
         run: |
@@ -37,6 +51,10 @@ jobs:
         if: steps.list-changed.outputs.changed == 'true'
         uses: helm/kind-action@v1
 
+      - name: Create Secret for Tests from Playground Account
+        run: |
+          kubectl create secret generic external-secret --from-literal=agentkey=${DefaultVirtualClusterAgentKeySecret}
+
       - name: Run chart-testing (install)
         if: steps.list-changed.outputs.changed == 'true'
-        run: ct install --target-branch ${{ github.event.repository.default_branch }} --upgrade --skip-missing-values
+        run: ct install --namespace default --target-branch ${{ github.event.repository.default_branch }} --upgrade --skip-missing-values

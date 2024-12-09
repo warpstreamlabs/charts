@@ -51,7 +51,7 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
-Secret Name
+Secret Name, DEPRECATED - this will be removed soon
 */}}
 {{- define "warpstream-agent.secretName" -}}
 {{- if .Values.config.secretName }}
@@ -146,5 +146,28 @@ Return the deployment kind to use
 {{- print $.Values.deploymentKind }}
 {{- else }}
 {{- print "Deployment" }}
+{{- end }}
+{{- end }}
+
+{{/*
+Return the Agent Key Secret Name
+*/}}
+{{- define "warpstream-agent.agentKey.secretName" -}}
+{{- if $.Values.config.apiKeySecretKeyRef }}
+{{- print $.Values.config.apiKeySecretKeyRef.name }}
+{{- else -}}
+{{/*Print helper warpstream-agent.secretName until it is removed then use {{- printf "%s-apikey" (include "warpstream-agent.fullname" .) -}}*/}}
+{{- include "warpstream-agent.secretName" . }}
+{{- end }}
+{{- end }}
+
+{{/*
+Return the Agent Key Secret Key
+*/}}
+{{- define "warpstream-agent.agentKey.secretKey" -}}
+{{- if $.Values.config.apiKeySecretKeyRef }}
+{{- print $.Values.config.apiKeySecretKeyRef.key }}
+{{- else -}}
+apikey
 {{- end }}
 {{- end }}
