@@ -69,6 +69,7 @@ spec:
             - playground
             {{- else }}
             - agent
+            - agentKeyPath=/app/agent-key/{{ include "warpstream-agent.agentKey.secretKey" . }}
             {{- end }}
             {{- range .Values.extraArgs }}
             - {{ . }}
@@ -119,13 +120,6 @@ spec:
                 fieldRef:
                   apiVersion: v1
                   fieldPath: metadata.namespace
-            {{- if not .Values.config.playground }}
-            - name: WARPSTREAM_API_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "warpstream-agent.secretName" . }}
-                  key: apikey
-            {{- end }}
             {{- if and .Values.resources (not .Values.goMaxProcs) }}
             {{- if .Values.resources.requests }}
             - name: GOMAXPROCS
@@ -157,9 +151,14 @@ spec:
             - name: schema-registry
               containerPort: 9094
               protocol: TCP
-          {{- with .Values.volumeMounts }}
+          {{- if not .Values.config.playground }}
           volumeMounts:
+            - name: agent-key
+              mountPath: /app/agent-key
+              readOnly: true
+            {{- with .Values.volumeMounts }}
             {{- toYaml . | nindent 12 }}
+            {{- end }}
           {{- end }}
       {{- with .Values.initContainers }}
       initContainers:
@@ -185,7 +184,12 @@ spec:
       topologySpreadConstraints:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.volumes }}
+      {{- if not .Values.config.playground }}
       volumes:
+        - name: agent-key
+          secret:
+            secretName: {{ include "warpstream-agent.agentKey.secretName" . }}
+        {{- with .Values.volumes }}
         {{- toYaml . | nindent 8 }}
+        {{- end }}
       {{- end }}
