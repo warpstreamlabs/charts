@@ -1,2 +1,2 @@
-charts/warpstream-agent/ci/apikey-buildin.yaml
-charts/warpstream-agent/ci/apikey-external.yaml
+charts/warpstream-agent/ci/apikey-buildin-values.yaml
+charts/warpstream-agent/ci/apikey-external-values.yaml
