@@ -78,13 +78,13 @@ spec:
             httpGet:
               path: /v1/status
               port: http
-            initialDelaySeconds: 10
+            initialDelaySeconds: 30
             periodSeconds: 5
           livenessProbe:
             httpGet:
               path: /v1/status
               port: http
-            initialDelaySeconds: 10
+            initialDelaySeconds: 30
             failureThreshold: 5
             periodSeconds: 5
           resources:
