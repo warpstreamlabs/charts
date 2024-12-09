@@ -69,7 +69,7 @@ spec:
             - playground
             {{- else }}
             - agent
-            - agentKeyPath=/app/agent-key/{{ include "warpstream-agent.agentKey.secretKey" . }}
+            - -agentKeyPath=/app/agent-key/{{ include "warpstream-agent.agentKey.secretKey" . }}
             {{- end }}
             {{- range .Values.extraArgs }}
             - {{ . }}
