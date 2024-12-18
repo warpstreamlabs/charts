@@ -151,11 +151,13 @@ spec:
             - name: schema-registry
               containerPort: 9094
               protocol: TCP
-          {{- if not .Values.config.playground }}
+          {{- if or (.Values.volumeMounts) (not .Values.config.playground)  }}
           volumeMounts:
+            {{- if not .Values.config.playground }}
             - name: agent-key
               mountPath: /app/agent-key
               readOnly: true
+            {{- end }}
             {{- with .Values.volumeMounts }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
@@ -184,11 +186,13 @@ spec:
       topologySpreadConstraints:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- if not .Values.config.playground }}
+      {{- if or (.Values.volumes) (not .Values.config.playground)  }}
       volumes:
+        {{- if not .Values.config.playground }}
         - name: agent-key
           secret:
             secretName: {{ include "warpstream-agent.agentKey.secretName" . }}
+        {{- end }}
         {{- with .Values.volumes }}
         {{- toYaml . | nindent 8 }}
         {{- end }}

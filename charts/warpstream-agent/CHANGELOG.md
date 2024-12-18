@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.13.66] - 2024-12-18
 
 - Update WarpStream Agent to v607.
+- Fix volumes and volume mounts not rendering when in playground mode
 
 ## [0.13.65] - 2024-12-12
 
