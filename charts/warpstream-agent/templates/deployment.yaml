@@ -74,6 +74,19 @@ spec:
             {{- range .Values.extraArgs }}
             - {{ . }}
             {{- end }}
+            {{- with .Values.certificate }}
+            {{- if .enableTLS }}
+            - -kafkaTLS=true
+            - -tlsServerCertFile=/etc/private/ssl/agent/tls.crt
+            - -tlsServerPrivateKeyFile=/etc/private/ssl/agent/tls.key
+            {{- if .mtls.enabled }}
+            - -requireMTLSAuthentication=true
+            {{- if .mtls.certificateAuthoritySecretKeyRef.name }}
+            - -tlsClientCACertFile=/etc/private/ssl/agent-mtls/{{ .mtls.certificateAuthoritySecretKeyRef.key }}
+            {{- end }}
+            {{- end }}
+            {{- end }}
+            {{- end }}
           readinessProbe:
             httpGet:
               path: /v1/status
@@ -151,12 +164,24 @@ spec:
             - name: schema-registry
               containerPort: 9094
               protocol: TCP
-          {{- if or (.Values.volumeMounts) (not .Values.config.playground)  }}
+          {{- if or (.Values.volumeMounts) (not .Values.config.playground) (.Values.certificate) }}
           volumeMounts:
             {{- if not .Values.config.playground }}
             - name: agent-key
               mountPath: /app/agent-key
               readOnly: true
+            {{- end }}
+            {{- with .Values.certificate }}
+            {{- if .enableTLS }}
+            - name: agent-certs
+              mountPath: "/etc/private/ssl/agent"
+              readOnly: true
+            {{- if .mtls.certificateAuthoritySecretKeyRef.name }}
+            - name: agent-mtls-certs
+              mountPath: "/etc/private/ssl/agent-mtls"
+              readOnly: true
+            {{- end }}
+            {{- end }}
             {{- end }}
             {{- with .Values.volumeMounts }}
             {{- toYaml . | nindent 12 }}
@@ -186,12 +211,24 @@ spec:
       topologySpreadConstraints:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- if or (.Values.volumes) (not .Values.config.playground)  }}
+      {{- if or (.Values.volumes) (not .Values.config.playground) (.Values.certificate) }}
       volumes:
         {{- if not .Values.config.playground }}
         - name: agent-key
           secret:
             secretName: {{ include "warpstream-agent.agentKey.secretName" . }}
+        {{- end }}
+        {{- with .Values.certificate }}
+        {{- if .enableTLS }}
+        - name: agent-certs
+          secret:
+            secretName: {{ .secretName }}
+        {{- if .mtls.certificateAuthoritySecretKeyRef.name }}
+        - name: agent-mtls-certs
+          secret:
+            secretName: {{ .mtls.certificateAuthoritySecretKeyRef.name }}
+        {{- end }}
+        {{- end }}
         {{- end }}
         {{- with .Values.volumes }}
         {{- toYaml . | nindent 8 }}
