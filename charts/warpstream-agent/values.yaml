@@ -67,6 +67,8 @@ service:
   port: 9092
   httpPort: 8080
   schemaRegistryPort: 9094
+  perPod:
+    enabled: false
   labels: {}
 
 # A service that only contains the Kafka TCP port

@@ -34,7 +34,7 @@ spec:
   selector:
     {{- include "warpstream-agent.selectorLabels" . | nindent 4 }}
 ...
-{{- if eq (include "warpstream-agent.deploymentKind" .) "StatefulSet" }}
+{{- if and (eq (include "warpstream-agent.deploymentKind" .) "StatefulSet") (.Values.service.perPod.enabled) }}
 {{ $replicas := (.Values.replicas | int) }}
 {{- range $i, $e := until $replicas }}
 {{- with $ }}
