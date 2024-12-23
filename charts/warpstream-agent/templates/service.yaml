@@ -34,6 +34,7 @@ spec:
   selector:
     {{- include "warpstream-agent.selectorLabels" . | nindent 4 }}
 ...
+{{- if .Values.service.perPod }}
 {{- if and (eq (include "warpstream-agent.deploymentKind" .) "StatefulSet") (.Values.service.perPod.enabled) }}
 {{ $replicas := (.Values.replicas | int) }}
 {{- range $i, $e := until $replicas }}
@@ -74,6 +75,7 @@ spec:
   selector:
     statefulset.kubernetes.io/pod-name: {{ include "warpstream-agent.fullname" . }}-{{ $i }}
 ...
+{{- end }}
 {{- end }}
 {{- end }}
 {{- end }}
