@@ -91,6 +91,12 @@ service:
   schemaRegistryPort: 9094
   labels: {}
 
+  # Create services per pod, this can be used in combination with deploymentKind=StatefulSet and statefulSetConfig.clusterDomain
+  # to expose each pod outside of the cluster when using Kong or Isto ingresses.
+  # See https://github.com/warpstreamlabs/charts/pull/156 for details
+  perPod:
+    enabled: false
+
 # A service that only contains the Kafka TCP port
 # Typically used to help with exposing only Kafka via a Load Balancer
 kafkaService:
