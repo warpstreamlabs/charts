@@ -30,6 +30,7 @@ Before installing the WarpStream Chart, create a new BYOC cluster in your [WarpS
 helm repo add warpstream https://warpstreamlabs.github.io/charts
 helm repo update
 helm upgrade --install warpstream-agent warpstream/warpstream-agent \
+    --namespace $YOUR_NAMESPACE \
     --set config.bucketURL="$YOUR_OBJECT_STORE" \
     --set config.apiKey="$YOUR_API_KEY" \
     --set config.region="$YOUR_CONTROL_PLANE_REGION" \
