@@ -171,3 +171,14 @@ Return the Agent Key Secret Key
 apikey
 {{- end }}
 {{- end }}
+
+{{/*
+Return the agent hostname override
+*/}}
+{{- define "warpstream-agent.hostnameOverride" -}}
+{{- range $extraEnv := .Values.extraEnv }}
+{{- if eq $extraEnv.name "WARPSTREAM_DISCOVERY_KAFKA_HOSTNAME_OVERRIDE" }}
+{{- print $extraEnv.value }}
+{{- end }}
+{{- end }}
+{{- end }}
