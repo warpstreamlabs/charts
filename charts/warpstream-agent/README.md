@@ -55,7 +55,7 @@ config:
 3. Install or upgrade the WarpStream Helm chart using your custom yaml file:
 
 ```shell
-helm upgrade --install warpstream-agent warpstream/warpstream-agent -f warpstream-values.yaml
+helm upgrade --install warpstream-agent warpstream/warpstream-agent --namespace $YOUR_NAMESPACE -f warpstream-values.yaml
 ```
 
 ### Upgrading
@@ -64,7 +64,7 @@ To upgrade the deployment:
 
 ```shell
 helm repo update
-helm upgrade warpstream-agent warpstream/warpstream-agent --reuse-values
+helm upgrade warpstream-agent warpstream/warpstream-agent --namespace $YOUR_NAMESPACE --reuse-values
 ```
 
 ### Uninstalling the Chart
