@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.13.75] - 2025-01-22
+
+- Update WarpStream Agent to v613.
+
 ## [0.13.74] - 2025-01-16
 
 - Update WarpStream Agent to v612.
