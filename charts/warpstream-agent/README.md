@@ -122,7 +122,8 @@ The stateless nature of the WarpStream agents allows them to be deployed behind 
 Update your Helm chart configuration with these parameters:
 
 ```yaml
-service:
+kafkaService:
+  enabled: true
   type: LoadBalancer
 
 extraEnv: 
@@ -138,7 +139,8 @@ If your load balancer is exposed to the internet, enabling authentication on the
 Enable authentication by setting the `WARPSTREAM_REQUIRE_AUTHENTICATION` variable:
 
 ```yaml
-service:
+kafkaService:
+  enabled: true
   type: LoadBalancer
 
 extraEnv: 
