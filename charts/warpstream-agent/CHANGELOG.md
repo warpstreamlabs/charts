@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.13.75] - 2025-01-22
 
+- Update WarpStream Agent to v614.
+- Add native support for agent groups https://docs.warpstream.com/warpstream/byoc/advanced-agent-deployment-options/agent-groups
+- Add value array `extraEnvFrom` to add more items to the `envFrom` field.
+
+## [0.13.75] - 2025-01-22
+
 - Update WarpStream Agent to v613.
 
 ## [0.13.74] - 2025-01-16

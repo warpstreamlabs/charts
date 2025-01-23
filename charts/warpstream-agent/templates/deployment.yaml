@@ -87,6 +87,9 @@ spec:
             {{- end }}
             {{- end }}
             {{- end }}
+            {{- if .Values.config.agentGroup }}
+            - -agentGroup={{ .Values.config.agentGroup }}
+            {{- end }}
           readinessProbe:
             httpGet:
               path: /v1/status
@@ -153,6 +156,9 @@ spec:
           {{- else }}
             - secretRef:
                 name: {{ include "warpstream-agent.secretName" . }}
+          {{- end }}
+          {{- with .Values.extraEnvFrom }}
+          {{ toYaml . | nindent 12 }}
           {{- end }}
           ports:
             - name: kafka

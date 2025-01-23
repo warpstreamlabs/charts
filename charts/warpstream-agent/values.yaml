@@ -127,6 +127,9 @@ config:
   # apiKeySecretKeyRef: # Provide this if you want to manage the secret externally
   #   name:
   #   key:
+  # Agent Groups configuration https://docs.warpstream.com/warpstream/byoc/advanced-agent-deployment-options/agent-groups
+  # Leave empty for Default group
+  agentGroup: ""
 
 # Ensures that the Agents are configured with the recommended resources for production
 # usage. We recommend that you do not set this to false except for in staging/dev
@@ -163,6 +166,15 @@ resources:
 extraEnv: []
 # Add additional environment settings to the pod. Can be useful in proxy
 # environments
+
+extraEnvFrom: []
+# Add additional environment from configmaps or secrets.
+# Example:
+# extraEnvFrom:
+#   - configMapRef:
+#       name: my-env-from-configmap
+#   - secretRef:
+#       name: my-env-from-secret
 
 volumeMounts: []
 # Add any volumeMounts to the pod.
