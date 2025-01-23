@@ -169,7 +169,7 @@ extraEnv: []
 
 extraEnvFrom: []
 # Add additional environment from configmaps or secrets.
-# Example: 
+# Example:
 # extraEnvFrom:
 #   - configMapRef:
 #       name: my-env-from-configmap
