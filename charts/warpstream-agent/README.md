@@ -123,6 +123,7 @@ Update your Helm chart configuration with these parameters:
 
 ```yaml
 kafkaService:
+  enabled: true
   type: LoadBalancer
 
 extraEnv: 
@@ -139,6 +140,7 @@ Enable authentication by setting the `WARPSTREAM_REQUIRE_AUTHENTICATION` variabl
 
 ```yaml
 kafkaService:
+  enabled: true
   type: LoadBalancer
 
 extraEnv: 
