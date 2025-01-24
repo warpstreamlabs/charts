@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.13.78] - 2025-01-24
+- Don't fall back to using a secret secret when `configMapEnabled` is set to false.
+  - In the past, some deployment combinations would cause pods to not run due to missing secrets.
+  - For example if `configMapEnabled` was false, and `config.apiKeySecretKeyRef` was used, the secret `{{ include "warpstream-agent.secretName" . }}` would not exist which would prevent pods from starting.
+  - Users that were relying on this functionality should switch to `extraEnvFrom` that was added in `0.13.76`, as the previous functionaliy was not intended behavior.
+- Document env variables that should be set if `configMapEnabled` is set to false
+
 ## [0.13.77] - 2025-01-24
 - Update WarpStream Agent to v615.
 

@@ -111,7 +111,9 @@ headlessService:
   enabled: true
 
 config:
-   # If set to false, configmap will not be created and secrets will be referenced in the deployemnt
+  # If set to false, configmap will not be created
+  # When the configmap is not created, the environment variables WARPSTREAM_BUCKET_URL, WARPSTREAM_DEFAULT_VIRTUAL_CLUSTER_ID, and WARPSTREAM_REGION
+  # should be set via `extraEnv` or `extraEnvFrom`
   configMapEnabled: true
   playground: false
   ## To learn what values to set for the config variables, look at our documentation

@@ -153,9 +153,6 @@ spec:
           {{- if ne .Values.config.configMapEnabled false }}
             - configMapRef:
                 name: {{ include "warpstream-agent.fullname" . }}
-          {{- else }}
-            - secretRef:
-                name: {{ include "warpstream-agent.secretName" . }}
           {{- end }}
           {{- with .Values.extraEnvFrom }}
           {{ toYaml . | nindent 12 }}
