@@ -5,7 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.13.75] - 2025-01-22
+## [0.13.77] - 2025-01-22
+- Update WarpStream Agent to v615.
+
+## [0.13.76] - 2025-01-22
 
 - Update WarpStream Agent to v614.
 - Add native support for agent groups https://docs.warpstream.com/warpstream/byoc/advanced-agent-deployment-options/agent-groups
