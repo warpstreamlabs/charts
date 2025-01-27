@@ -33,6 +33,12 @@ spec:
     {{- end }}
   selector:
     {{- include "warpstream-agent.selectorLabels" . | nindent 4 }}
+  {{- with .Values.service.loadBalancerSourceRanges }}
+  loadBalancerSourceRanges:
+    {{- range . }}
+    - {{ . }}
+    {{- end }}
+  {{- end }}
 ...
 {{- if .Values.service.perPod }}
 {{- if and (eq (include "warpstream-agent.deploymentKind" .) "StatefulSet") (.Values.service.perPod.enabled) }}
