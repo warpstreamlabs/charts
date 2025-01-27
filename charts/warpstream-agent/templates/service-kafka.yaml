@@ -19,5 +19,11 @@ spec:
       name: kafka
   selector:
     {{- include "warpstream-agent.selectorLabels" . | nindent 4 }}
+  {{- with .Values.kafkaService.loadBalancerSourceRanges }}
+  loadBalancerSourceRanges:
+    {{- range . }}
+    - {{ . }}
+    {{- end }}
+  {{- end }}
 {{- end}}
 {{- end}}
