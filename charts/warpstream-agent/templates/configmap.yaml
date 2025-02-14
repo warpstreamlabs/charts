@@ -24,7 +24,7 @@ data:
   {{- if .Values.config.ingestionBucketURL }}
     {{- fail "ingestionBucketURL configuration should only be set when using s3Express" }}
   {{- end }}
-  {{- if not .Values.config.compactionBucketURL }}
+  {{- if .Values.config.compactionBucketURL }}
     {{- fail "compactionBucketURL configuration should only be set when using s3Express" }}
   {{- end }}
   {{- if not .Values.config.bucketURL }}
