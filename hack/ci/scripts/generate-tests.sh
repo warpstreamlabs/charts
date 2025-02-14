@@ -87,7 +87,6 @@ config:
   virtualClusterID: "${DefaultVirtualClusterID}"
   region: "us-east-1"
   apiKey: "${DefaultVirtualClusterAgentKeySecret}"
-  s3ExpressEnabled: true
   ingestionBucketURL: "warpstream_multi://mem://mem_bucket<>mem://mem_bucket<>mem://mem_bucket"
   compactionBucketURL: "mem://mem_bucket"
 

@@ -8,30 +8,20 @@ metadata:
 data:
   # The config values below are not required in playground mode.
   {{- if not .Values.config.playground }}
-  {{- if .Values.config.s3ExpressEnabled }}
-  {{- if .Values.config.bucketURL }}
-    {{- fail "bucketURL configuration should not be set when using s3Express" }}
-  {{- end }}
-  {{- if not .Values.config.ingestionBucketURL }}
-    {{- fail "ingestionBucketURL configuration value must be set" }}
+  {{- if .Values.config.ingestionBucketURL }}
+   {{- if .Values.config.bucketURL }}
+    {{- fail "bucketURL configuration value must not be set when setting ingestionBucketURL" }}
   {{- end }}
   {{- if not .Values.config.compactionBucketURL }}
-    {{- fail "compactionBucketURL configuration value must be set" }}
+    {{- fail "bucketURL configuration value must be set when setting ingestionBucketURL" }}
   {{- end }}
   WARPSTREAM_INGESTION_BUCKET_URL: {{ .Values.config.ingestionBucketURL | quote }}
   WARPSTREAM_COMPACTION_BUCKET_URL: {{ .Values.config.compactionBucketURL | quote }}
   {{- else }}
-  {{- if .Values.config.ingestionBucketURL }}
-    {{- fail "ingestionBucketURL configuration should only be set when using s3Express" }}
-  {{- end }}
-  {{- if .Values.config.compactionBucketURL }}
-    {{- fail "compactionBucketURL configuration should only be set when using s3Express" }}
-  {{- end }}
   {{- if not .Values.config.bucketURL }}
-    {{- fail "bucketURL configuration value must be set" }}
+    {{- fail "bucketURL or ingestionBucketURL configuration value must be set" }}
   {{- end }}
   WARPSTREAM_BUCKET_URL: {{ .Values.config.bucketURL | quote }}
-  {{- end }}
   {{- if not .Values.config.virtualClusterID }}
     {{- fail "virtualClusterID configuration value must be set" }}
   {{- end }}

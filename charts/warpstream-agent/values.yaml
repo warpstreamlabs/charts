@@ -142,10 +142,9 @@ config:
   # Agent Groups configuration https://docs.warpstream.com/warpstream/byoc/advanced-agent-deployment-options/agent-groups
   # Leave empty for Default group
   agentGroup: ""
-  # Enable Configuration for S3 Express One Zone.
+  # Low Latency Cluster Settings
   # Ref: https://docs.warpstream.com/warpstream/byoc/advanced-agent-deployment-options/low-latency-clusters
-  s3ExpressEnabled: false
-  # The ingestion bucket URL should be 3 S3 Express One Zone Buckets in the following format:
+  # The ingestion bucket URL:
   # warpstream_multi://s3://bucket-one-us-east-1a?region=us-east-1<>s3://bucket-one-us-east-1b?region=us-east-1<>s3://bucket-one-us-east-1b?region=us-east-1
   # ingestionBucketURL: ""
   # The compaction bucket URL should be a single classic S3 Bucket following the normal format:
