@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.13.89] - 2025-02-14
+- Add support for low latancy clusters. Ref: https://docs.warpstream.com/warpstream/byoc/advanced-agent-deployment-options/low-latency-clusters
+
 ## [0.13.88] - 2025-02-14
 - Dummy release since the last release errored pushing to gh-pages
 
