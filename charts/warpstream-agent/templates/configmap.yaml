@@ -8,12 +8,15 @@ metadata:
 data:
   # The config values below are not required in playground mode.
 {{- if not .Values.config.playground }}
-  {{- if .Values.config.ingestionBucketURL }}
+  {{- if or .Values.config.ingestionBucketURL .Values.config.compactionBucketURL}}
     {{- if .Values.config.bucketURL }}
       {{- fail "bucketURL configuration value must not be set when setting ingestionBucketURL" }}
     {{- end }}
     {{- if not .Values.config.compactionBucketURL }}
-      {{- fail "bucketURL configuration value must be set when setting ingestionBucketURL" }}
+      {{- fail "compactionBucketURL configuration value must be set when setting ingestionBucketURL" }}
+    {{- end }}
+    {{- if not .Values.config.ingestionBucketURL }}
+      {{- fail "ingestionBucketURL configuration value must be set when setting compactionBucketURL" }}
     {{- end }}
   WARPSTREAM_INGESTION_BUCKET_URL: {{ .Values.config.ingestionBucketURL | quote }}
   WARPSTREAM_COMPACTION_BUCKET_URL: {{ .Values.config.compactionBucketURL | quote }}

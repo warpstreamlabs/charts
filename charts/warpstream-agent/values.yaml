@@ -143,6 +143,7 @@ config:
   # Leave empty for Default group
   agentGroup: ""
   # Low Latency Cluster Settings
+  # When these are set bucketURL cannot be set.
   # Ref: https://docs.warpstream.com/warpstream/byoc/advanced-agent-deployment-options/low-latency-clusters
   # The ingestion bucket URL:
   # warpstream_multi://s3://bucket-one-us-east-1a?region=us-east-1<>s3://bucket-one-us-east-1b?region=us-east-1<>s3://bucket-one-us-east-1b?region=us-east-1
