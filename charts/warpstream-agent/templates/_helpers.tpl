@@ -155,6 +155,8 @@ Return the Agent Key Secret Name
 {{- define "warpstream-agent.agentKey.secretName" -}}
 {{- if $.Values.config.apiKeySecretKeyRef }}
 {{- print $.Values.config.apiKeySecretKeyRef.name }}
+{{- else if $.Values.config.agentKeySecretKeyRef }}
+{{- print $.Values.config.agentKeySecretKeyRef.name }}
 {{- else -}}
 {{/*Print helper warpstream-agent.secretName until it is removed then use {{- printf "%s-apikey" (include "warpstream-agent.fullname" .) -}}*/}}
 {{- include "warpstream-agent.secretName" . }}
@@ -167,6 +169,8 @@ Return the Agent Key Secret Key
 {{- define "warpstream-agent.agentKey.secretKey" -}}
 {{- if $.Values.config.apiKeySecretKeyRef }}
 {{- print $.Values.config.apiKeySecretKeyRef.key }}
+{{- else if $.Values.config.agentKeySecretKeyRef }}
+{{- print $.Values.config.agentKeySecretKeyRef.key }}
 {{- else -}}
 apikey
 {{- end }}

@@ -2,7 +2,7 @@
 set -e
 set -o pipefail
 
-# Test for setting the apiKey via Helm
+# Test for setting the deprecated apiKey via Helm
 set +e
 read -r -d '' ci_test_apikey_buildin << EOM
 config:
@@ -27,7 +27,32 @@ set -e
 
 echo "${ci_test_apikey_buildin}" | envsubst > charts/warpstream-agent/ci/apikey-buildin-values.yaml
 
-# Test for setting the apiKey via external secret
+# Test for setting the agentKey via Helm
+set +e
+read -r -d '' ci_test_agentkey_buildin << EOM
+config:
+  bucketURL: "mem://mem_bucket"
+  virtualClusterID: "${DefaultVirtualClusterID}"
+  region: "us-east-1"
+  agentKey: "${DefaultVirtualClusterAgentKeySecret}"
+
+# overriding resources so it fits on a runner
+resources:
+  requests:
+    cpu: 1
+    memory: 4Gi
+    # we do not need the disk space, but Kubernetes will count some logs that it emits
+    # about our containers towards our containers ephemeral usage and if we requested
+    # 0 storage we could end up getting evicted unnecessarily when the node is under disk pressure.
+    ephemeral-storage: "100Mi"
+  limits:
+    memory: 4Gi
+EOM
+set -e
+
+echo "${ci_test_agentkey_buildin}" | envsubst > charts/warpstream-agent/ci/agentkey-buildin-values.yaml
+
+# Test for setting the deprecated apiKey via external secret
 set +e
 read -r -d '' ci_test_apikey_external << EOM
 config:
@@ -54,14 +79,41 @@ set -e
 
 echo "${ci_test_apikey_external}" | envsubst > charts/warpstream-agent/ci/apikey-external-values.yaml
 
-# Test for using agent groups
+# Test for setting the agentKey via external secret
 set +e
-read -r -d '' ci_test_apikey_agent_group << EOM
+read -r -d '' ci_test_agentkey_external << EOM
 config:
   bucketURL: "mem://mem_bucket"
   virtualClusterID: "${DefaultVirtualClusterID}"
   region: "us-east-1"
-  apiKey: "${DefaultVirtualClusterAgentKeySecret}"
+  agentKeySecretKeyRef:
+    name: external-secret
+    key: agentkey
+
+# overriding resources so it fits on a runner
+resources:
+  requests:
+    cpu: 1
+    memory: 4Gi
+    # we do not need the disk space, but Kubernetes will count some logs that it emits
+    # about our containers towards our containers ephemeral usage and if we requested
+    # 0 storage we could end up getting evicted unnecessarily when the node is under disk pressure.
+    ephemeral-storage: "100Mi"
+  limits:
+    memory: 4Gi
+EOM
+set -e
+
+echo "${ci_test_agentkey_external}" | envsubst > charts/warpstream-agent/ci/agentkey-external-values.yaml
+
+# Test for using agent groups
+set +e
+read -r -d '' ci_test_agentkey_agent_group << EOM
+config:
+  bucketURL: "mem://mem_bucket"
+  virtualClusterID: "${DefaultVirtualClusterID}"
+  region: "us-east-1"
+  agentKey: "${DefaultVirtualClusterAgentKeySecret}"
   agentGroup: "my-group"
 
 # overriding resources so it fits on a runner
@@ -78,15 +130,15 @@ resources:
 EOM
 set -e
 
-echo "${ci_test_apikey_agent_group}" | envsubst > charts/warpstream-agent/ci/apikey-agent-group-values.yaml
+echo "${ci_test_agentkey_agent_group}" | envsubst > charts/warpstream-agent/ci/agentkey-agent-group-values.yaml
 
 # Test for using s3 express
 set +e
-read -r -d '' ci_test_apikey_s3express << EOM
+read -r -d '' ci_test_agentkey_s3express << EOM
 config:
   virtualClusterID: "${DefaultVirtualClusterID}"
   region: "us-east-1"
-  apiKey: "${DefaultVirtualClusterAgentKeySecret}"
+  agentKey: "${DefaultVirtualClusterAgentKeySecret}"
   ingestionBucketURL: "warpstream_multi://mem://mem_bucket<>mem://mem_bucket<>mem://mem_bucket"
   compactionBucketURL: "mem://mem_bucket"
 
@@ -104,4 +156,4 @@ resources:
 EOM
 set -e
 
-echo "${ci_test_apikey_s3express}" | envsubst > charts/warpstream-agent/ci/apikey-agent-group-values.yaml
+echo "${ci_test_agentkey_s3express}" | envsubst > charts/warpstream-agent/ci/agentkey-agent-group-values.yaml
