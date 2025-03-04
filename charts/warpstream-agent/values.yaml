@@ -134,11 +134,20 @@ config:
   # region: "us-east-1"
   #
   # Agent API Key Secret
-  # secretName: # DEPRECATED this will be removed soon, please switch to apiKeySecretKeyRef
+  # secretName: # DEPRECATED this will be removed soon, please switch to agentKeySecretKeyRef
+  #
+  # DEPRECATED apiKey and apiKeySecretKeyRef will be removed soon, please switch to agentKey or agentKeySecretKeyRef.
   # apiKey: "YOUR_API_KEY" # Provide this if you want the chart to manage the secret
   # apiKeySecretKeyRef: # Provide this if you want to manage the secret externally
   #   name:
   #   key:
+  #
+  # Agent Key Secret
+  # agentKey: "YOUR_AGENT_KEY" # Provide this if you want the chart to manage the secret
+  # agentKeySecretKeyRef: # Provide this if you want to manage the secret externally
+  #   name:
+  #   key:
+  #
   # Agent Groups configuration https://docs.warpstream.com/warpstream/byoc/advanced-agent-deployment-options/agent-groups
   # Leave empty for Default group
   agentGroup: ""

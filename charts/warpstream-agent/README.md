@@ -32,12 +32,14 @@ helm repo update
 helm upgrade --install warpstream-agent warpstream/warpstream-agent \
     --namespace $YOUR_NAMESPACE \
     --set config.bucketURL="$YOUR_OBJECT_STORE" \
-    --set config.apiKey="$YOUR_API_KEY" \
+    --set config.agentKey="$YOUR_API_KEY" \
     --set config.region="$YOUR_CONTROL_PLANE_REGION" \
     --set config.virtualClusterID="$YOUR_VIRTUAL_CLUSTER_ID"
 ```
 
-The chart creates a Kubernetes Secret for the Agent API key. You can also create a secret manually and set `config.secretName` to the secret's name (the secret key field must be `apikey`).
+The chart creates a Kubernetes Secret for the Agent key. You can also create a secret manually and set 
+`config.agentKeySecretKeyRef.name` and `config.agentKeySecretKeyRef.key` to the name of your Kubernetes secret and 
+the data key name within that secret.
 
 As an alternative to supplying the configuration parameters as arguments, you can create a supplemental YAML file containing your specific config parameters. Any parameters not specified in this file will default to those set in [values.yaml](values.yaml).
 
@@ -47,7 +49,7 @@ As an alternative to supplying the configuration parameters as arguments, you ca
 ```yaml
 config:
   bucketURL: <WARPSTREAM_BUCKET_URL>
-  apiKey: <WARPSTREAM_AGENT_APIKEY>
+  agentKey: <WARPSTREAM_AGENT_KEY>
   virtualClusterID: <WARPSTREAM_VIRTUAL_CLUSTER_ID>
   region: <WARPSTREAM_CLUSTER_REGION>
 ```

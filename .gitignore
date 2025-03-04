@@ -1,1 +1,2 @@
 charts/warpstream-agent/ci/apikey-*-values.yaml
+charts/warpstream-agent/ci/agentkey-*-values.yaml
