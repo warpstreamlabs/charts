@@ -36,7 +36,12 @@ spec:
     metadata:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum   }}
-        checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+        {{- if .Values.config.apiKey }}
+        checksum/secret-deprecated-api-key: {{ include (print $.Template.BasePath "/secret-deprecated-api-key.yaml") . | sha256sum }}
+        {{- end }}
+        {{- if .Values.config.agentKey }}
+        checksum/secret-agent-key: {{ include (print $.Template.BasePath "/secret-agent-key.yaml") . | sha256sum }}
+        {{- end }}
       {{- with .Values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
