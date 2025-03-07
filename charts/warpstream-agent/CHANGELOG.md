@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.13.96] - 2025-03-07
+- Fix test-connection.yaml for Keyverno policy compliance:
+  - Add CPU and memory resource requests/limits for test pods
+  - Add nodeSelector for architecture in test pods (configurable via values.yaml)
+  - Add emptyDir volume to prevent hostPath Keyverno policy violations
+  - Make all test pod settings configurable via values.yaml
+
 ## [0.13.95] - 2025-03-06
 - Update WarpStream Agent to v630
 
