@@ -186,3 +186,56 @@ Return the agent hostname override
 {{- end }}
 {{- end }}
 {{- end }}
+
+{{/*
+Test pod resources
+*/}}
+{{- define "warpstream-agent.test.resources" -}}
+resources:
+  {{- if .Values.test.resources }}
+  {{- toYaml .Values.test.resources | nindent 2 }}
+  {{- else }}
+  requests:
+    cpu: 200m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  {{- end }}
+{{- end }}
+
+{{/*
+Test pod nodeSelector
+*/}}
+{{- define "warpstream-agent.test.nodeSelector" -}}
+nodeSelector:
+  {{- if .Values.test.nodeSelector }}
+  {{- toYaml .Values.test.nodeSelector | nindent 2 }}
+  {{- else }}
+  kubernetes.io/arch: amd64
+  {{- end }}
+{{- end }}
+
+{{/*
+Test pod volumes
+*/}}
+{{- define "warpstream-agent.test.volumes" -}}
+volumes:
+  # Always include an emptyDir volume to prevent hostPath issues
+  - name: tmp-volume
+    emptyDir: {}
+  {{- if .Values.certificate }}
+    {{- with .Values.certificate }}
+      {{- if .enableTLS }}
+  - name: agent-ca
+    secret:
+      secretName: ci-certificate-ca
+      {{- end }}
+      {{- if .mtls.enabled }}
+  - name: agent-mtls
+    secret:
+      secretName: ci-certificate-client
+      {{- end }}
+    {{- end }}
+  {{- end }}
+{{- end }}
