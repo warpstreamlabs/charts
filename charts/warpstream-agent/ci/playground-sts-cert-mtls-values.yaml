@@ -44,3 +44,13 @@ resources:
 extraEnv:
   - name: WARPSTREAM_ADVERTISE_HOSTNAME_STRATEGY
     value: auto-ip4  # playground mode defaults to local so we need to override it for tests to pass
+
+# Test resource settings
+test:
+  resources:
+    requests:
+      cpu: 1m
+      memory: 128Mi
+    limits:
+      cpu: 100m
+      memory: 256Mi

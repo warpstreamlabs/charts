@@ -28,6 +28,7 @@ spec:
         {{- end }}
         - -type
         - diagnose-connection
+      {{- include "warpstream-agent.test.resources" . | nindent 6 }}
       {{- if .Values.certificate }}
       volumeMounts:
         {{- with .Values.certificate }}
@@ -44,21 +45,8 @@ spec:
         {{- end }}
       {{- end }}
   restartPolicy: Never
-  {{- if .Values.certificate }}
-  volumes:
-    {{- with .Values.certificate }}
-    {{- if .enableTLS }}
-      - name: agent-ca
-        secret:
-          secretName: ci-certificate-ca
-    {{- end }}
-    {{- if .mtls.enabled }}
-      - name: agent-mtls
-        secret:
-          secretName: ci-certificate-client
-    {{- end }}
-    {{- end }}
-  {{- end }}
+  {{- include "warpstream-agent.test.nodeSelector" . | nindent 2 }}
+  {{- include "warpstream-agent.test.volumes" . | nindent 2 }}
   {{- with .Values.affinity }}
   affinity:
     {{- toYaml . | nindent 8 }}
@@ -95,6 +83,7 @@ spec:
         {{- end }}
         - -type
         - diagnose-connection
+      {{- include "warpstream-agent.test.resources" . | nindent 6 }}
       {{- if .Values.certificate }}
       volumeMounts:
         {{- with .Values.certificate }}
@@ -111,21 +100,8 @@ spec:
         {{- end }}
       {{- end }}
   restartPolicy: Never
-  {{- if .Values.certificate }}
-  volumes:
-    {{- with .Values.certificate }}
-    {{- if .enableTLS }}
-      - name: agent-ca
-        secret:
-          secretName: ci-certificate-ca
-    {{- end }}
-    {{- if .mtls.enabled }}
-      - name: agent-mtls
-        secret:
-          secretName: ci-certificate-client
-    {{- end }}
-    {{- end }}
-  {{- end }}
+  {{- include "warpstream-agent.test.nodeSelector" . | nindent 2 }}
+  {{- include "warpstream-agent.test.volumes" . | nindent 2 }}
   {{- with .Values.affinity }}
   affinity:
     {{- toYaml . | nindent 8 }}

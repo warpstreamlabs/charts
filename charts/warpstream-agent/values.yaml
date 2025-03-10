@@ -311,3 +311,15 @@ volumes: []
 ## ref: https://kubernetes.io/docs/tasks/administer-cluster/configure-multiple-schedulers/
 ##
 # schedulerName: default-scheduler
+
+# Resources for test pods
+test:
+  resources:
+    requests:
+      cpu: 1m
+      memory: 128Mi
+    limits:
+      cpu: 100m
+      memory: 256Mi
+  nodeSelector:
+    kubernetes.io/arch: amd64

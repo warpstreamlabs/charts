@@ -22,6 +22,16 @@ resources:
     ephemeral-storage: "100Mi"
   limits:
     memory: 4Gi
+
+# Test resource settings
+test:
+  resources:
+    requests:
+      cpu: 1m
+      memory: 128Mi
+    limits:
+      cpu: 100m
+      memory: 256Mi
 EOM
 set -e
 
@@ -47,6 +57,16 @@ resources:
     ephemeral-storage: "100Mi"
   limits:
     memory: 4Gi
+
+# Test resource settings
+test:
+  resources:
+    requests:
+      cpu: 1m
+      memory: 128Mi
+    limits:
+      cpu: 100m
+      memory: 256Mi
 EOM
 set -e
 
@@ -74,6 +94,16 @@ resources:
     ephemeral-storage: "100Mi"
   limits:
     memory: 4Gi
+
+# Test resource settings
+test:
+  resources:
+    requests:
+      cpu: 1m
+      memory: 128Mi
+    limits:
+      cpu: 100m
+      memory: 256Mi
 EOM
 set -e
 
@@ -101,6 +131,16 @@ resources:
     ephemeral-storage: "100Mi"
   limits:
     memory: 4Gi
+
+# Test resource settings
+test:
+  resources:
+    requests:
+      cpu: 1m
+      memory: 128Mi
+    limits:
+      cpu: 100m
+      memory: 256Mi
 EOM
 set -e
 
@@ -127,6 +167,16 @@ resources:
     ephemeral-storage: "100Mi"
   limits:
     memory: 4Gi
+
+# Test resource settings
+test:
+  resources:
+    requests:
+      cpu: 1m
+      memory: 128Mi
+    limits:
+      cpu: 100m
+      memory: 256Mi
 EOM
 set -e
 
@@ -153,7 +203,17 @@ resources:
     ephemeral-storage: "100Mi"
   limits:
     memory: 4Gi
+
+# Test resource settings
+test:
+  resources:
+    requests:
+      cpu: 1m
+      memory: 128Mi
+    limits:
+      cpu: 100m
+      memory: 256Mi
 EOM
 set -e
 
-echo "${ci_test_agentkey_s3express}" | envsubst > charts/warpstream-agent/ci/agentkey-agent-group-values.yaml
+echo "${ci_test_agentkey_s3express}" | envsubst > charts/warpstream-agent/ci/agentkey-s3express-values.yaml
