@@ -197,19 +197,19 @@ resources:
       {{- toYaml .Values.test.resources | nindent 2 }}
     {{- else }}
       requests:
-        cpu: 200m
-        memory: 256Mi
+        cpu: 1m
+        memory: 128Mi
       limits:
-        cpu: 500m
-        memory: 512Mi
+        cpu: 100m
+        memory: 256Mi
     {{- end }}
   {{- else }}
     requests:
-      cpu: 200m
-      memory: 256Mi
+      cpu: 1m
+      memory: 128Mi
     limits:
-      cpu: 500m
-      memory: 512Mi
+      cpu: 100m
+      memory: 256Mi
   {{- end }}
 {{- end }}
 
