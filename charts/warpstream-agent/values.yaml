@@ -212,6 +212,14 @@ volumeMounts: []
 extraArgs: []
 # Add additional args settings to the pod.
 
+# If enabled only deploy pods into the given zone
+availabilityZoneSelector:
+  enabled: false
+  zone: "us-east-1a"
+
+  # The node label to select on
+  nodeZoneLabel: topology.kubernetes.io/zone
+
 nodeSelector: {}
 
 tolerations: []

@@ -199,9 +199,21 @@ spec:
       initContainers:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      {{- if hasKey .Values "availabilityZoneSelector" }}
+      {{- if or .Values.nodeSelector .Values.availabilityZoneSelector.enabled }}
+      nodeSelector:
+      {{- with .Values.nodeSelector }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.availabilityZoneSelector.enabled }}
+        {{ .Values.availabilityZoneSelector.nodeZoneLabel }}: {{ .Values.availabilityZoneSelector.zone }}
+      {{- end }}
+      {{- end }}
+      {{- else }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
+      {{- end }}
       {{- end }}
       {{- with .Values.affinity }}
       affinity:
