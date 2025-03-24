@@ -2,8 +2,8 @@ apiVersion: v2
 name: warpstream-agent
 description: WarpStream Agent for Kubernetes.
 type: application
-version: 0.14.3
-appVersion: v638
+version: 0.14.4
+appVersion: v639
 icon: https://avatars.githubusercontent.com/u/132156278
 home: https://docs.warpstream.com/warpstream/
 sources:
