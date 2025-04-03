@@ -117,7 +117,7 @@ If you plan to expose the WarpStream Agents outside your VPC (I.E to the public 
 
 ### Kubernetes Equal Spread
 
-Idealy when deploying WarpStream Kubernetes will equallyy distribute pods across all nodes and zones. However in some
+Idealy when deploying WarpStream Kubernetes will equally distribute pods across all nodes and zones. However in some
 cases Kubernetes may not equally spread the pods across zones which will limit high availability of the WarpStream
 cluster. 
 
