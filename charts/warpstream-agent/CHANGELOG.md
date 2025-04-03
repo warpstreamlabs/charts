@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [0.14.6] - 2025-04-03
-- Updating readme, need to update version to make CI happy
+- Updating readme, dummy version bump so CI passes
 
 ## [0.14.5] - 2025-04-02
 - Update WarpStream Agent to v640
