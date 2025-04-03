@@ -115,6 +115,14 @@ WarpStream supports secure authentication and encryption via SASL and TLS, altho
 
 If you plan to expose the WarpStream Agents outside your VPC (I.E to the public internet), enabling both is highly recommended. See the [Authentication](https://docs.warpstream.com/warpstream/byoc/advanced-agent-deployment-options/enable-agent-auth) documentation for more details.
 
+### Kubernetes Equal Spread
+
+Idealy when deploying WarpStream Kubernetes will equally distribute pods across all nodes and zones. However in some
+cases Kubernetes may not equally spread the pods across zones which will limit high availability of the WarpStream
+cluster. 
+
+[This document](https://docs.warpstream.com/warpstream/byoc/deploy/kubernetes-known-issues#when-running-in-kubernetes-warpstream-pods-end-up-in-the-same-zone-or-node) contains details
+and a solution to force Kubernetes to equally spread the pods across nodes and zones.
 
 ## Other Deployment Options
 
