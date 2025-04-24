@@ -25,6 +25,10 @@ replicas: 3
 # when the Agents are deployed in Kubernetes to avoid issues like this.
 deploymentKind: Deployment  # or StatefulSet
 
+# Annotations to set on the Deployment or StatefulSet.
+# deploymentAnnotations:
+#   foo: bar
+
 # Only used in Deployments
 revisionHistoryLimit: 10
 

@@ -4,6 +4,10 @@ metadata:
   name: {{ include "warpstream-agent.fullname" . }}
   labels:
     {{- include "warpstream-agent.labels" . | nindent 4 }}
+  {{- with .Values.deploymentAnnotations }}
+  annotations:
+    {{- toYaml . | trim | nindent 4 }}
+  {{- end }}
 spec:
   {{- if .Values.config.playground }}
   replicas: 1
