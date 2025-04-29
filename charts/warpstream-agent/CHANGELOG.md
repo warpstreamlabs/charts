@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.14.17] - 2025-04-29
+- Support `annotations` variable in all resources
+  - For resources that have their own annotations field i.e `.Values.serviceAccount.annotations` the annotations will be merged together with the resource specific annotations taking priority
+- Remove `deploymentAnnotations` variable as now it can be controlled via `annotations`.
+
 ## [0.14.16] - 2025-04-24
 - Added `deploymentAnnotations` variable to set annotations of the deployment and statefulset
 

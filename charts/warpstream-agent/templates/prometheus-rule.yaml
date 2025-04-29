@@ -9,6 +9,10 @@ metadata:
     {{- with .Values.prometheusRule.labels }}
     {{- tpl (toYaml . | nindent 4) $ }}
     {{- end }}
+  {{- with .Values.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
   groups:
   {{- with .Values.prometheusRule.groups }}
