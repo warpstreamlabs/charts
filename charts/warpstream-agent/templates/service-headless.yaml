@@ -5,7 +5,7 @@ metadata:
   name: {{ include "warpstream-agent.fullname" . }}-headless
   labels:
     {{- include "warpstream-agent.labels" . | nindent 4 }}
-  {{- with .Values.headlessService.annotations }}
+  {{- with (mergeOverwrite (default (dict) .Values.annotations) (default (dict) .Values.headlessService.annotations)) }}
   annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}

@@ -5,7 +5,7 @@ deploymentStrategy:
   type: RollingUpdate
   rollingUpdate: null  # setting rollingUpdate to null so helm will fail if pod doesn't start
 
-deploymentAnnotations:
+annotations:
   foo: bar
 
 # overriding resources so it fits on a runner

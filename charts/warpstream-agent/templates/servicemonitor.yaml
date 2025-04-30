@@ -9,6 +9,10 @@ metadata:
     {{- with .Values.serviceMonitor.labels }}
     {{- tpl (toYaml . | nindent 4) $ }}
     {{- end }}
+  {{- with .Values.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
   endpoints:
   - port: http

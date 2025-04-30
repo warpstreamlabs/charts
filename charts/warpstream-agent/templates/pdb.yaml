@@ -5,6 +5,10 @@ metadata:
   name: {{ include "warpstream-agent.fullname" . }}
   labels:
     {{- include "warpstream-agent.labels" . | nindent 4 }}
+  {{- with .Values.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
   {{- if .Values.pdb.minAvailable }}
   minAvailable: {{ .Values.pdb.minAvailable }}

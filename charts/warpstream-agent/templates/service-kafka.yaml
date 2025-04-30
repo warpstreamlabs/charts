@@ -6,7 +6,7 @@ metadata:
   name: {{ include "warpstream-agent.fullname" . }}-kafka
   labels:
     {{- include "warpstream-agent.labels" . | nindent 4 }}
-  {{- with .Values.kafkaService.annotations }}
+  {{- with (mergeOverwrite (default (dict) .Values.annotations) (default (dict) .Values.kafkaService.annotations)) }}
   annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}

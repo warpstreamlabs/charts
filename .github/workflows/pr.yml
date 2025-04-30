@@ -23,7 +23,7 @@ jobs:
 
       - name: Create Playground Account for Tests
         run: |
-          playground_account_raw=`curl https://api.prod.us-east-1.warpstream.com/api/v1/signup -X POST -d '{"primary_user_first_name": "chart-ci", "primary_user_last_name": "Account", "tenant_name": "chart-ci-organization-'$(uuidgen)'", "primary_user_email": "chart-ci-email@'$(uuidgen)'", "primary_user_password": "chart-ci-password-'$(uuidgen)'", "is_demo": true}'`
+          playground_account_raw=`curl https://console.warpstream.com/api/v1/signup -X POST -d '{"primary_user_first_name": "chart-ci", "primary_user_last_name": "Account", "tenant_name": "chart-ci-organization-'$(uuidgen)'", "primary_user_email": "chart-ci-email@'$(uuidgen)'", "primary_user_password": "chart-ci-password-'$(uuidgen)'", "is_demo": true}'`
 
           export DefaultVirtualClusterID=`echo ${playground_account_raw} | jq -r .DefaultVirtualClusterID`
           export DefaultVirtualClusterAgentKeySecret=`echo ${playground_account_raw} | jq -r .DefaultVirtualClusterAgentKeySecret`
