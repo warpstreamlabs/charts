@@ -37,6 +37,7 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           args:
+            - cli-beta
             - benchmark-producer
             - -bootstrap-host={{ .Values.bootstrapHost }}
             - -bootstrap-port={{ .Values.bootstrapPort }}
