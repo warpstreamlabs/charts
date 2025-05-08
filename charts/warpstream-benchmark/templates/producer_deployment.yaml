@@ -1,0 +1,75 @@
+{{- if .Values.producer.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "warpstream-benchmark.fullname" . }}-producer
+  labels:
+    {{- include "warpstream-benchmark.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.producer.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "warpstream-benchmark.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: producer
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "warpstream-benchmark.labels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+        app.kubernetes.io/component: producer
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args:
+            - cli-beta
+            - benchmark-producer
+            - -bootstrap-host={{ .Values.bootstrapHost }}
+            - -bootstrap-port={{ .Values.bootstrapPort }}
+            - -topic={{ .Values.topicName }}
+            - -num-clients={{ .Values.producer.numClients }}
+            - -record-size={{ int64 .Values.producer.recordSize }}
+            - -max-records-per-second={{ int64 .Values.producer.maxRecordsPerSecond }}
+            - -producer-max-bytes={{ int64 .Values.producer.producerMaxBytes }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          ports:
+            - name: prometheus
+              containerPort: 8081
+              protocol: TCP
+          {{- with .Values.volumeMounts }}
+          volumeMounts:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{- with .Values.volumes }}
+      volumes:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}

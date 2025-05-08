@@ -1,0 +1,13 @@
+apiVersion: v2
+name: warpstream-benchmark
+description: WarpStream Benchmark for Kubernetes.
+type: application
+version: 0.1.0
+appVersion: v652
+icon: https://avatars.githubusercontent.com/u/132156278
+home: https://docs.warpstream.com/warpstream/
+sources:
+  - https://github.com/warpstreamlabs/charts/warpstream-agent
+maintainers:
+  - name: WarpStream
+    email: founders@warpstreamlabs.com

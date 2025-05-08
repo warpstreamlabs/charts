@@ -1,0 +1,21 @@
+topicName: "ws-benchmark"
+bootstrapHost: "warpstream-benchmark-playground.warpstream-benchmark-playground.svc.cluster.local"
+bootstrapPort: 9092
+
+consumer:
+  enabled: true
+  replicaCount: 1
+  numClients: 3
+
+  fetchMaxBytes: 50000000
+  fetchMaxPartitionBytes: 25000000
+
+producer:
+  enabled: true
+  replicaCount: 1
+  numClients: 3
+
+  recordSize: 10000
+  # Using a low number of records per second to not explode the local agent
+  maxRecordsPerSecond: 3
+  producerMaxBytes: 16000000

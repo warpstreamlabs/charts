@@ -51,6 +51,15 @@ jobs:
         if: steps.list-changed.outputs.changed == 'true'
         uses: helm/kind-action@v1
 
+      - name: Setup WarpStream Playground Cluster for benchmark test
+        run: |
+          kubectl create ns warpstream-benchmark-playground
+          kubectl create deployment -n warpstream-benchmark-playground warpstream-benchmark-playground --image=public.ecr.aws/warpstream-labs/warpstream_agent:latest -- /warpstream playground
+          kubectl set env -n warpstream-benchmark-playground deployment/warpstream-benchmark-playground WARPSTREAM_ADVERTISE_HOSTNAME_STRATEGY=auto-ip4
+          kubectl create svc clusterip -n warpstream-benchmark-playground warpstream-benchmark-playground --tcp=9092:9092
+          sleep 30
+          kubectl exec -it -n warpstream-benchmark-playground deployments/warpstream-benchmark-playground -- /warpstream cli create-topic -topic ws-benchmark
+          
       - name: Create Secret for Tests from Playground Account
         run: |
           kubectl create secret generic external-secret --from-literal=agentkey=${DefaultVirtualClusterAgentKeySecret}
