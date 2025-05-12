@@ -46,6 +46,7 @@ spec:
             - -record-size={{ int64 .Values.producer.recordSize }}
             - -max-records-per-second={{ int64 .Values.producer.maxRecordsPerSecond }}
             - -producer-max-bytes={{ int64 .Values.producer.producerMaxBytes }}
+            - -num-records={{ int64 (.Values.producer.numRecords | default -1) }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           ports:

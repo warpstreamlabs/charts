@@ -30,6 +30,7 @@ producer:
   recordSize: 10000
   maxRecordsPerSecond: 10000
   producerMaxBytes: 16000000
+  numRecords: -1
 
 service:
   annotations: {}
