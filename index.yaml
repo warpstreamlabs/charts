@@ -2908,6 +2908,23 @@ entries:
   warpstream-benchmark:
   - apiVersion: v2
     appVersion: v652
+    created: "2025-05-12T20:55:46.52947719Z"
+    description: WarpStream Benchmark for Kubernetes.
+    digest: 44311b5653098981d121f6da8cc2a67e0420fbe8f61cfcc7d4e44e83e3d3eebb
+    home: https://docs.warpstream.com/warpstream/
+    icon: https://avatars.githubusercontent.com/u/132156278
+    maintainers:
+    - email: founders@warpstreamlabs.com
+      name: WarpStream
+    name: warpstream-benchmark
+    sources:
+    - https://github.com/warpstreamlabs/charts/warpstream-agent
+    type: application
+    urls:
+    - https://github.com/warpstreamlabs/charts/releases/download/warpstream-benchmark-0.1.1/warpstream-benchmark-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
+    appVersion: v652
     created: "2025-05-08T22:51:42.724381184Z"
     description: WarpStream Benchmark for Kubernetes.
     digest: 79ac5fcf01d461c789036b1f67ce4b900fbf05ad15c913dcad3c012c0d9ef754
@@ -2923,4 +2940,4 @@ entries:
     urls:
     - https://github.com/warpstreamlabs/charts/releases/download/warpstream-benchmark-0.1.0/warpstream-benchmark-0.1.0.tgz
     version: 0.1.0
-generated: "2025-05-08T22:51:42.724778777Z"
+generated: "2025-05-12T20:55:46.529916989Z"
