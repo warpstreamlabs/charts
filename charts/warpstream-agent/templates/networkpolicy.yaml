@@ -1,0 +1,80 @@
+{{- if .Values.networkPolicy }}
+  {{- if .Values.networkPolicy.enabled }}
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: {{ include "warpstream-agent.fullname" . }}-networkpolicy
+  labels: {{ include "warpstream-agent.labels" . | nindent 4 }}
+  {{- with .Values.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  podSelector:
+    matchLabels:
+      {{- include "warpstream-agent.selectorLabels" . | nindent 6 }}
+  policyTypes:
+    {{- if .Values.networkPolicy.ingressRules }}
+    - Ingress
+    {{- end }} # end if .Values.networkPolicy.ingressRules
+    {{- if .Values.networkPolicy.egressRules }}
+    - Egress
+    {{- end }} # end if .Values.networkPolicy.egressRules
+  {{- if .Values.networkPolicy.ingressRules }}
+  ingress:
+    {{- range $rule := index .Values "networkPolicy" "ingressRules" "cidrs" }}
+    - from:
+        - ipBlock:
+            cidr: {{ index $rule.host }}
+          ports:
+            - port: {{ index $rule.port }}
+    {{- end }} 
+
+    {{- range $rule := index .Values "networkPolicy" "ingressRules" "pods" }}
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: {{ index $rule.namespace }}
+          podSelector:
+            matchLabels:
+              {{- range $k, $v := $rule.labels }}
+              {{- range $kk, $vv := $v }}
+              {{ $kk }}: {{ $vv }}
+              {{- end }}
+              {{- end }}
+      ports:
+        - port: {{ index $rule.port }}
+          protocol: {{ index $rule.protocol }}
+    {{- end }}
+  {{- end }}
+  {{- if .Values.networkPolicy.egressRules }}
+  egress:
+
+    {{- range $rule := index .Values "networkPolicy" "egressRules" "pods" }}
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: {{ index $rule.namespace }}
+          podSelector:
+            matchLabels:
+              {{- range $k, $v := $rule.labels }}
+              {{- range $kk, $vv := $v }}
+              {{ $kk }}: {{ $vv }}
+              {{- end }}
+              {{- end }}
+      ports:
+        - port: {{ index $rule.port }}
+          protocol: {{ index $rule.protocol }}
+    {{- end }}
+
+    {{- range $rule := index .Values "networkPolicy" "egressRules" "cidrs" }}
+    - to:
+        - ipBlock:
+            cidr: {{ index $rule.host }}
+      ports:
+        - port: {{ index $rule.port }}
+    {{- end }}
+  {{- end }}
+
+  {{- end }} # end if .Values.networkPolicy.enabled
+  {{- end }} # end if .Values.networkPolicy
