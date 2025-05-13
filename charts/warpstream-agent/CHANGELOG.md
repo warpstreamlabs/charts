@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.15.0] - 2025-05-13
 - Add Network Policies template
 
+## [0.14.20] - 2025-05-09
+- Update WarpStream Agent to v653
+
 ## [0.14.19] - 2025-05-02
 - Update WarpStream Agent to v650
 

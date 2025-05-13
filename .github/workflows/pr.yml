@@ -27,9 +27,11 @@ jobs:
 
           export DefaultVirtualClusterID=`echo ${playground_account_raw} | jq -r .DefaultVirtualClusterID`
           export DefaultVirtualClusterAgentKeySecret=`echo ${playground_account_raw} | jq -r .DefaultVirtualClusterAgentKeySecret`
+          export DefaultVirtualClusterMetadataURL=`echo ${playground_account_raw} | jq -r .DefaultVirtualClusterMetadataURL`
 
           echo "DefaultVirtualClusterID=${DefaultVirtualClusterID}" >> $GITHUB_ENV
           echo "DefaultVirtualClusterAgentKeySecret=${DefaultVirtualClusterAgentKeySecret}" >> $GITHUB_ENV
+          echo "DefaultVirtualClusterMetadataURL=${DefaultVirtualClusterMetadataURL}" >> $GITHUB_ENV
 
       - name: Generate Tests
         run: |
@@ -52,6 +54,7 @@ jobs:
         uses: helm/kind-action@v1
 
       - name: Setup WarpStream Playground Cluster for benchmark test
+        if: steps.list-changed.outputs.changed == 'true'
         run: |
           kubectl create ns warpstream-benchmark-playground
           kubectl create deployment -n warpstream-benchmark-playground warpstream-benchmark-playground --image=public.ecr.aws/warpstream-labs/warpstream_agent:latest -- /warpstream playground
@@ -61,10 +64,12 @@ jobs:
           kubectl exec -it -n warpstream-benchmark-playground deployments/warpstream-benchmark-playground -- /warpstream cli create-topic -topic ws-benchmark
           
       - name: Create Secret for Tests from Playground Account
+        if: steps.list-changed.outputs.changed == 'true'
         run: |
           kubectl create secret generic external-secret --from-literal=agentkey=${DefaultVirtualClusterAgentKeySecret}
 
       - name: Generate Certificate for TLS testing
+        if: steps.list-changed.outputs.changed == 'true'
         run: |
           mkdir /tmp/certificates
           cd /tmp/certificates
