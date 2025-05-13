@@ -26,8 +26,11 @@ spec:
     - from:
         - ipBlock:
             cidr: {{ index $rule.host }}
-          ports:
-            - port: {{ index $rule.port }}
+
+      {{- if index $rule.port }}
+      ports:
+        - port: {{ index $rule.port }}
+      {{- end }}
     {{- end }} 
 
     {{- range $rule := index .Values "networkPolicy" "ingressRules" "pods" }}
@@ -42,9 +45,11 @@ spec:
               {{ $kk }}: {{ $vv }}
               {{- end }}
               {{- end }}
+      {{- if index $rule.port }}
       ports:
         - port: {{ index $rule.port }}
           protocol: {{ index $rule.protocol }}
+      {{- end }}
     {{- end }}
   {{- end }}
   {{- if .Values.networkPolicy.egressRules }}
@@ -62,17 +67,21 @@ spec:
               {{ $kk }}: {{ $vv }}
               {{- end }}
               {{- end }}
+      {{- if index $rule.port }}
       ports:
         - port: {{ index $rule.port }}
           protocol: {{ index $rule.protocol }}
+      {{- end }}
     {{- end }}
 
     {{- range $rule := index .Values "networkPolicy" "egressRules" "cidrs" }}
     - to:
         - ipBlock:
             cidr: {{ index $rule.host }}
+      {{- if index $rule.port }}
       ports:
         - port: {{ index $rule.port }}
+      {{- end }}
     {{- end }}
   {{- end }}
 
