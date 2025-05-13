@@ -8,11 +8,8 @@ read -r -d '' ci_test_apikey_buildin << EOM
 config:
   bucketURL: "mem://mem_bucket"
   virtualClusterID: "${DefaultVirtualClusterID}"
-  region: "us-east-1"
+  region: "us-east1"
   apiKey: "${DefaultVirtualClusterAgentKeySecret}"
-
-extraArgs:
-  - -metadataURL="${DefaultVirtualClusterMetadataURL}"
 
 # overriding resources so it fits on a runner
 resources:
@@ -46,11 +43,8 @@ read -r -d '' ci_test_agentkey_buildin << EOM
 config:
   bucketURL: "mem://mem_bucket"
   virtualClusterID: "${DefaultVirtualClusterID}"
-  region: "us-east-1"
+  region: "us-east1"
   agentKey: "${DefaultVirtualClusterAgentKeySecret}"
-
-extraArgs:
-  - -metadataURL="${DefaultVirtualClusterMetadataURL}"
 
 # overriding resources so it fits on a runner
 resources:
@@ -84,13 +78,10 @@ read -r -d '' ci_test_apikey_external << EOM
 config:
   bucketURL: "mem://mem_bucket"
   virtualClusterID: "${DefaultVirtualClusterID}"
-  region: "us-east-1"
+  region: "us-east1"
   apiKeySecretKeyRef:
     name: external-secret
     key: agentkey
-
-extraArgs:
-  - -metadataURL="${DefaultVirtualClusterMetadataURL}"
 
 # overriding resources so it fits on a runner
 resources:
@@ -124,13 +115,10 @@ read -r -d '' ci_test_agentkey_external << EOM
 config:
   bucketURL: "mem://mem_bucket"
   virtualClusterID: "${DefaultVirtualClusterID}"
-  region: "us-east-1"
+  region: "us-east1"
   agentKeySecretKeyRef:
     name: external-secret
     key: agentkey
-
-extraArgs:
-  - -metadataURL="${DefaultVirtualClusterMetadataURL}"
 
 # overriding resources so it fits on a runner
 resources:
@@ -164,12 +152,9 @@ read -r -d '' ci_test_agentkey_agent_group << EOM
 config:
   bucketURL: "mem://mem_bucket"
   virtualClusterID: "${DefaultVirtualClusterID}"
-  region: "us-east-1"
+  region: "us-east1"
   agentKey: "${DefaultVirtualClusterAgentKeySecret}"
   agentGroup: "my-group"
-
-extraArgs:
-  - -metadataURL="${DefaultVirtualClusterMetadataURL}"
 
 # overriding resources so it fits on a runner
 resources:
@@ -202,13 +187,10 @@ set +e
 read -r -d '' ci_test_agentkey_s3express << EOM
 config:
   virtualClusterID: "${DefaultVirtualClusterID}"
-  region: "us-east-1"
+  region: "us-east1"
   agentKey: "${DefaultVirtualClusterAgentKeySecret}"
   ingestionBucketURL: "warpstream_multi://mem://mem_bucket<>mem://mem_bucket<>mem://mem_bucket"
   compactionBucketURL: "mem://mem_bucket"
-
-extraArgs:
-  - -metadataURL="${DefaultVirtualClusterMetadataURL}"
 
 # overriding resources so it fits on a runner
 resources:
