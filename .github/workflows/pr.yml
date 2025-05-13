@@ -27,9 +27,11 @@ jobs:
 
           export DefaultVirtualClusterID=`echo ${playground_account_raw} | jq -r .DefaultVirtualClusterID`
           export DefaultVirtualClusterAgentKeySecret=`echo ${playground_account_raw} | jq -r .DefaultVirtualClusterAgentKeySecret`
+          export DefaultVirtualClusterMetadataURL=`echo ${playground_account_raw} | jq -r .DefaultVirtualClusterMetadataURL`
 
           echo "DefaultVirtualClusterID=${DefaultVirtualClusterID}" >> $GITHUB_ENV
           echo "DefaultVirtualClusterAgentKeySecret=${DefaultVirtualClusterAgentKeySecret}" >> $GITHUB_ENV
+          echo "DefaultVirtualClusterMetadataURL=${DefaultVirtualClusterMetadataURL}" >> $GITHUB_ENV
 
       - name: Generate Tests
         run: |
