@@ -11,6 +11,9 @@ config:
   region: "us-east-1"
   apiKey: "${DefaultVirtualClusterAgentKeySecret}"
 
+extraArgs:
+  - -metadataURL="${DefaultVirtualClusterMetadataURL}"
+
 # overriding resources so it fits on a runner
 resources:
   requests:
@@ -45,6 +48,9 @@ config:
   virtualClusterID: "${DefaultVirtualClusterID}"
   region: "us-east-1"
   agentKey: "${DefaultVirtualClusterAgentKeySecret}"
+
+extraArgs:
+  - -metadataURL="${DefaultVirtualClusterMetadataURL}"
 
 # overriding resources so it fits on a runner
 resources:
@@ -83,6 +89,9 @@ config:
     name: external-secret
     key: agentkey
 
+extraArgs:
+  - -metadataURL="${DefaultVirtualClusterMetadataURL}"
+
 # overriding resources so it fits on a runner
 resources:
   requests:
@@ -120,6 +129,9 @@ config:
     name: external-secret
     key: agentkey
 
+extraArgs:
+  - -metadataURL="${DefaultVirtualClusterMetadataURL}"
+
 # overriding resources so it fits on a runner
 resources:
   requests:
@@ -156,6 +168,9 @@ config:
   agentKey: "${DefaultVirtualClusterAgentKeySecret}"
   agentGroup: "my-group"
 
+extraArgs:
+  - -metadataURL="${DefaultVirtualClusterMetadataURL}"
+
 # overriding resources so it fits on a runner
 resources:
   requests:
@@ -191,6 +206,9 @@ config:
   agentKey: "${DefaultVirtualClusterAgentKeySecret}"
   ingestionBucketURL: "warpstream_multi://mem://mem_bucket<>mem://mem_bucket<>mem://mem_bucket"
   compactionBucketURL: "mem://mem_bucket"
+
+extraArgs:
+  - -metadataURL="${DefaultVirtualClusterMetadataURL}"
 
 # overriding resources so it fits on a runner
 resources:
