@@ -335,3 +335,28 @@ test:
       memory: 256Mi
   nodeSelector:
     kubernetes.io/arch: amd64
+
+# Optional Network Policy resource declaration
+networkPolicy:
+  enabled: false
+#   ingressRules:
+#     cidrs:
+#       - host: cidr
+#         port: port_number
+#     pods:
+#       - namespace: namespace_value
+#         labels:
+#           - key: value
+#         port: port_number
+#         protocol: TCP|UDP
+#
+#   egressRules:
+#     cidrs:
+#       - host: cidr
+#         port: port_number
+#     pods:
+#       - namespace: namespace_value
+#         labels:
+#           - key: value
+#         port: port_number
+#         protocol: TCP|UDP
