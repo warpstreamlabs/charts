@@ -14,14 +14,14 @@ config:
 # overriding resources so it fits on a runner
 resources:
   requests:
-    cpu: 1
-    memory: 4Gi
+    cpu: 500m
+    memory: 2Gi
     # we do not need the disk space, but Kubernetes will count some logs that it emits
     # about our containers towards our containers ephemeral usage and if we requested
     # 0 storage we could end up getting evicted unnecessarily when the node is under disk pressure.
     ephemeral-storage: "100Mi"
   limits:
-    memory: 4Gi
+    memory: 2Gi
 
 # Test resource settings
 test:
@@ -49,14 +49,14 @@ config:
 # overriding resources so it fits on a runner
 resources:
   requests:
-    cpu: 1
-    memory: 4Gi
+    cpu: 500m
+    memory: 2Gi
     # we do not need the disk space, but Kubernetes will count some logs that it emits
     # about our containers towards our containers ephemeral usage and if we requested
     # 0 storage we could end up getting evicted unnecessarily when the node is under disk pressure.
     ephemeral-storage: "100Mi"
   limits:
-    memory: 4Gi
+    memory: 2Gi
 
 # Test resource settings
 test:
@@ -86,14 +86,14 @@ config:
 # overriding resources so it fits on a runner
 resources:
   requests:
-    cpu: 1
-    memory: 4Gi
+    cpu: 500m
+    memory: 2Gi
     # we do not need the disk space, but Kubernetes will count some logs that it emits
     # about our containers towards our containers ephemeral usage and if we requested
     # 0 storage we could end up getting evicted unnecessarily when the node is under disk pressure.
     ephemeral-storage: "100Mi"
   limits:
-    memory: 4Gi
+    memory: 2Gi
 
 # Test resource settings
 test:
@@ -123,14 +123,14 @@ config:
 # overriding resources so it fits on a runner
 resources:
   requests:
-    cpu: 1
-    memory: 4Gi
+    cpu: 500m
+    memory: 2Gi
     # we do not need the disk space, but Kubernetes will count some logs that it emits
     # about our containers towards our containers ephemeral usage and if we requested
     # 0 storage we could end up getting evicted unnecessarily when the node is under disk pressure.
     ephemeral-storage: "100Mi"
   limits:
-    memory: 4Gi
+    memory: 2Gi
 
 # Test resource settings
 test:
@@ -159,14 +159,14 @@ config:
 # overriding resources so it fits on a runner
 resources:
   requests:
-    cpu: 1
-    memory: 4Gi
+    cpu: 500m
+    memory: 2Gi
     # we do not need the disk space, but Kubernetes will count some logs that it emits
     # about our containers towards our containers ephemeral usage and if we requested
     # 0 storage we could end up getting evicted unnecessarily when the node is under disk pressure.
     ephemeral-storage: "100Mi"
   limits:
-    memory: 4Gi
+    memory: 2Gi
 
 # Test resource settings
 test:
@@ -195,14 +195,14 @@ config:
 # overriding resources so it fits on a runner
 resources:
   requests:
-    cpu: 1
-    memory: 4Gi
+    cpu: 500m
+    memory: 2Gi
     # we do not need the disk space, but Kubernetes will count some logs that it emits
     # about our containers towards our containers ephemeral usage and if we requested
     # 0 storage we could end up getting evicted unnecessarily when the node is under disk pressure.
     ephemeral-storage: "100Mi"
   limits:
-    memory: 4Gi
+    memory: 2Gi
 
 # Test resource settings
 test:
@@ -232,14 +232,14 @@ config:
 # overriding resources so it fits on a runner
 resources:
   requests:
-    cpu: 1
-    memory: 4Gi
+    cpu: 500m
+    memory: 2Gi
     # we do not need the disk space, but Kubernetes will count some logs that it emits
     # about our containers towards our containers ephemeral usage and if we requested
     # 0 storage we could end up getting evicted unnecessarily when the node is under disk pressure.
     ephemeral-storage: "100Mi"
   limits:
-    memory: 4Gi
+    memory: 2Gi
 
 # Test resource settings
 test:
