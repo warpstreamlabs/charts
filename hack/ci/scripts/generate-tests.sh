@@ -14,14 +14,14 @@ config:
 # overriding resources so it fits on a runner
 resources:
   requests:
-    cpu: 1
-    memory: 4Gi
+    cpu: 500m
+    memory: 2Gi
     # we do not need the disk space, but Kubernetes will count some logs that it emits
     # about our containers towards our containers ephemeral usage and if we requested
     # 0 storage we could end up getting evicted unnecessarily when the node is under disk pressure.
     ephemeral-storage: "100Mi"
   limits:
-    memory: 4Gi
+    memory: 2Gi
 
 # Test resource settings
 test:
@@ -49,14 +49,14 @@ config:
 # overriding resources so it fits on a runner
 resources:
   requests:
-    cpu: 1
-    memory: 4Gi
+    cpu: 500m
+    memory: 2Gi
     # we do not need the disk space, but Kubernetes will count some logs that it emits
     # about our containers towards our containers ephemeral usage and if we requested
     # 0 storage we could end up getting evicted unnecessarily when the node is under disk pressure.
     ephemeral-storage: "100Mi"
   limits:
-    memory: 4Gi
+    memory: 2Gi
 
 # Test resource settings
 test:
@@ -86,14 +86,14 @@ config:
 # overriding resources so it fits on a runner
 resources:
   requests:
-    cpu: 1
-    memory: 4Gi
+    cpu: 500m
+    memory: 2Gi
     # we do not need the disk space, but Kubernetes will count some logs that it emits
     # about our containers towards our containers ephemeral usage and if we requested
     # 0 storage we could end up getting evicted unnecessarily when the node is under disk pressure.
     ephemeral-storage: "100Mi"
   limits:
-    memory: 4Gi
+    memory: 2Gi
 
 # Test resource settings
 test:
@@ -123,14 +123,14 @@ config:
 # overriding resources so it fits on a runner
 resources:
   requests:
-    cpu: 1
-    memory: 4Gi
+    cpu: 500m
+    memory: 2Gi
     # we do not need the disk space, but Kubernetes will count some logs that it emits
     # about our containers towards our containers ephemeral usage and if we requested
     # 0 storage we could end up getting evicted unnecessarily when the node is under disk pressure.
     ephemeral-storage: "100Mi"
   limits:
-    memory: 4Gi
+    memory: 2Gi
 
 # Test resource settings
 test:
@@ -159,14 +159,14 @@ config:
 # overriding resources so it fits on a runner
 resources:
   requests:
-    cpu: 1
-    memory: 4Gi
+    cpu: 500m
+    memory: 2Gi
     # we do not need the disk space, but Kubernetes will count some logs that it emits
     # about our containers towards our containers ephemeral usage and if we requested
     # 0 storage we could end up getting evicted unnecessarily when the node is under disk pressure.
     ephemeral-storage: "100Mi"
   limits:
-    memory: 4Gi
+    memory: 2Gi
 
 # Test resource settings
 test:
@@ -195,14 +195,14 @@ config:
 # overriding resources so it fits on a runner
 resources:
   requests:
-    cpu: 1
-    memory: 4Gi
+    cpu: 500m
+    memory: 2Gi
     # we do not need the disk space, but Kubernetes will count some logs that it emits
     # about our containers towards our containers ephemeral usage and if we requested
     # 0 storage we could end up getting evicted unnecessarily when the node is under disk pressure.
     ephemeral-storage: "100Mi"
   limits:
-    memory: 4Gi
+    memory: 2Gi
 
 # Test resource settings
 test:
@@ -217,3 +217,49 @@ EOM
 set -e
 
 echo "${ci_test_agentkey_s3express}" | envsubst > charts/warpstream-agent/ci/agentkey-s3express-values.yaml
+
+# Test for prometheus operator scraping
+set +e
+read -r -d '' ci_test_prometheus_scrape << EOM
+config:
+  bucketURL: "mem://mem_bucket"
+  virtualClusterID: "${DefaultVirtualClusterID}"
+  region: "us-east1"
+  agentKeySecretKeyRef:
+    name: external-secret
+    key: agentkey
+
+# overriding resources so it fits on a runner
+resources:
+  requests:
+    cpu: 500m
+    memory: 2Gi
+    # we do not need the disk space, but Kubernetes will count some logs that it emits
+    # about our containers towards our containers ephemeral usage and if we requested
+    # 0 storage we could end up getting evicted unnecessarily when the node is under disk pressure.
+    ephemeral-storage: "100Mi"
+  limits:
+    memory: 2Gi
+
+# Test resource settings
+test:
+  resources:
+    requests:
+      cpu: 1m
+      memory: 128Mi
+    limits:
+      cpu: 100m
+      memory: 256Mi
+
+serviceMonitor:
+  enabled: true
+
+scrapeConfig:
+  enable: true
+  passwordKeyRef:
+    name: external-secret
+    key: agentkey
+EOM
+set -e
+
+echo "${ci_test_prometheus_scrape}" | envsubst > charts/warpstream-agent/ci/prometheus-scrape-values.yaml

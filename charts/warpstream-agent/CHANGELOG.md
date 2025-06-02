@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.15.6] - 2025-06-02
+- Add ability to scrape [hosted prometheus endpoint](https://docs.warpstream.com/warpstream/byoc/monitor-the-warpstream-agents/hosted-prometheus-endpoint) with the prometheus operator [ScrapeConfig CRD](https://prometheus-operator.dev/docs/developer/scrapeconfig/)
+- Fix Prometheus Service monitor to only scrape 1 service preventing duplicate metrics in prometheus
+
 ## [0.15.5] - 2025-05-30
 - Update WarpStream Agent to v658
 

@@ -303,6 +303,22 @@ prometheusRule:
           identifier: 'Alert identifier.'
           msg: Alert message.
 
+scrapeConfig:
+  ## If true, a ScrapeConfig CRD is created for a prometheus operator
+  ## https://github.com/coreos/prometheus-operator
+  ##
+  ## If enabled creates a ScrapeConfig to scrape the hosted prometheus endpoint
+  ## https://docs.warpstream.com/warpstream/byoc/monitor-the-warpstream-agents/hosted-prometheus-endpoint
+  enabled: false
+  labels: {}
+  interval: 30s
+  scrapeTimeout: 30s
+  basicAuth:
+    # It is recommended to set this to the same values as agentKeySecretKeyRef
+    passwordKeyRef:
+      name: ""
+      key: ""
+
 ## list of hosts and IPs that will be injected into the pod's hosts file
 hostAliases: []
   # - ip: "127.0.0.1"

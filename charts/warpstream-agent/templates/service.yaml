@@ -8,6 +8,7 @@ metadata:
     {{- with .Values.service.labels }}
     {{- toYaml . | nindent 4 }}
     {{- end }}
+    prometheus: "true"
   {{- with (mergeOverwrite (default (dict) .Values.annotations) (default (dict) .Values.service.annotations)) }}
   annotations:
     {{- toYaml . | nindent 4 }}
