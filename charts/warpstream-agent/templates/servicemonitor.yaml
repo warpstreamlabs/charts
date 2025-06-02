@@ -41,6 +41,7 @@ spec:
   selector:
     matchLabels:
       {{- include "warpstream-agent.selectorLabels" . | nindent 6 }}
+      prometheus: "true"
   namespaceSelector:
     matchNames:
       - {{ .Release.Namespace }}
