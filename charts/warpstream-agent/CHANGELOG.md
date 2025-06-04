@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.15.8] - 2025-05-30
+- Update WarpStream Agent to v659
+
 ## [0.15.7] - 2025-06-03
 - Add `dnsConfig` variable to support changing the WarpStream Pod's dns configuration. See https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-dns-config for details.
 
