@@ -3,6 +3,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "warpstream-benchmark.fullname" . }}-consumer
+  namespace: {{ .Release.Namespace }}
   labels:
     {{- include "warpstream-benchmark.labels" . | nindent 4 }}
 spec:

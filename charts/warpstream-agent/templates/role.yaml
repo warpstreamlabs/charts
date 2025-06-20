@@ -9,6 +9,7 @@ metadata:
     {{- toYaml . | nindent 4 }}
   {{- end }}
   name: {{ include "warpstream-agent.fullname" . }}-role
+  namespace: {{ .Release.Namespace }}
 rules:
 - apiGroups:
   - ""

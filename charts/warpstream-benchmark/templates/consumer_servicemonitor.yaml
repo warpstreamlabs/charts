@@ -5,6 +5,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: {{ include "warpstream-benchmark.fullname" . }}-consumer
+  namespace: {{ .Release.Namespace }}
   labels:
     {{- include "warpstream-benchmark.labels" . | nindent 4 }}
     {{- with .Values.serviceMonitor.labels }}

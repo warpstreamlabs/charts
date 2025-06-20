@@ -4,6 +4,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: {{ include "warpstream-agent.fullname" . }}-kafka
+  namespace: {{ .Release.Namespace }}
   labels:
     {{- include "warpstream-agent.labels" . | nindent 4 }}
   {{- with (mergeOverwrite (default (dict) .Values.annotations) (default (dict) .Values.kafkaService.annotations)) }}
