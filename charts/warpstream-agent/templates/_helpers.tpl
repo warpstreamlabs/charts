@@ -78,7 +78,11 @@ Return the appropriate apiVersion for Horizontal Pod Autoscaler.
 {{- define "warpstream-agent.hpa.apiVersion" -}}
 {{- if $.Capabilities.APIVersions.Has "autoscaling/v2/HorizontalPodAutoscaler" }}
 {{- print "autoscaling/v2" }}
+{{- else if $.Capabilities.APIVersions.Has "autoscaling/v2" }}
+{{- print "autoscaling/v2" }}
 {{- else if $.Capabilities.APIVersions.Has "autoscaling/v2beta2/HorizontalPodAutoscaler" }}
+{{- print "autoscaling/v2beta2" }}
+{{- else if $.Capabilities.APIVersions.Has "autoscaling/v2beta2" }}
 {{- print "autoscaling/v2beta2" }}
 {{- else }}
 {{- print "autoscaling/v2beta1" }}
@@ -92,6 +96,8 @@ Return the appropriate apiVersion for podDisruptionBudget.
 {{- if $.Values.pdb.apiVersion }}
 {{- print $.Values.pdb.apiVersion }}
 {{- else if $.Capabilities.APIVersions.Has "policy/v1/PodDisruptionBudget" }}
+{{- print "policy/v1" }}
+{{- else if $.Capabilities.APIVersions.Has "policy/v1" }}
 {{- print "policy/v1" }}
 {{- else }}
 {{- print "policy/v1beta1" }}
