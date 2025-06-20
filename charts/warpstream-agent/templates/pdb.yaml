@@ -3,6 +3,7 @@ apiVersion: {{ include "warpstream-agent.pdb.apiVersion" . }}
 kind: PodDisruptionBudget
 metadata:
   name: {{ include "warpstream-agent.fullname" . }}
+  namespace: {{ .Release.Namespace }}
   labels:
     {{- include "warpstream-agent.labels" . | nindent 4 }}
   {{- with .Values.annotations }}

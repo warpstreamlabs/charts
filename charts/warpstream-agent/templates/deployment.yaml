@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: {{ include "warpstream-agent.deploymentKind" . }}
 metadata:
   name: {{ include "warpstream-agent.fullname" . }}
+  namespace: {{ .Release.Namespace }}
   labels:
     {{- include "warpstream-agent.labels" . | nindent 4 }}
   {{- with .Values.annotations }}
