@@ -69,7 +69,7 @@ certificate:
       name: ""
       key: ""
 
-terminationGracePeriodSeconds: 300
+terminationGracePeriodSeconds: 600
 
 serviceAccount:
   # Specifies whether a service account should be created
