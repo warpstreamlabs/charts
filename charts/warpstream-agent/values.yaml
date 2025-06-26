@@ -71,7 +71,7 @@ certificate:
     create: false
     issuer:
       # The cert-manager issuer reference to use to create the certificate
-      ref: { }
+      ref: {}
     #   kind: Issuer
     #   name: selfsigned-issuer
     dnsNames:
