@@ -1,0 +1,51 @@
+# Need override os we have a static release name for certificates while testing
+fullnameOverride: "playground-sts-cert"
+
+config:
+  playground: true
+
+# testing with statefulset
+deploymentKind: StatefulSet
+
+certificate:
+  # Set to true to enable TLS termination on the WarpStream agent
+  # see TLS documentation for details https://docs.warpstream.com/warpstream/byoc/advanced-agent-deployment-options/protect-data-in-motion-with-tls-encryption#tls-encryption-overview
+  enableTLS: true
+
+  certManager:
+    # Allow cert-manager to create the certificate
+    create: true
+    issuer:
+      # The cert-manager issuer reference to use to create the certificate
+      ref:
+        kind: ClusterIssuer
+        name: ci-issuer
+    dnsNames:
+      - 'warpstream-agent.default.svc.cluster.local'
+      - '*.warpstream-agent-headless.default.svc.cluster.local'
+
+# overriding resources so it fits on a runner
+resources:
+  requests:
+    cpu: 500m
+    memory: 2Gi
+    # we do not need the disk space, but Kubernetes will count some logs that it emits
+    # about our containers towards our containers ephemeral usage and if we requested
+    # 0 storage we could end up getting evicted unnecessarily when the node is under disk pressure.
+    ephemeral-storage: "100Mi"
+  limits:
+    memory: 2Gi
+
+extraEnv:
+  - name: WARPSTREAM_ADVERTISE_HOSTNAME_STRATEGY
+    value: auto-ip4  # playground mode defaults to local so we need to override it for tests to pass
+
+# Test resource settings
+test:
+  resources:
+    requests:
+      cpu: 1m
+      memory: 128Mi
+    limits:
+      cpu: 100m
+      memory: 256Mi
