@@ -1,5 +1,5 @@
 # Need override os we have a static release name for certificates while testing
-fullnameOverride: "playground-sts-cert"
+fullnameOverride: "playground-sts-cert-manager"
 
 config:
   playground: true
@@ -21,8 +21,10 @@ certificate:
         kind: ClusterIssuer
         name: ci-issuer
     dnsNames:
-      - 'warpstream-agent.default.svc.cluster.local'
-      - '*.warpstream-agent-headless.default.svc.cluster.local'
+      - playground-sts-cert-manager
+      - playground-sts-cert-manager-kafka
+      - 'playground-sts-cert-manager.default.svc.cluster.local'
+      - '*.playground-sts-cert-manager-headless.default.svc.cluster.local'
 
 # overriding resources so it fits on a runner
 resources:
