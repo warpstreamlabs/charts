@@ -61,9 +61,11 @@ jobs:
       - name: Install & Initialize Cert Manager
         run: |
           kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.18.0/cert-manager.yaml
+          # Wait for cert manager to start
+          sleep 30
           kubectl apply -f hack/ci/manifests/cert-manager-ca.yaml
           # Wait for certificate to create
-          sleep 10
+          sleep 30
           # Copy root ca secret to default ns so the tests can use the ca.crt key from it
           kubectl get secret root-secret -n cert-manager -o yaml | sed 's/namespace: cert-manager/namespace: default/' | kubectl apply -f -
 
