@@ -66,8 +66,21 @@ certificate:
   # see TLS documentation for details https://docs.warpstream.com/warpstream/byoc/advanced-agent-deployment-options/protect-data-in-motion-with-tls-encryption#tls-encryption-overview
   enableTLS: false
 
+  certManager:
+    # Allow cert-manager to create the certificate
+    create: false
+    issuer:
+      # The cert-manager issuer reference to use to create the certificate
+      ref: { }
+    #   kind: Issuer
+    #   name: selfsigned-issuer
+    dnsNames:
+      - 'warpstream-agent.warpstream.svc.cluster.local'
+      - '*.warpstream-agent-headless.warpstream.svc.cluster.local'
+
   # The Kubernetes TLS secret that contains a certificate and private key
   # see https://kubernetes.io/docs/concepts/configuration/secret/#tls-secrets
+  # If using cert-manager this value is not used.
   secretName: ""
 
   mtls:
