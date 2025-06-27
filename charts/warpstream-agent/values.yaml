@@ -14,11 +14,11 @@ replicas: 3
 # Use StatefulSet when TLS is needed for an easier time managing certificates due to stable hostnames.
 #
 # Or when more control is desired over rolling restarts. With Deployments Kubernetes does not wait for
-# terminating pods to disappear before moving on, usually this is not a problem, however if you experience 
+# terminating pods to disappear before moving on, usually this is not a problem, however if you experience
 # unexpected application behavior during upgrades using StatefulSets may be desired.
 # This deployment behavior is expected to be configurable in Kubernetes 1.34 https://github.com/kubernetes/enhancements/issues/3973
 #
-# *Note (only applicable if statefulSetConfig.disableAutomaticHostnameOverride is set to false)* 
+# *Note (only applicable if statefulSetConfig.disableAutomaticHostnameOverride is set to false)*
 # If you switch to using StatefulSet you should stop using WarpStream's convenience bootstrap
 # URL in your Kafka clients, and switch to the Kubernetes service name instead. The reason for this is that
 # when you switch to StatefulSet, the Agents will begin advertising their stable pod names in the Kafka
