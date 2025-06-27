@@ -4,6 +4,9 @@ config:
 # testing with statefulset
 deploymentKind: StatefulSet
 
+statefulSetConfig:
+  disableAutomaticHostnameOverride: true
+
 # overriding resources so it fits on a runner
 resources:
   requests:
