@@ -3,6 +3,23 @@ entries:
   warpstream-agent:
   - apiVersion: v2
     appVersion: v669
+    created: "2025-06-30T19:05:08.951669769Z"
+    description: WarpStream Agent for Kubernetes.
+    digest: 1ad740bdf326fb44c39505ab67fa68f8b4c821436579b24b600e7a3746d89f04
+    home: https://docs.warpstream.com/warpstream/
+    icon: https://avatars.githubusercontent.com/u/132156278
+    maintainers:
+    - email: founders@warpstreamlabs.com
+      name: WarpStream
+    name: warpstream-agent
+    sources:
+    - https://github.com/warpstreamlabs/charts/warpstream-agent
+    type: application
+    urls:
+    - https://github.com/warpstreamlabs/charts/releases/download/warpstream-agent-0.15.21/warpstream-agent-0.15.21.tgz
+    version: 0.15.21
+  - apiVersion: v2
+    appVersion: v669
     created: "2025-06-30T17:51:57.619655216Z"
     description: WarpStream Agent for Kubernetes.
     digest: d19ea1fca1d9a378de861f015c36d9cf18cb836a0663b47ff400f4a5c7a28cce
@@ -3282,6 +3299,23 @@ entries:
   warpstream-benchmark:
   - apiVersion: v2
     appVersion: v652
+    created: "2025-06-30T19:05:09.067135378Z"
+    description: WarpStream Benchmark for Kubernetes.
+    digest: 43e5cf31d6767ff56a2fb5199ea60c2767a5a1e6bcec73fea39c61b35e759930
+    home: https://docs.warpstream.com/warpstream/
+    icon: https://avatars.githubusercontent.com/u/132156278
+    maintainers:
+    - email: founders@warpstreamlabs.com
+      name: WarpStream
+    name: warpstream-benchmark
+    sources:
+    - https://github.com/warpstreamlabs/charts/warpstream-agent
+    type: application
+    urls:
+    - https://github.com/warpstreamlabs/charts/releases/download/warpstream-benchmark-0.1.2/warpstream-benchmark-0.1.2.tgz
+    version: 0.1.2
+  - apiVersion: v2
+    appVersion: v652
     created: "2025-05-12T20:55:46.52947719Z"
     description: WarpStream Benchmark for Kubernetes.
     digest: 44311b5653098981d121f6da8cc2a67e0420fbe8f61cfcc7d4e44e83e3d3eebb
@@ -3314,4 +3348,4 @@ entries:
     urls:
     - https://github.com/warpstreamlabs/charts/releases/download/warpstream-benchmark-0.1.0/warpstream-benchmark-0.1.0.tgz
     version: 0.1.0
-generated: "2025-06-30T17:51:57.620241558Z"
+generated: "2025-06-30T19:05:09.067878437Z"
