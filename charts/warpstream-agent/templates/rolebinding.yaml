@@ -3,6 +3,7 @@ kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: {{ include "warpstream-agent.fullname" . }}-rolebinding
+  namespace: {{ .Release.Namespace }}
   labels:
     {{- include "warpstream-agent.labels" . | nindent 4 }}
   {{- with .Values.annotations }}

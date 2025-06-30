@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.15.22] - 2025-06-30
 - "helm template" APIVersions lacks Resource
 
+## [0.15.21] - 2025-06-30
+- Added namespace to templates so "helm template" output includes the namespace
+
 ## [0.15.20] - 2025-06-30
 - Add support for [cert-manager](https://cert-manager.io/) certificates
 
