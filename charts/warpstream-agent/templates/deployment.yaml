@@ -1,3 +1,4 @@
+{{- $fullName := (include "warpstream-agent.fullname" .) }}
 apiVersion: apps/v1
 kind: {{ include "warpstream-agent.deploymentKind" . }}
 metadata:
@@ -136,7 +137,7 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
-            {{ if and (eq (include "warpstream-agent.deploymentKind" .) "StatefulSet") (not (include "warpstream-agent.hostnameOverride" .)) }}
+            {{ if and (eq (include "warpstream-agent.deploymentKind" .) "StatefulSet") (not .Values.statefulSetConfig.disableAutomaticHostnameOverride) (not (include "warpstream-agent.hostnameOverride" .)) }}
             - name: WARPSTREAM_DISCOVERY_KAFKA_HOSTNAME_OVERRIDE
               value: $(MY_POD_NAME).{{ include "warpstream-agent.fullname" . }}-headless.{{ .Release.Namespace }}.svc.{{ .Values.statefulSetConfig.clusterDomain }}
             {{ end -}}
@@ -249,9 +250,15 @@ spec:
         {{- end }}
         {{- with .Values.certificate }}
         {{- if .enableTLS }}
+        {{- if and .certManager .certManager.create }}
+        - name: agent-certs
+          secret:
+            secretName: {{ $fullName }}-cert
+        {{- else }}
         - name: agent-certs
           secret:
             secretName: {{ .secretName }}
+        {{- end }}
         {{- if .mtls.certificateAuthoritySecretKeyRef.name }}
         - name: agent-mtls-certs
           secret:
