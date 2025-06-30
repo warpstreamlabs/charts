@@ -1,11 +1,25 @@
+# Need override os we have a static release name for certificates while testing
+fullnameOverride: "playground-sts-cert-manager"
+
 config:
   playground: true
 
 # testing with statefulset
 deploymentKind: StatefulSet
 
-statefulSetConfig:
-  disableAutomaticHostnameOverride: true
+certificate:
+  # Set to true to enable TLS termination on the WarpStream agent
+  # see TLS documentation for details https://docs.warpstream.com/warpstream/byoc/advanced-agent-deployment-options/protect-data-in-motion-with-tls-encryption#tls-encryption-overview
+  enableTLS: true
+
+  certManager:
+    # Allow cert-manager to create the certificate
+    create: true
+    issuer:
+      # The cert-manager issuer reference to use to create the certificate
+      ref:
+        kind: ClusterIssuer
+        name: ci-issuer
 
 # overriding resources so it fits on a runner
 resources:
