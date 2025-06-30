@@ -23,7 +23,7 @@ replicas: 3
 # URL in your Kafka clients, and switch to the Kubernetes service name instead. The reason for this is that
 # when you switch to StatefulSet, the Agents will begin advertising their stable pod names in the Kafka
 # protocol as their hostname, instead of their internal IP addresses. When this happens, WarpStream's DNS
-# server will start returning CNAME's for the convience bootstrap URL for each Agent. Since these CNAME's
+# server will start returning CNAME's for the convenience bootstrap URL for each Agent. Since these CNAME's
 # are private to the Kubernetes cluster WarpStream's DNS server cannot resolve them causing applications
 # to fail to connect.
 #
