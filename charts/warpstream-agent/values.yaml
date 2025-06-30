@@ -68,15 +68,26 @@ certificate:
 
   certManager:
     # Allow cert-manager to create the certificate
+    # https://cert-manager.io
     create: false
+    subject: {}
+    # X509 Certificate Subject: https://cert-manager.io/docs/reference/api-docs/#cert-manager.io/v1.X509Subject
+    # organizations:
+    # countries:
+    # organizationalUnits:
+    # ect..
+    #
     issuer:
       # The cert-manager issuer reference to use to create the certificate
       ref: {}
     #   kind: Issuer
     #   name: selfsigned-issuer
-    dnsNames:
-      - 'warpstream-agent.warpstream.svc.cluster.local'
-      - '*.warpstream-agent-headless.warpstream.svc.cluster.local'
+    dnsNames: []
+    # If not set these default DNS Names are used:
+    # - {{ include "warpstream-agent.fullname" . }}
+    # - {{ include "warpstream-agent.fullname" . }}-kafka
+    # - '{{ include "warpstream-agent.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local'
+    # - '*.{{ include "warpstream-agent.fullname" . }}-headless.{{ .Release.Namespace }}.svc.cluster.local'
 
   # The Kubernetes TLS secret that contains a certificate and private key
   # see https://kubernetes.io/docs/concepts/configuration/secret/#tls-secrets
