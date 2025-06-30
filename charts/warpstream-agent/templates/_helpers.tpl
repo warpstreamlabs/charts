@@ -246,9 +246,15 @@ volumes:
   {{- if hasKey .Values "certificate" }}
     {{- with .Values.certificate }}
       {{- if .enableTLS }}
+      {{- if and .certManager .certManager.create }}
+  - name: agent-ca
+    secret:
+      secretName: root-secret
+      {{- else }}
   - name: agent-ca
     secret:
       secretName: ci-certificate-ca
+      {{- end}}
       {{- end }}
       {{- if hasKey . "mtls" }}
         {{- if .mtls.enabled }}

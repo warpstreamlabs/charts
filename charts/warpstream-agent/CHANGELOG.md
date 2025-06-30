@@ -8,6 +8,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.15.22] - 2025-06-30
 - "helm template" APIVersions lacks Resource
 
+## [0.15.20] - 2025-06-30
+- Add support for [cert-manager](https://cert-manager.io/) certificates
+
+## [0.15.19] - 2025-06-27
+- Add support to disable the automatic hostname override `statefulSetConfig.disableAutomaticHostnameOverride` when using Statefulsets and revert to advertising pod IP addresses.
+
+## [0.15.18] - 2025-06-26
+- Update WarpStream Agent to v669
+
+## [0.15.17] - 2025-06-25
+- Update WarpStream Agent to v668
+- set terminationGracePeriodSeconds for warpstream-agent to 600
+
+## [0.15.16] - 2025-06-24
+- Update WarpStream Agent to v667
+
 ## [0.15.15] - 2025-06-18
 - Update WarpStream Agent to v666
 
