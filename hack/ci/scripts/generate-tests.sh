@@ -263,3 +263,38 @@ EOM
 set -e
 
 echo "${ci_test_prometheus_scrape}" | envsubst > charts/warpstream-agent/ci/prometheus-scrape-values.yaml
+
+# Test for setting the metadataURL instead of region
+set +e
+read -r -d '' ci_test_metadataURL << EOM
+config:
+  bucketURL: "mem://mem_bucket"
+  virtualClusterID: "${DefaultVirtualClusterID}"
+  metadataURL: "https://metadata.default.us-east-1.warpstream.com"
+  agentKey: "${DefaultVirtualClusterAgentKeySecret}"
+
+# overriding resources so it fits on a runner
+resources:
+  requests:
+    cpu: 500m
+    memory: 2Gi
+    # we do not need the disk space, but Kubernetes will count some logs that it emits
+    # about our containers towards our containers ephemeral usage and if we requested
+    # 0 storage we could end up getting evicted unnecessarily when the node is under disk pressure.
+    ephemeral-storage: "100Mi"
+  limits:
+    memory: 2Gi
+
+# Test resource settings
+test:
+  resources:
+    requests:
+      cpu: 1m
+      memory: 128Mi
+    limits:
+      cpu: 100m
+      memory: 256Mi
+EOM
+set -e
+
+echo "${ci_test_metadataURL}" | envsubst > charts/warpstream-agent/ci/metadataURL-values.yaml

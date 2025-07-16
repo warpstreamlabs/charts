@@ -36,8 +36,13 @@ data:
     {{- end }}
   WARPSTREAM_DEFAULT_VIRTUAL_CLUSTER_ID: {{ .Values.config.virtualClusterID | quote }}
     {{- if not .Values.config.region }}
-      {{- fail "region configuration value must be set" }}
-    {{- end }}
+      {{- if not .Values.config.metadataURL }}
+        {{- fail "region or metadataURL configuration value must be set" }}
+      {{- else }}
+  WARPSTREAM_METADATA_URL: {{ .Values.config.metadataURL | quote }}
+      {{- end }}
+    {{- else }}
   WARPSTREAM_REGION: {{ .Values.config.region | quote }}
+    {{- end }}
   {{- end }}
 {{- end }}
