@@ -175,6 +175,10 @@ config:
   # virtualClusterID: "YOUR_VIRTUAL_CLUSTER_ID"
   # region: "us-east-1"
   #
+  # The metadata URL of the WarpStream Control Plane. In most cases this should be left unset and the agent will automatically
+  # find the correct URL to use based on the region. Note: This value is not used if region is set.
+  # metadataURL: ""
+  #
   # Agent API Key Secret
   # secretName: # DEPRECATED this will be removed soon, please switch to agentKeySecretKeyRef
   #
