@@ -270,7 +270,7 @@ read -r -d '' ci_test_metadataURL << EOM
 config:
   bucketURL: "mem://mem_bucket"
   virtualClusterID: "${DefaultVirtualClusterID}"
-  metadataURL: "https://metadata.default.us-east-1.warpstream.com"
+  metadataURL: "https://metadata.default.us-east1.gcp.warpstream.com"
   agentKey: "${DefaultVirtualClusterAgentKeySecret}"
 
 # overriding resources so it fits on a runner
