@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.15.32] - 2025-07-23
+- Update WarpStream Agent to v677
+
 ## [0.15.31] - 2025-07-23
 - Add a `bentoService` that exposes the service-wide HTTP server default port `4195` and adds the ability to specify additional ports.
 
