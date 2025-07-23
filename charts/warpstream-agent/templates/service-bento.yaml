@@ -1,0 +1,25 @@
+{{- if and .Values.bentoService .Values.bentoService.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "warpstream-agent.fullname" . }}-bento
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "warpstream-agent.labels" . | nindent 4 }}
+  {{- with (mergeOverwrite (default (dict) .Values.annotations) (default (dict) .Values.bentoService.annotations)) }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.bentoService.type }}
+  ports:
+    - port: {{ .Values.bentoService.port }}
+      targetPort: {{ .Values.bentoService.port }}
+      protocol: TCP
+      name: http
+    {{- with .Values.bentoService.extraPorts }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  selector:
+    {{- include "warpstream-agent.selectorLabels" . | nindent 4 }}
+{{- end }}

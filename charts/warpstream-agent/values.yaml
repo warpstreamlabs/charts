@@ -156,6 +156,16 @@ kafkaService:
   # More info: https://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/
   # loadBalancerSourceRanges: []
 
+bentoService:
+  enabled: false
+  type: ClusterIP
+  port: 4195
+  extraPorts: []
+    # - name: example
+    #   port: 9999
+    #   targetPort: 9999
+    #   protocol: TCP
+
 rbac:
   create: true
 
