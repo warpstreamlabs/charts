@@ -119,17 +119,15 @@ spec:
             failureThreshold: 5
             periodSeconds: 5
           resources:
-            {{- $cpuMillicoresRequest := .Values.resources.requests.cpu | include "convertToMillicores" -}}
-            {{- $goMaxProcs := divf $cpuMillicoresRequest 1000 -}}
-            {{- $goMaxProcs := ceil $goMaxProcs -}}
             {{- if .Values.enforceProductionResourceRequirements}}
-            {{- $memoryRequest := .Values.resources.requests.memory | include "convertToBytes" -}}
-            {{- $memoryPerMillicore := divf $memoryRequest $cpuMillicoresRequest -}}
-            {{- $memoryPerCPU := mulf $memoryPerMillicore 1000.0 -}}
-            {{- $minMemoryPerCPU := 4000000000.0 -}}
-            {{- if lt $memoryPerCPU $minMemoryPerCPU -}}
-            {{ fail (printf "Memory request per CPU (%.2f GiB) is less than the required 4 GiB per CPU. Please increase the memory request." (divf $memoryPerCPU 1073741824)) }}
-            {{- end -}}
+              {{- $cpuMillicoresRequest := .Values.resources.requests.cpu | include "convertToMillicores" -}}
+              {{- $memoryRequest := .Values.resources.requests.memory | include "convertToBytes" -}}
+              {{- $memoryPerMillicore := divf $memoryRequest $cpuMillicoresRequest -}}
+              {{- $memoryPerCPU := mulf $memoryPerMillicore 1000.0 -}}
+              {{- $minMemoryPerCPU := 4000000000.0 -}}
+              {{- if lt $memoryPerCPU $minMemoryPerCPU -}}
+                {{ fail (printf "Memory request per CPU (%.2f GiB) is less than the required 4 GiB per CPU. Please increase the memory request." (divf $memoryPerCPU 1073741824)) }}
+              {{- end -}}
             {{- end -}}
             {{- toYaml .Values.resources | nindent 12 }}
           env:
@@ -151,16 +149,15 @@ spec:
                 fieldRef:
                   apiVersion: v1
                   fieldPath: metadata.namespace
-            {{- if and .Values.resources (not .Values.goMaxProcs) }}
-            {{- if .Values.resources.requests }}
             - name: GOMAXPROCS
+              {{- if not .Values.goMaxProcs }}
+              {{- $cpuMillicoresRequest := .Values.resources.requests.cpu | include "convertToMillicores" -}}
+              {{- $goMaxProcs := divf $cpuMillicoresRequest 1000 -}}
+              {{- $goMaxProcs := ceil $goMaxProcs }}
               value: {{ $goMaxProcs | quote }}
-            {{- end }}
-            {{- end }}
-            {{- if .Values.goMaxProcs }}
-            - name: GOMAXPROCS
+              {{- else }}
               value: {{ .Values.goMaxProcs | quote }}
-            {{- end }}
+              {{- end -}}
           {{- if .Values.extraEnv }}
             {{- toYaml .Values.extraEnv | nindent 12 }}
           {{- end }}
