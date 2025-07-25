@@ -249,6 +249,10 @@ resources:
     # We don't limit ephemeral-storage because its coorelated with how many logs the
     # Agents are emitting which is impossible to predict.
 
+# If set overrides the calculated GOMAXPROCS from resources set above.
+# If you are setting this you may also want to set enforceProductionResourceRequirements to false.
+# goMaxProcs: 3
+
 extraEnv: []
 # Add additional environment settings to the pod. Can be useful in proxy
 # environments
