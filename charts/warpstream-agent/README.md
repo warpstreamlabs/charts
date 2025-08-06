@@ -189,10 +189,108 @@ kubectl logs deployment/warpstream-agent
 ```
 
 
-## All configuration options
+## Values
 
-Refer to the [Agent Configuration Reference](https://docs.warpstream.com/warpstream/byoc/advanced-agent-deployment-options/agent-configuration) for available configuration values.
-
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| podLabels | object | `{}` | Additional labels to add to WarpStream Agent pods |
+| annotations | object | `{}` | Additional annotations to add to all created resources |
+| image.repository | string | `public.ecr.aws/warpstream-labs/warpstream_agent` | The container image to use |
+| image.pullPolicy | string | `IfNotPresent` | The image pull policy |
+| image.tag | string | ` ` | The image tag |
+| imagePullSecrets | list | `[]` | Optional array of imagePullSecrets containing private registry credentials # Ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/ |
+| nameOverride | string | ` ` | |
+| fullnameOverride | string | ` ` | |
+| replicas | number | `3` | The number of agent replicas to deploy when autoscaling is disabled |
+| deploymentKind | string | `Deployment` | Deploy the agents using a `Deployment` or `StatefulSet`. |
+| revisionHistoryLimit | number | `10` | The number of deployment revision replicasets to keep in Kubernetes |
+| terminationGracePeriodSeconds | number | `600` | The amount of seconds Kubernetes will wait to force kill the pod after initially terminating |
+| securityContext | object | `{}` | |
+| goMaxProcs | number | ` ` | Override the calculated GOMAXPROCS from `resources.requests.cpu` |
+| extraEnv | list | `[]` | Extra environment variables to add to the WarpStream Agent |
+| extraEnvFrom | list | `[]` | Extra environment variables to add to the WarpStream Agent |
+| volumeMounts | list | `[]` | Extra volume mounts to add to the WarpStream Agent |
+| volumes | list | `[]` | Extra volumes to add to the WarpStream Agent |
+| extraArgs | list | `[]` | Extra arguments to add to the WarpStream Agent |
+| nodeSelector | object | `{}` | |
+| tolerations | list | `[]` | |
+| affinity | object | `{}` | |
+| topologySpreadConstraints | list | `[]` | Ref: https://kubernetes.io/docs/concepts/workloads/pods/pod-topology-spread-constraints/
+| priorityClassName | string | ` ` | |
+| hostAliases | list | `[]` | |
+| initContainers | list | `[]` | |
+| dnsConfig | object | `{}` | |
+| deploymentStrategy.type | string | `RollingUpdate` | |
+| deploymentStrategy.rollingUpdate.maxSurge | number | `1` | |
+| deploymentStrategy.rollingUpdate.maxUnavailable | number | `1` | |
+| statefulSetConfig.clusterDomain | string | `cluster.local` | The domain to use when configuring the statefulset |
+| statefulSetConfig.podManagementPolicy | string | `Parallel` | Ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#pod-management-policies |
+| statefulSetConfig.updateStrategy.type | string | `RollingUpdate` | Ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies |
+| statefulSetConfig.disableAutomaticHostnameOverride | bool | `false` | Disables setting WARPSTREAM_DISCOVERY_KAFKA_HOSTNAME_OVERRIDE automatically to the pod hostname |
+| certificate.enableTLS | bool | `false` | Enable TLS termination on the WarpStream Agents |
+| certificate.certManager.create | bool | `false` | Enable cert-manager to manage the certificates |
+| certificate.certManager.subject | object | `{}` | X509 Certificate Subject Ref: https://cert-manager.io/docs/reference/api-docs/#cert-manager.io/v1.X509Subject | 
+| certificate.certManager.issuer.ref | object | `{}` | |
+| certificate.certManager.dnsNames | list | `[]` | Override the default DNS names used to create the certificate |
+| certificate.secretName | string | ` ` | The TLS Kubernetes secret name containing the certificate. Only used when not using cert-manager Ref: https://kubernetes.io/docs/concepts/configuration/secret/#tls-secrets |
+| certificate.mtls.enabled | bool | `false` | Enable MTLS Ref: https://docs.warpstream.com/warpstream/byoc/authentication/mutual-tls-mtls |
+| certificate.mtls.certificateAuthoritySecretKeyRef.name | string | ` ` | The secret name for the certificate authority public key |
+| certificate.mtls.certificateAuthoritySecretKeyRef.key | string | ` ` | The secret key for the certificate authority public key |
+| serviceAccount.create | bool | `true` | |
+| serviceAccount.automountServiceAccountToken | bool | `true` | |
+| serviceAccount.annotations | object | `{}` | Additional annotations to add to the created service account |
+| serviceAccount.name | string | `null` | Override the name of the created service account |
+| rbac.create | bool | `true` | |
+| service.type | string | `ClusterIP` | |
+| service.port | number | `9092` | |
+| service.httpPort | number | `8080` | |
+| service.schemaRegistryPort | number | `9094` | |
+| service.labels | object | `{}` | Additional labels to add to the service |
+| service.loadBalancerSourceRanges | list | `[]` | |
+| service.perPod | bool | `false` | Create a unique service for each Kubernetes pod, typically only used when using Kong or Isto ingresses |
+| headlessService.enabled | bool | `false` | Enable the headless service |
+| kafkaService.enabled | bool | `false` | Enable the additional kafka service |
+| kafkaService.type | string | `ClusterIP` | |
+| kafkaService.port | number | `9092` | |
+| kafkaService.loadBalancerSourceRanges | list | `[]` | |
+| bentoService.enabled | bool | `false` | Enable the additional bento service |
+| bentoService.type | string | `ClusterIP` | |
+| bentoService.port | number | `4195` | |
+| bentoService.extraPorts | list | `[]` | Additional ports to add to the bento service |
+| config.configMapEnabled | bool | `true` | Enable create the configmap to configure the WarpStream Agents, only set to `false` if you are configuring the agent via `extraEnv` or `extraEnvFrom` |
+| config.playground | bool | `false` | Enable playground mode Ref: https://docs.warpstream.com/warpstream/reference/cli-reference/warpstream-playground |
+| config.bucketURL | string | ` ` | The bucket URL to use for storage |
+| config.virtualClusterID | string | ` ` | The WarpStream virtual cluster ID |
+| config.region | string | ` ` | The control plane region for the WarpStream cluster |
+| config.metadataURL | string | ` ` | The metadata URL of the WarpStream control plane, only used for private link or dedicated control planes |
+| config.agentKey | string | ` ` | The agent key, the helm chart will manage the Kubernetes secret that the key is stored in | 
+| config.agentKeySecretKeyRef.name | string | ` ` | The Kubernetes secret name that contains the agent key |
+| config.agentKeySecretKeyRef.key | string | ` ` | The Kubernetes secret key that contains the agent key |
+| config.agentGroup | string | ` ` | The optional agent group to use Ref: https://docs.warpstream.com/warpstream/byoc/advanced-agent-deployment-options/agent-groups |
+| config.ingestionBucketURL | string | ` ` | The optional ingestion bucket URL, usually used for low latency clusters https://docs.warpstream.com/warpstream/byoc/advanced-agent-deployment-options/low-latency-clusters |
+| config.compactionBucketURL | string | ` ` | The optional compaction bucket URL, usually used for low latency clusters https://docs.warpstream.com/warpstream/byoc/advanced-agent-deployment-options/low-latency-clusters |
+| enforceProductionResourceRequirements | bool | `true` | Enforce production resource requirements, 1:4 CPU to memory ratios |
+| resources.requests.cpu | string | `4` | |
+| resources.requests.memory | string | `16Gi` | |
+| resources.requests.ephemeral-storage | string | `100Mi` | Ephemeral Storage requests, used to inform Kubelet about the agent potentially generating lots of logs |
+| resources.limits.memory | string | `16Gi` | Should be set to the same as `resources.requests.memory` |
+| availabilityZoneSelector.enabled | bool | `false` | Enable deploying into a single availability zone |
+| availabilityZoneSelector.zone | string | `us-east-1a` | The single availability zone to deploy into |
+| availabilityZoneSelector.nodeZoneLabel | string | `topology.kubernetes.io/zone` | The node label to select the availability zone from |
+| autoscaling.enabled | bool | `true` | Enable autoscaling the WarpStream Agents |
+| autoscaling.minReplicas | number | `3` | The minimum number of autoscaling WarpStream Agents |
+| autoscaling.maxReplicas | number | `30` | The maximum number of autoscaling WarpStream Agents |
+| autoscaling.targetCPU | string | `60` | The target CPU percentage to keep the pods scaled at |
+| autoscaling.targetMemory | string | ` ` | The target memory percentage to keep the pods scaled at |
+| autoscaling.behavior | object | ` ` | The scale up and down behavior, see `values.yaml` for defaults |
+| pdb.create | bool | `true` | Create a pod distruption budget |
+| pdb.maxUnavailable | number | `1` | |
+| serviceMonitor.enabled | bool | `false` | Enable creating a prometheus operator service monitor |
+| prometheusRule.enabled | bool | `false` | Enable creating a prometheus operator prometheus rule |
+| scrapeConfig.enabled | bool | `false` | Enable creating a prometheus operator scrape config |
+| networkPolicy.enabled | bool | `false` | Create a network policy |
+| networkPolicy.ingressRules | object | `{}` | The network policy ingress rules |
+| networkPolicy.egressRules | object | `{}` | The network policy egress rules |
 
 ## Development
 
