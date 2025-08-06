@@ -2,12 +2,11 @@
 
 [WarpStream](https://www.warpstream.com/) is an Apache Kafka® compatible data streaming platform built directly on top of object storage. This Helm chart simplifies the deployment of WarpStream agents into your Kubernetes cluster using the "Bring Your Own Cloud" (BYOC) model.
 
-
-## Using the WarpStream Helm repository
+## Using the WarpStream Helm Repository
 
 Start by adding this repository to your Helm repositories:
 
-```
+```shell
 helm repo add warpstream https://warpstreamlabs.github.io/charts
 helm repo update
 ```
@@ -20,7 +19,7 @@ Helm v3.6 or later.
 
 ## Quickstart
 
-By default, the WarpStream deployment runs as a ClusterIP Service with auto-scaling and authentication disabled and requires additional steps to grant the pods permission to access object storage.
+By default, the WarpStream deployment runs as a ClusterIP Service with auto-scaling and authentication disabled. Additional steps are required to grant the pods permission to access object storage.
 
 ### Installing the WarpStream Chart
 
@@ -37,9 +36,7 @@ helm upgrade --install warpstream-agent warpstream/warpstream-agent \
     --set config.virtualClusterID="$YOUR_VIRTUAL_CLUSTER_ID"
 ```
 
-The chart creates a Kubernetes Secret for the Agent key. You can also create a secret manually and set 
-`config.agentKeySecretKeyRef.name` and `config.agentKeySecretKeyRef.key` to the name of your Kubernetes secret and 
-the data key name within that secret.
+The chart creates a Kubernees Secret for the Agent key. You can also create a secret manually and set  `config.agentKeySecretKeyRef.name` and `config.agentKeySecretKeyRef.key` to the name of your Kubernetes secret and  the data key name within that secret.
 
 As an alternative to supplying the configuration parameters as arguments, you can create a supplemental YAML file containing your specific config parameters. Any parameters not specified in this file will default to those set in [values.yaml](values.yaml).
 
@@ -54,10 +51,12 @@ config:
   region: <WARPSTREAM_CLUSTER_REGION>
 ```
 
-3. Install or upgrade the WarpStream Helm chart using your custom yaml file:
+3. Install or upgrade the WarpStream Helm chart using your custom YAML file:
 
 ```shell
-helm upgrade --install warpstream-agent warpstream/warpstream-agent --namespace $YOUR_NAMESPACE -f warpstream-values.yaml
+helm upgrade --install warpstream-agent warpstream/warpstream-agent \
+    --namespace $YOUR_NAMESPACE \
+    -f warpstream-values.yaml
 ```
 
 ### Upgrading
@@ -66,7 +65,9 @@ To upgrade the deployment:
 
 ```shell
 helm repo update
-helm upgrade warpstream-agent warpstream/warpstream-agent --namespace $YOUR_NAMESPACE --reuse-values
+helm upgrade warpstream-agent warpstream/warpstream-agent \
+    --namespace $YOUR_NAMESPACE \
+    --reuse-values
 ```
 
 ### Uninstalling the Chart
@@ -89,20 +90,24 @@ Before installing, consider:
 - **Authentication**: How will your clients securely connect with your WarpStream cluster?
 
 ### Networking
-As with any Kubernetes deployment, there are a variety of network topologies available, but two will be highlighted here.
-1. **Direct Route** (recommended) - a network route exists for clients to connect directly with each pod
 
-In this scenario, the deployment utilizes the built-in load-balancing provided by the WarpStream Service Discovery to round-robin client connections to the available pods. Learn more about WarpStream's custom service discovery in the [Service Discovery](https://docs.warpstream.com/warpstream/overview/architecture/service-discovery#kafka-service-discovery) documentation. In this configuration, each pod will need to be reachable from the clients via the internal IP which it advertises as part of the Service Discovery process.
+As with any Kubernetes deployment, there are a variety of network topologies available, but two will be highlighted here:
 
-2. **Load Balancer/Proxy** - clients connect to the agents via a traditional network load balancer or proxy
+1. **Direct Route** (recommended) - A network route exists for clients to connect directly with each pod
 
-In this scenario, because the WarpStream agents are entirely stateless, they can be deployed behind a network load balancer. This means clients only need to be able to reach the load balancer. The key to this configuration is that all agents need to advertise the hostname or IP of the load balancer instead of their local IP. Read more about this option [here](https://docs.warpstream.com/warpstream/byoc/advanced-agent-deployment-options/configure-warpstream-agent-within-a-container-or-behind-a-proxy).
+   In this scenario, the deployment utilizes the built-in load-balancing provided by the WarpStream Service Discovery to round-robin client connections to the available pods. Learn more about WarpStream's custom service discovery in the [Service Discovery](https://docs.warpstream.com/warpstream/overview/architecture/service-discovery#kafka-service-discovery) documentation. In this configuration, each pod will need to be reachable from the clients via the internal IP which it advertises as part of the Service Discovery process.
+
+2. **Load Balancer/Proxy** - Clients connect to the agents via a traditional network load balancer or proxy
+
+   In this scenario, because the WarpStream agents are entirely stateless, they can be deployed behind a network load balancer. This means clients only need to be able to reach the load balancer. The key to this configuration is that all agents need to advertise the hostname or IP of the load balancer instead of their local IP. Read more about this option [here](https://docs.warpstream.com/warpstream/byoc/advanced-agent-deployment-options/configure-warpstream-agent-within-a-container-or-behind-a-proxy).
 
 
 ### Scaling
+
 WarpStream clusters can auto-scale easily due to the stateless nature of agents. The recommendation is to auto-scale based on CPU usage with a 50% average usage target. Auto-scaling is disabled by default in the Helm chart (3 replicas are used instead). See `autoscaling` in [values.yaml](values.yaml) for the available options.
 
 ### Object Storage Access
+
 WarpStream agents rely on object storage as opposed to local disks. This means each pod needs permissions to access your object storage bucket. Configuration varies depending on your cloud provider. See [Object Storage Configuration](https://docs.warpstream.com/warpstream/byoc/deploy/different-object-stores) for more details.
 
 Other useful references:
@@ -111,14 +116,15 @@ Other useful references:
 - https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity
 
 ### Authentication
+
 WarpStream supports secure authentication and encryption via SASL and TLS, although neither is enabled by default. 
 
-If you plan to expose the WarpStream Agents outside your VPC (I.E to the public internet), enabling both is highly recommended. See the [Authentication](https://docs.warpstream.com/warpstream/byoc/advanced-agent-deployment-options/enable-agent-auth) documentation for more details.
+If you plan to expose the WarpStream Agents outside your VPC (i.e., to the public internet), enabling both is highly recommended. See the [Authentication](https://docs.warpstream.com/warpstream/byoc/advanced-agent-deployment-options/enable-agent-auth) documentation for more details.
 
 ### Kubernetes Equal Spread
 
-Idealy when deploying WarpStream Kubernetes will equally distribute pods across all nodes and zones. However in some
-cases Kubernetes may not equally spread the pods across zones which will limit high availability of the WarpStream
+Ideally, when deploying WarpStream, Kubernetes will equally distribute pods across all nodes and zones. However, in some
+cases, Kubernetes may not equally spread the pods across zones, which will limit the high availability of the WarpStream
 cluster. 
 
 [This document](https://docs.warpstream.com/warpstream/byoc/deploy/kubernetes-known-issues#when-running-in-kubernetes-warpstream-pods-end-up-in-the-same-zone-or-node) contains details
@@ -127,6 +133,7 @@ and a solution to force Kubernetes to equally spread the pods across nodes and z
 ## Other Deployment Options
 
 ### LoadBalancer Service
+
 The stateless nature of the WarpStream agents allows them to be deployed behind a network load balancer using `type: LoadBalancer` in your Service configuration. See the [Kubernetes Service documentation](https://kubernetes.io/docs/concepts/services-networking/service/#loadbalancer) for details.
 
 Update your Helm chart configuration with these parameters:
@@ -138,13 +145,12 @@ kafkaService:
 
 extraEnv: 
   - name: WARPSTREAM_DISCOVERY_KAFKA_HOSTNAME_OVERRIDE
-    value: <LOAD_BALANCER_DNS HOSTNAME>
+    value: <LOAD_BALANCER_DNS_HOSTNAME>
 ```
 
 Follow your cloud provider's load balancer documentation to complete the configuration.
 
-**Note**
-If your load balancer is exposed to the internet, enabling authentication on the WarpStream agents is highly recommended. See [Authentication](https://docs.warpstream.com/warpstream/byoc/advanced-agent-deployment-options/enable-agent-auth) for more details, including how to create the client credentials in the WarpStream console.
+**Note**: If your load balancer is exposed to the internet, enabling authentication on the WarpStream agents is highly recommended. See [Authentication](https://docs.warpstream.com/warpstream/byoc/advanced-agent-deployment-options/enable-agent-auth) for more details, including how to create the client credentials in the WarpStream console.
 
 Enable authentication by setting the `WARPSTREAM_REQUIRE_AUTHENTICATION` variable:
 
@@ -155,12 +161,13 @@ kafkaService:
 
 extraEnv: 
   - name: WARPSTREAM_DISCOVERY_KAFKA_HOSTNAME_OVERRIDE
-    value: <LOAD_BALANCER_DNS HOSTNAME>
+    value: <LOAD_BALANCER_DNS_HOSTNAME>
   - name: WARPSTREAM_REQUIRE_AUTHENTICATION
     value: "true"
 ```
 
 ### Playground Mode
+
 Use playground mode to easily test WarpStream without needing to first create a WarpStream account. See WarpStream's ["Hello World"](https://docs.warpstream.com/warpstream/getting-started/hello-world-using-kafka) to learn more.
 
 Playground mode can also be used for testing the WarpStream Kubernetes deployment in local environments such as [kind][], [minikube][], or [Rancher Desktop][].
@@ -169,12 +176,12 @@ Playground mode can also be used for testing the WarpStream Kubernetes deploymen
 [minikube]: https://minikube.sigs.k8s.io/docs/
 [Rancher Desktop]: https://rancherdesktop.io/
 
-**Warning**
-In playground mode the agent is configured to store all data in memory. This means, if the pod is restarted for any reason, the data will be lost.
+**Warning**: In playground mode, the agent is configured to store all data in memory. This means that if the pod is restarted for any reason, the data will be lost.
 
 Run in playground mode:
 ```shell
-helm upgrade --install warpstream-agent warpstream/warpstream-agent --set config.playground=true
+helm upgrade --install warpstream-agent warpstream/warpstream-agent \
+    --set config.playground=true
 ```
 
 Verify the temporary deployment:
@@ -187,7 +194,6 @@ Obtain the temporary WarpStream console URL:
 ```shell
 kubectl logs deployment/warpstream-agent
 ```
-
 
 ## Values
 
@@ -247,7 +253,7 @@ kubectl logs deployment/warpstream-agent
 | service.schemaRegistryPort | number | `9094` | |
 | service.labels | object | `{}` | Additional labels to add to the service |
 | service.loadBalancerSourceRanges | list | `[]` | |
-| service.perPod | bool | `false` | Create a unique service for each Kubernetes pod, typically only used when using Kong or Isto ingresses |
+| service.perPod | bool | `false` | Create a unique service for each Kubernetes pod, typically only used when using Kong or Istio ingresses |
 | headlessService.enabled | bool | `false` | Enable the headless service |
 | kafkaService.enabled | bool | `false` | Enable the additional kafka service |
 | kafkaService.type | string | `ClusterIP` | |
@@ -283,7 +289,7 @@ kubectl logs deployment/warpstream-agent
 | autoscaling.targetCPU | string | `60` | The target CPU percentage to keep the pods scaled at |
 | autoscaling.targetMemory | string | ` ` | The target memory percentage to keep the pods scaled at |
 | autoscaling.behavior | object | ` ` | The scale up and down behavior, see `values.yaml` for defaults |
-| pdb.create | bool | `true` | Create a pod distruption budget |
+| pdb.create | bool | `true` | Create a pod disruption budget |
 | pdb.maxUnavailable | number | `1` | |
 | serviceMonitor.enabled | bool | `false` | Enable creating a prometheus operator service monitor |
 | prometheusRule.enabled | bool | `false` | Enable creating a prometheus operator prometheus rule |
@@ -294,7 +300,7 @@ kubectl logs deployment/warpstream-agent
 
 ## Development
 
-### Publishing a new release
+### Publishing a New Release
 
 1. When applicable: Update `appVersion` in [`Chart.yaml`](./Chart.yaml) with the latest [release][].
 1. When changing any Helm chart resources: Update `version` in [`Chart.yaml`](./Chart.yaml).
