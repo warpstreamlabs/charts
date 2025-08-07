@@ -160,6 +160,211 @@ extraEnv:
     value: "true"
 ```
 
+**Note:** This helm chart has multiple services it is recommended to only set `kafkaService` to `LoadBalancer` and
+leave the other services as `ClusterIP`. Setting the other services in this helm chart to `LoadBalancer` could
+expose internal WarpStream Agent functionality like the agent-to-agent communication endpoints or the Bento Managed
+pipeline endpoints.
+
+### Metrics
+
+WarpStream supports exposing metrics with Prometheus and Datadog. For more information see [Monitoring](https://docs.warpstream.com/warpstream/byoc/monitor-the-warpstream-agents) and [Important Metrics and Logs](https://docs.warpstream.com/warpstream/byoc/monitor-the-warpstream-agents/important-metrics-and-logs).
+
+#### Prometheus Operator
+
+The helm chart has native support for creating service monitors and scrape configurations for the [Prometheus Operator](https://github.com/prometheus-operator/prometheus-operator).
+
+To configure this set the following in your `values.yaml`
+
+```yaml
+# To scrape metrics from the WarpStream Agents
+serviceMonitor:
+  enabled: true
+
+# To scrape metrics from our hosted prometheus endpoint
+# Ref: https://docs.warpstream.com/warpstream/byoc/monitor-the-warpstream-agents/hosted-prometheus-endpoint
+scrapeConfig:
+  enabled: true
+```
+
+#### Datadog Agent
+
+To configure the WarpStream agent to push metrics to datadog configure the following in your `values.yaml`.
+
+This example assumes you are running a datadog agent as a daemonset on every Kubernetes node.
+If this is not the case in your setup, then the environment variable `DD_AGENT_HOST` will
+need to be set to the correct host for your environment.
+
+```yaml
+extraEnv:
+  - name: DD_AGENT_HOST
+    valueFrom:
+      fieldRef:
+        fieldPath: status.hostIP
+  - name: WARPSTREAM_ENABLE_DATADOG_METRICS
+    value: "true"
+```
+
+**Note:** Datadog Agents can also be configured to pull metrics from the WarpStream Agents, however we recommend
+using the above push setup for most installtions.
+
+### Deployment vs Statefulset
+
+Use StatefulSet when TLS is needed for an easier time managing certificates due to stable hostnames.
+
+Or when more control is desired over rolling restarts. With Deployments Kubernetes does not wait for
+terminating pods to disappear before moving on, usually this is not a problem, however if you experience
+unexpected application behavior during upgrades using StatefulSets may be desired.
+This deployment behavior is expected to be configurable in Kubernetes 1.34 https://github.com/kubernetes/enhancements/issues/3973
+
+**Note:** If you switch to using StatefulSet you should stop using WarpStream's convenience bootstrap
+URL in your Kafka clients, and switch to the Kubernetes service name instead. The reason for this is that
+when you switch to StatefulSet, the Agents will begin advertising their stable pod names in the Kafka
+protocol as their hostname, instead of their internal IP addresses. When this happens, WarpStream's DNS
+server will start returning CNAME's for the convenience bootstrap URL for each Agent. Since these CNAME's
+are private to the Kubernetes cluster WarpStream's DNS server cannot resolve them causing applications
+to fail to connect.
+
+For example the WarpStream agents will change from advertising their IP, i.e `10.1.2.3` to advertising their 
+hostname, i.e `warpstream-agent-0.warpstream-agent.default.svc.cluster.local`. Your applications should then use 
+the following as their bootstrap URL: `warpstream-agent-kafka.default.svc.cluster.local:9092`.
+
+In general, we always recommend using the Kubernetes service name as the bootstrap URL for your clients
+when the Agents are deployed in Kubernetes to avoid issues like this.
+
+**Note:** The above documentation about bootstrap URLs and advertise hostname will only work if the client 
+applications are in the same Kubernetes cluster as the WarpStream agents. It is possible to make this work for 
+external applications by tweaking `statefulSetConfig.clusterDomain` but this is a more advanced topic and requires 
+external DNS management that is out of scope for this section.
+
+To use Statefulsets set the following
+
+```yaml
+deploymentKind: StatefulSet
+```
+
+The statefulset configuration can also be changed. Most of the time these settings don't need to be changed and can 
+be left at the defaults bellow.
+
+```yaml
+statefulSetConfig:
+  clusterDomain: cluster.local
+  podManagementPolicy: Parallel  # or OrderedReady, see https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#pod-management-policies
+  updateStrategy:
+    # see https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
+    type: RollingUpdate
+
+  # Disables setting WARPSTREAM_DISCOVERY_KAFKA_HOSTNAME_OVERRIDE automatically to the pod hostname
+  # i.e warpstream-agent-0.warpstream-agent-headless.warpstream.svc.cluster.local
+  # Disabling this automatic hostname may be desired if using statefulsets for better control over
+  # rolling updates.
+  # If using TLS disabling the automatic hostname is not recommended as the pods will not longer advertise
+  # a stable hostname and revert to advertising their IP address.
+  disableAutomaticHostnameOverride: false
+```
+
+### Control Plane Private Link
+
+If you have required a private link to the WarpStream control plane you can configure the helm chart to use that
+private link by setting `metadataURL`, an example is bellow.
+
+```yaml
+metadataURL: "https://private.example.com"
+```
+
+**Note:** The URL for the private link will be shared with you by the WarpStream Support team. Do not set this URL
+unless told to do so by WarpStream Support as setting it without communication will make the WarpStream Agents fail
+to run.
+
+### Availability Zone Management
+
+#### Even Distribution across Zones
+
+By default the helm chart will use Kubernetes' default pod scheduling techniques. This is not always ideal as you
+could end up with pods not evenly balances across all zones.
+
+Set the following in your `values.yaml` to require pods to be eenly distributed across all zones in your Kubernetes 
+cluster.
+
+```yaml
+topologySpreadConstraints:
+  # Try to spread pods across multiple zones
+  - maxSkew: 1 # +/- one pod per zone
+    # Depending on your Kubernetes deployment this label may be different
+    topologyKey: topology.kubernetes.io/zone
+    whenUnsatisfiable: DoNotSchedule
+    # minDomains is only available in Kubernetes 1.30+
+    # Remove this field if you are on an older Kubernetes
+    # version.
+    # When possible set to the number of available 
+    # availability zones in your cluster.
+    minDomains: 3
+    # Label Selector to select the warpstream deployment
+    labelSelector:
+      matchLabels:
+        app.kubernetes.io/name: warpstream-agent
+        app.kubernetes.io/instance: warpstream-agent # Set to your helm release name
+
+affinity:
+  # Make sure pods are not scheduled on the same node to prevent bin packing
+  podAntiAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+    # Label Selector to select the warpstream deployment
+    - labelSelector:
+        matchLabels:
+          app.kubernetes.io/name: warpstream-agent
+          app.kubernetes.io/instance: warpstream-agent # Set to your helm release name
+      topologyKey: kubernetes.io/hostname
+```
+
+#### Autoscaling Per Zone
+
+By default the helm chart will autoscale all zones at the same time, meaning all WarpStream Agents in all zones
+must trigger the autoscaling thresholds for pods to be scaled up and down.
+
+This isn't always ideal, especially in situations when there are more clients in one availability zone. In that
+case only a single zone should be autoscaled while the rest shouldn't.
+
+To acheive this it is recommended to install the warpstream helm chart 3 different times into the same Kubernetes
+cluster each with a unique helm release name but all pointing to the same object storage and all using the same
+virtual cluster ID and agent keys.
+
+Then in each chart's `values.yaml` the following should be set
+
+```yaml
+# Deployment 1
+...
+availabilityZoneSelector:
+  enabled: true
+  zone: "us-east-1a"
+
+  # The node label to select on
+  nodeZoneLabel: topology.kubernetes.io/zone
+
+# Deployment 2
+...
+availabilityZoneSelector:
+  enabled: true
+  zone: "us-east-1b"
+
+  # The node label to select on
+  nodeZoneLabel: topology.kubernetes.io/zone
+
+# Deployment 3
+...
+availabilityZoneSelector:
+  enabled: true
+  zone: "us-east-1c"
+
+  # The node label to select on
+  nodeZoneLabel: topology.kubernetes.io/zone
+```
+
+Change the `zone` to the correct availability zones present in your Kubernetes cluster. 
+
+**Note:** Most Kubernetes cluster deployments will have the zone labeled on zones under the 
+`topology.kubernetes.io/zone` label. If this is different for your deployment set `nodeZoneLabel` to the correct
+value.
+
 ### Playground Mode
 Use playground mode to easily test WarpStream without needing to first create a WarpStream account. See WarpStream's ["Hello World"](https://docs.warpstream.com/warpstream/getting-started/hello-world-using-kafka) to learn more.
 
