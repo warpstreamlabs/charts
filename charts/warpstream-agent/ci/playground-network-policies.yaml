@@ -36,3 +36,13 @@ test:
     limits:
       cpu: 100m
       memory: 256Mi
+
+networkPolicy:
+  enabled: true
+  ingressRules:
+    cidrs:
+      - host: 0.0.0.0/0
+
+  egressRules:
+    cidrs:
+      - host: 0.0.0.0/0

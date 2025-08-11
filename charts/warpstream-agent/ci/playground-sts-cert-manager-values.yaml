@@ -1,5 +1,5 @@
 # Need override os we have a static release name for certificates while testing
-fullnameOverride: "playground-sts-cert"
+fullnameOverride: "playground-sts-cert-manager"
 
 config:
   playground: true
@@ -12,22 +12,14 @@ certificate:
   # see TLS documentation for details https://docs.warpstream.com/warpstream/byoc/advanced-agent-deployment-options/protect-data-in-motion-with-tls-encryption#tls-encryption-overview
   enableTLS: true
 
-  # The Kubernetes TLS secret that contains a certificate and private key
-  # see https://kubernetes.io/docs/concepts/configuration/secret/#tls-secrets
-  secretName: "ci-certificate"
-
-  mtls:
-    # Set to true to enable mutual TLS on the WarpStream agent, requires enableTLS set to true
-    # see mTLS documentation for details https://docs.warpstream.com/warpstream/byoc/authentication/mutual-tls-mtls
-    enabled: true
-
-    # The secret key reference for the certificate authority public key
-    # If not set, the container's root certificate pool will be used for mtls client certificate verification
-    # It is recommend to always set this to your CA's public key and not rely on the root certificate pool
-    # see mTLS documentation for details on why using the root certificate pool is not recommended
-    certificateAuthoritySecretKeyRef:
-      name: "ci-certificate-ca"
-      key: "ca.crt"
+  certManager:
+    # Allow cert-manager to create the certificate
+    create: true
+    issuer:
+      # The cert-manager issuer reference to use to create the certificate
+      ref:
+        kind: ClusterIssuer
+        name: ci-issuer
 
 # overriding resources so it fits on a runner
 resources:

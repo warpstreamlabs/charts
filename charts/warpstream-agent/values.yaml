@@ -11,19 +11,29 @@ fullnameOverride: ""
 # Ignored if auto-scaling is enabled (which it is by default).
 replicas: 3
 
-# Only use StatefulSet when TLS is needed for an easier time managing certificates due to stable hostnames.
+# Use StatefulSet when TLS is needed for an easier time managing certificates due to stable hostnames.
 #
-# *Note* that if you switch to using StatefulSet you should stop using WarpStream's convenience bootstrap
+# Or when more control is desired over rolling restarts. With Deployments Kubernetes does not wait for
+# terminating pods to disappear before moving on, usually this is not a problem, however if you experience
+# unexpected application behavior during upgrades using StatefulSets may be desired.
+# This deployment behavior is expected to be configurable in Kubernetes 1.34 https://github.com/kubernetes/enhancements/issues/3973
+#
+# *Note (only applicable if statefulSetConfig.disableAutomaticHostnameOverride is set to false)*
+# If you switch to using StatefulSet you should stop using WarpStream's convenience bootstrap
 # URL in your Kafka clients, and switch to the Kubernetes service name instead. The reason for this is that
 # when you switch to StatefulSet, the Agents will begin advertising their stable pod names in the Kafka
 # protocol as their hostname, instead of their internal IP addresses. When this happens, WarpStream's DNS
-# server will start returning CNAME's for the convience bootstrap URL for each Agent. Since these CNAME's
+# server will start returning CNAME's for the convenience bootstrap URL for each Agent. Since these CNAME's
 # are private to the Kubernetes cluster WarpStream's DNS server cannot resolve them causing applications
 # to fail to connect.
 #
 # In general, we always recommend using the Kubernetes service name as the bootstrap URL for your clients
 # when the Agents are deployed in Kubernetes to avoid issues like this.
 deploymentKind: Deployment  # or StatefulSet
+
+# Annotations to set on all resources
+# annotations:
+#   foo: bar
 
 # Only used in Deployments
 revisionHistoryLimit: 10
@@ -43,13 +53,45 @@ statefulSetConfig:
     # see https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
     type: RollingUpdate
 
+  # Disables setting WARPSTREAM_DISCOVERY_KAFKA_HOSTNAME_OVERRIDE automatically to the pod hostname
+  # i.e warpstream-agent-0.warpstream-agent-headless.warpstream.svc.cluster.local
+  # Disabling this automatic hostname may be desired if using statefulsets for better control over
+  # rolling updates.
+  # If using TLS disabling the automatic hostname is not recommended as the pods will not longer advertise
+  # a stable hostname and revert to advertising their IP address.
+  disableAutomaticHostnameOverride: false
+
 certificate:
   # Set to true to enable TLS termination on the WarpStream agent
   # see TLS documentation for details https://docs.warpstream.com/warpstream/byoc/advanced-agent-deployment-options/protect-data-in-motion-with-tls-encryption#tls-encryption-overview
   enableTLS: false
 
+  certManager:
+    # Allow cert-manager to create the certificate
+    # https://cert-manager.io
+    create: false
+    subject: {}
+    # X509 Certificate Subject: https://cert-manager.io/docs/reference/api-docs/#cert-manager.io/v1.X509Subject
+    # organizations:
+    # countries:
+    # organizationalUnits:
+    # ect..
+    #
+    issuer:
+      # The cert-manager issuer reference to use to create the certificate
+      ref: {}
+    #   kind: Issuer
+    #   name: selfsigned-issuer
+    dnsNames: []
+    # If not set these default DNS Names are used:
+    # - {{ include "warpstream-agent.fullname" . }}
+    # - {{ include "warpstream-agent.fullname" . }}-kafka
+    # - '{{ include "warpstream-agent.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local'
+    # - '*.{{ include "warpstream-agent.fullname" . }}-headless.{{ .Release.Namespace }}.svc.cluster.local'
+
   # The Kubernetes TLS secret that contains a certificate and private key
   # see https://kubernetes.io/docs/concepts/configuration/secret/#tls-secrets
+  # If using cert-manager this value is not used.
   secretName: ""
 
   mtls:
@@ -65,7 +107,7 @@ certificate:
       name: ""
       key: ""
 
-terminationGracePeriodSeconds: 300
+terminationGracePeriodSeconds: 600
 
 serviceAccount:
   # Specifies whether a service account should be created
@@ -114,6 +156,16 @@ kafkaService:
   # More info: https://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/
   # loadBalancerSourceRanges: []
 
+bentoService:
+  enabled: false
+  type: ClusterIP
+  port: 4195
+  extraPorts: []
+    # - name: example
+    #   port: 9999
+    #   targetPort: 9999
+    #   protocol: TCP
+
 rbac:
   create: true
 
@@ -133,15 +185,37 @@ config:
   # virtualClusterID: "YOUR_VIRTUAL_CLUSTER_ID"
   # region: "us-east-1"
   #
+  # The metadata URL of the WarpStream Control Plane. In most cases this should be left unset and the agent will automatically
+  # find the correct URL to use based on the region. Note: This value is not used if region is set.
+  # metadataURL: ""
+  #
   # Agent API Key Secret
-  # secretName: # DEPRECATED this will be removed soon, please switch to apiKeySecretKeyRef
+  # secretName: # DEPRECATED this will be removed soon, please switch to agentKeySecretKeyRef
+  #
+  # DEPRECATED apiKey and apiKeySecretKeyRef will be removed soon, please switch to agentKey or agentKeySecretKeyRef.
   # apiKey: "YOUR_API_KEY" # Provide this if you want the chart to manage the secret
   # apiKeySecretKeyRef: # Provide this if you want to manage the secret externally
   #   name:
   #   key:
+  #
+  # Agent Key Secret
+  # agentKey: "YOUR_AGENT_KEY" # Provide this if you want the chart to manage the secret
+  # agentKeySecretKeyRef: # Provide this if you want to manage the secret externally
+  #   name:
+  #   key:
+  #
   # Agent Groups configuration https://docs.warpstream.com/warpstream/byoc/advanced-agent-deployment-options/agent-groups
   # Leave empty for Default group
   agentGroup: ""
+  # Low Latency Cluster Settings
+  # When these are set bucketURL cannot be set.
+  # Ref: https://docs.warpstream.com/warpstream/byoc/advanced-agent-deployment-options/low-latency-clusters
+  # The ingestion bucket URL:
+  # warpstream_multi://s3://bucket-one-us-east-1a?region=us-east-1<>s3://bucket-one-us-east-1b?region=us-east-1<>s3://bucket-one-us-east-1b?region=us-east-1
+  # ingestionBucketURL: ""
+  # The compaction bucket URL should be a single classic S3 Bucket following the normal format:
+  # s3://my-bucket?region=us-east-1
+  # compactionBucketURL: ""
 
 # Ensures that the Agents are configured with the recommended resources for production
 # usage. We recommend that you do not set this to false except for in staging/dev
@@ -175,6 +249,10 @@ resources:
     # We don't limit ephemeral-storage because its coorelated with how many logs the
     # Agents are emitting which is impossible to predict.
 
+# If set overrides the calculated GOMAXPROCS from resources set above.
+# If you are setting this you may also want to set enforceProductionResourceRequirements to false.
+# goMaxProcs: 3
+
 extraEnv: []
 # Add additional environment settings to the pod. Can be useful in proxy
 # environments
@@ -193,6 +271,14 @@ volumeMounts: []
 
 extraArgs: []
 # Add additional args settings to the pod.
+
+# If enabled only deploy pods into the given zone
+availabilityZoneSelector:
+  enabled: false
+  zone: "us-east-1a"
+
+  # The node label to select on
+  nodeZoneLabel: topology.kubernetes.io/zone
 
 nodeSelector: {}
 
@@ -273,6 +359,22 @@ prometheusRule:
           identifier: 'Alert identifier.'
           msg: Alert message.
 
+scrapeConfig:
+  ## If true, a ScrapeConfig CRD is created for a prometheus operator
+  ## https://github.com/coreos/prometheus-operator
+  ##
+  ## If enabled creates a ScrapeConfig to scrape the hosted prometheus endpoint
+  ## https://docs.warpstream.com/warpstream/byoc/monitor-the-warpstream-agents/hosted-prometheus-endpoint
+  enabled: false
+  labels: {}
+  interval: 30s
+  scrapeTimeout: 30s
+  basicAuth:
+    # It is recommended to set this to the same values as agentKeySecretKeyRef
+    passwordKeyRef:
+      name: ""
+      key: ""
+
 ## list of hosts and IPs that will be injected into the pod's hosts file
 hostAliases: []
   # - ip: "127.0.0.1"
@@ -289,7 +391,48 @@ initContainers: []
 # Optional volume definition
 volumes: []
 
+# Optional dnsConfig for WarpStream Agent Pods
+# https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-dns-config
+dnsConfig: {}
+
 ## Use an alternate scheduler
 ## ref: https://kubernetes.io/docs/tasks/administer-cluster/configure-multiple-schedulers/
 ##
 # schedulerName: default-scheduler
+
+# Resources for test pods
+test:
+  resources:
+    requests:
+      cpu: 1m
+      memory: 128Mi
+    limits:
+      cpu: 100m
+      memory: 256Mi
+  nodeSelector:
+    kubernetes.io/arch: amd64
+
+# Optional Network Policy resource declaration
+networkPolicy:
+  enabled: false
+#   ingressRules:
+#     cidrs:
+#       - host: cidr
+#         port: port_number
+#     pods:
+#       - namespace: namespace_value
+#         labels:
+#           - key: value
+#         port: port_number
+#         protocol: TCP|UDP
+#
+#   egressRules:
+#     cidrs:
+#       - host: cidr
+#         port: port_number
+#     pods:
+#       - namespace: namespace_value
+#         labels:
+#           - key: value
+#         port: port_number
+#         protocol: TCP|UDP

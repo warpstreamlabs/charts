@@ -1,0 +1,29 @@
+{{- if and .Values.certificate.certManager .Values.certificate.certManager.create -}}
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ include "warpstream-agent.fullname" . }}-cert
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "warpstream-agent.labels" . | nindent 4 }}
+spec:
+  {{- if .Values.certificate.certManager.dnsNames }}
+  dnsNames: {{ toJson .Values.certificate.certManager.dnsNames }}
+  {{- else }}
+  dnsNames: 
+    - '{{ include "warpstream-agent.fullname" . }}'
+    - '{{ include "warpstream-agent.fullname" . }}-kafka'
+    - '{{ include "warpstream-agent.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local'
+    - '*.{{ include "warpstream-agent.fullname" . }}-headless.{{ .Release.Namespace }}.svc.cluster.local'
+  {{- end }}
+  {{- if .Values.certificate.certManager.subject }}
+  subject:
+    {{- toYaml .Values.certificate.certManager.subject | nindent 4 }}
+  {{- end }}
+  issuerRef:
+    {{- if not .Values.certificate.certManager.issuer.ref }}
+        {{- fail "When enabling cert-manager an issuer ref must be given" }}
+    {{- end }}
+    {{- toYaml .Values.certificate.certManager.issuer.ref | nindent 4 }}
+  secretName: {{ include "warpstream-agent.fullname" . }}-cert
+{{- end }}

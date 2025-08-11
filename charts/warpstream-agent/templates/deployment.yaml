@@ -1,9 +1,15 @@
+{{- $fullName := (include "warpstream-agent.fullname" .) }}
 apiVersion: apps/v1
 kind: {{ include "warpstream-agent.deploymentKind" . }}
 metadata:
   name: {{ include "warpstream-agent.fullname" . }}
+  namespace: {{ .Release.Namespace }}
   labels:
     {{- include "warpstream-agent.labels" . | nindent 4 }}
+  {{- with .Values.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
   {{- if .Values.config.playground }}
   replicas: 1
@@ -36,7 +42,12 @@ spec:
     metadata:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum   }}
-        checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+        {{- if .Values.config.apiKey }}
+        checksum/secret-deprecated-api-key: {{ include (print $.Template.BasePath "/secret-deprecated-api-key.yaml") . | sha256sum }}
+        {{- end }}
+        {{- if .Values.config.agentKey }}
+        checksum/secret-agent-key: {{ include (print $.Template.BasePath "/secret-agent-key.yaml") . | sha256sum }}
+        {{- end }}
       {{- with .Values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
@@ -58,6 +69,10 @@ spec:
       priorityClassName: {{ .Values.priorityClassName | quote }}
       {{- end }}
       terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
+      {{- with .Values.dnsConfig }}
+      dnsConfig:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
@@ -104,17 +119,15 @@ spec:
             failureThreshold: 5
             periodSeconds: 5
           resources:
-            {{- $cpuMillicoresRequest := .Values.resources.requests.cpu | include "convertToMillicores" -}}
-            {{- $goMaxProcs := divf $cpuMillicoresRequest 1000 -}}
-            {{- $goMaxProcs := ceil $goMaxProcs -}}
             {{- if .Values.enforceProductionResourceRequirements}}
-            {{- $memoryRequest := .Values.resources.requests.memory | include "convertToBytes" -}}
-            {{- $memoryPerMillicore := divf $memoryRequest $cpuMillicoresRequest -}}
-            {{- $memoryPerCPU := mulf $memoryPerMillicore 1000.0 -}}
-            {{- $minMemoryPerCPU := 4000000000.0 -}}
-            {{- if lt $memoryPerCPU $minMemoryPerCPU -}}
-            {{ fail (printf "Memory request per CPU (%.2f GiB) is less than the required 4 GiB per CPU. Please increase the memory request." (divf $memoryPerCPU 1073741824)) }}
-            {{- end -}}
+              {{- $cpuMillicoresRequest := .Values.resources.requests.cpu | include "convertToMillicores" -}}
+              {{- $memoryRequest := .Values.resources.requests.memory | include "convertToBytes" -}}
+              {{- $memoryPerMillicore := divf $memoryRequest $cpuMillicoresRequest -}}
+              {{- $memoryPerCPU := mulf $memoryPerMillicore 1000.0 -}}
+              {{- $minMemoryPerCPU := 4000000000.0 -}}
+              {{- if lt $memoryPerCPU $minMemoryPerCPU -}}
+                {{ fail (printf "Memory request per CPU (%.2f GiB) is less than the required 4 GiB per CPU. Please increase the memory request." (divf $memoryPerCPU 1073741824)) }}
+              {{- end -}}
             {{- end -}}
             {{- toYaml .Values.resources | nindent 12 }}
           env:
@@ -122,7 +135,7 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
-            {{ if and (eq (include "warpstream-agent.deploymentKind" .) "StatefulSet") (not (include "warpstream-agent.hostnameOverride" .)) }}
+            {{ if and (eq (include "warpstream-agent.deploymentKind" .) "StatefulSet") (not .Values.statefulSetConfig.disableAutomaticHostnameOverride) (not (include "warpstream-agent.hostnameOverride" .)) }}
             - name: WARPSTREAM_DISCOVERY_KAFKA_HOSTNAME_OVERRIDE
               value: $(MY_POD_NAME).{{ include "warpstream-agent.fullname" . }}-headless.{{ .Release.Namespace }}.svc.{{ .Values.statefulSetConfig.clusterDomain }}
             {{ end -}}
@@ -136,16 +149,15 @@ spec:
                 fieldRef:
                   apiVersion: v1
                   fieldPath: metadata.namespace
-            {{- if and .Values.resources (not .Values.goMaxProcs) }}
-            {{- if .Values.resources.requests }}
             - name: GOMAXPROCS
+              {{- if not .Values.goMaxProcs }}
+              {{- $cpuMillicoresRequest := .Values.resources.requests.cpu | include "convertToMillicores" -}}
+              {{- $goMaxProcs := divf $cpuMillicoresRequest 1000 -}}
+              {{- $goMaxProcs := ceil $goMaxProcs }}
               value: {{ $goMaxProcs | quote }}
-            {{- end }}
-            {{- end }}
-            {{- if .Values.goMaxProcs }}
-            - name: GOMAXPROCS
+              {{- else }}
               value: {{ .Values.goMaxProcs | quote }}
-            {{- end }}
+              {{- end -}}
           {{- if .Values.extraEnv }}
             {{- toYaml .Values.extraEnv | nindent 12 }}
           {{- end }}
@@ -194,9 +206,21 @@ spec:
       initContainers:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      {{- if hasKey .Values "availabilityZoneSelector" }}
+      {{- if or .Values.nodeSelector .Values.availabilityZoneSelector.enabled }}
+      nodeSelector:
+      {{- with .Values.nodeSelector }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.availabilityZoneSelector.enabled }}
+        {{ .Values.availabilityZoneSelector.nodeZoneLabel }}: {{ .Values.availabilityZoneSelector.zone }}
+      {{- end }}
+      {{- end }}
+      {{- else }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
+      {{- end }}
       {{- end }}
       {{- with .Values.affinity }}
       affinity:
@@ -223,9 +247,15 @@ spec:
         {{- end }}
         {{- with .Values.certificate }}
         {{- if .enableTLS }}
+        {{- if and .certManager .certManager.create }}
+        - name: agent-certs
+          secret:
+            secretName: {{ $fullName }}-cert
+        {{- else }}
         - name: agent-certs
           secret:
             secretName: {{ .secretName }}
+        {{- end }}
         {{- if .mtls.certificateAuthoritySecretKeyRef.name }}
         - name: agent-mtls-certs
           secret:

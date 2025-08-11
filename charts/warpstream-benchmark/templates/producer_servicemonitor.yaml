@@ -1,22 +1,24 @@
 {{- if .Values.serviceMonitor.enabled }}
+{{- if .Values.producer.enabled }}
 ---
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: {{ include "warpstream-agent.fullname" . }}
+  name: {{ include "warpstream-benchmark.fullname" . }}-producer
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "warpstream-agent.labels" . | nindent 4 }}
+    {{- include "warpstream-benchmark.labels" . | nindent 4 }}
     {{- with .Values.serviceMonitor.labels }}
     {{- tpl (toYaml . | nindent 4) $ }}
     {{- end }}
+    app.kubernetes.io/component: producer
   {{- with .Values.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
   endpoints:
-  - port: http
+  - port: prometheus
     {{- with .Values.serviceMonitor.interval }}
     interval: {{ . }}
     {{- end }}
@@ -41,8 +43,8 @@ spec:
   jobLabel: app.kubernetes.io/name
   selector:
     matchLabels:
-      {{- include "warpstream-agent.selectorLabels" . | nindent 6 }}
-      prometheus: "true"
+      {{- include "warpstream-benchmark.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: producer
   namespaceSelector:
     matchNames:
       - {{ .Release.Namespace }}
@@ -50,4 +52,5 @@ spec:
   targetLabels:
     {{- toYaml . | nindent 4 }}
   {{- end }}
+{{- end }}
 {{- end }}

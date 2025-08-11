@@ -78,7 +78,11 @@ Return the appropriate apiVersion for Horizontal Pod Autoscaler.
 {{- define "warpstream-agent.hpa.apiVersion" -}}
 {{- if $.Capabilities.APIVersions.Has "autoscaling/v2/HorizontalPodAutoscaler" }}
 {{- print "autoscaling/v2" }}
+{{- else if $.Capabilities.APIVersions.Has "autoscaling/v2" }}
+{{- print "autoscaling/v2" }}
 {{- else if $.Capabilities.APIVersions.Has "autoscaling/v2beta2/HorizontalPodAutoscaler" }}
+{{- print "autoscaling/v2beta2" }}
+{{- else if $.Capabilities.APIVersions.Has "autoscaling/v2beta2" }}
 {{- print "autoscaling/v2beta2" }}
 {{- else }}
 {{- print "autoscaling/v2beta1" }}
@@ -92,6 +96,8 @@ Return the appropriate apiVersion for podDisruptionBudget.
 {{- if $.Values.pdb.apiVersion }}
 {{- print $.Values.pdb.apiVersion }}
 {{- else if $.Capabilities.APIVersions.Has "policy/v1/PodDisruptionBudget" }}
+{{- print "policy/v1" }}
+{{- else if $.Capabilities.APIVersions.Has "policy/v1" }}
 {{- print "policy/v1" }}
 {{- else }}
 {{- print "policy/v1beta1" }}
@@ -155,6 +161,8 @@ Return the Agent Key Secret Name
 {{- define "warpstream-agent.agentKey.secretName" -}}
 {{- if $.Values.config.apiKeySecretKeyRef }}
 {{- print $.Values.config.apiKeySecretKeyRef.name }}
+{{- else if $.Values.config.agentKeySecretKeyRef }}
+{{- print $.Values.config.agentKeySecretKeyRef.name }}
 {{- else -}}
 {{/*Print helper warpstream-agent.secretName until it is removed then use {{- printf "%s-apikey" (include "warpstream-agent.fullname" .) -}}*/}}
 {{- include "warpstream-agent.secretName" . }}
@@ -167,6 +175,8 @@ Return the Agent Key Secret Key
 {{- define "warpstream-agent.agentKey.secretKey" -}}
 {{- if $.Values.config.apiKeySecretKeyRef }}
 {{- print $.Values.config.apiKeySecretKeyRef.key }}
+{{- else if $.Values.config.agentKeySecretKeyRef }}
+{{- print $.Values.config.agentKeySecretKeyRef.key }}
 {{- else -}}
 apikey
 {{- end }}
@@ -181,4 +191,78 @@ Return the agent hostname override
 {{- print $extraEnv.value }}
 {{- end }}
 {{- end }}
+{{- end }}
+
+{{/*
+Test pod resources
+*/}}
+{{- define "warpstream-agent.test.resources" -}}
+resources:
+  {{- if hasKey .Values "test" }}
+    {{- if hasKey .Values.test "resources" }}
+      {{- toYaml .Values.test.resources | nindent 2 }}
+    {{- else }}
+      requests:
+        cpu: 1m
+        memory: 128Mi
+      limits:
+        cpu: 100m
+        memory: 256Mi
+    {{- end }}
+  {{- else }}
+    requests:
+      cpu: 1m
+      memory: 128Mi
+    limits:
+      cpu: 100m
+      memory: 256Mi
+  {{- end }}
+{{- end }}
+
+{{/*
+Test pod nodeSelector
+*/}}
+{{- define "warpstream-agent.test.nodeSelector" -}}
+nodeSelector:
+  {{- if hasKey .Values "test" }}
+    {{- if hasKey .Values.test "nodeSelector" }}
+      {{- toYaml .Values.test.nodeSelector | nindent 2 }}
+    {{- else }}
+      kubernetes.io/arch: amd64
+    {{- end }}
+  {{- else }}
+    kubernetes.io/arch: amd64
+  {{- end }}
+{{- end }}
+
+{{/*
+Test pod volumes
+*/}}
+{{- define "warpstream-agent.test.volumes" -}}
+volumes:
+  # Always include an emptyDir volume to prevent hostPath issues
+  - name: tmp-volume
+    emptyDir: {}
+  {{- if hasKey .Values "certificate" }}
+    {{- with .Values.certificate }}
+      {{- if .enableTLS }}
+      {{- if and .certManager .certManager.create }}
+  - name: agent-ca
+    secret:
+      secretName: root-secret
+      {{- else }}
+  - name: agent-ca
+    secret:
+      secretName: ci-certificate-ca
+      {{- end}}
+      {{- end }}
+      {{- if hasKey . "mtls" }}
+        {{- if .mtls.enabled }}
+  - name: agent-mtls
+    secret:
+      secretName: ci-certificate-client
+        {{- end }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
 {{- end }}

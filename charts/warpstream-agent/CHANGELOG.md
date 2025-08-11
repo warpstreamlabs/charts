@@ -5,7 +5,250 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.13.81] - 2025-02-02
+## [0.15.38] - 2025-08-11
+- Update WarpStream Agent to v683
+
+## [0.15.37] - 2025-08-07
+- Update WarpStream Agent to v682
+
+## [0.15.36] - 2025-08-05
+- Update WarpStream Agent to v681
+
+## [0.15.35] - 2025-07-30
+- Update WarpStream Agent to v679
+
+## [0.15.34] - 2025-07-24
+- Document `goMaxProcs` in the `values.yaml` and improve logic around it and resource.requests.cpu to allow a easier bypass.
+
+## [0.15.33] - 2025-07-23
+- Update WarpStream Agent to v678
+
+## [0.15.32] - 2025-07-23
+- Update WarpStream Agent to v677
+
+## [0.15.31] - 2025-07-23
+- Add a `bentoService` that exposes the service-wide HTTP server default port `4195` and adds the ability to specify additional ports.
+
+## [0.15.30] - 2025-07-23
+- Update WarpStream Agent to v676
+
+## [0.15.29] - 2025-07-14
+- Add support for manually specifying the metadata url for the control plane via `config.metadataURL`
+
+## [0.15.28] - 2025-07-14
+- Update WarpStream Agent to v675
+
+## [0.15.27] - 2025-07-14
+- Update WarpStream Agent to v674
+
+## [0.15.26] - 2025-07-11
+- Update WarpStream Agent to v673
+
+## [0.15.25] - 2025-07-09
+- Update WarpStream Agent to v672
+
+## [0.15.24] - 2025-07-07
+- Update WarpStream Agent to v671
+
+## [0.15.23] - 2025-06-30
+- Update WarpStream Agent to v670
+
+## [0.15.22] - 2025-06-30
+- "helm template" APIVersions lacks Resource
+
+## [0.15.21] - 2025-06-30
+- Added namespace to templates so "helm template" output includes the namespace
+
+## [0.15.20] - 2025-06-30
+- Add support for [cert-manager](https://cert-manager.io/) certificates
+
+## [0.15.19] - 2025-06-27
+- Add support to disable the automatic hostname override `statefulSetConfig.disableAutomaticHostnameOverride` when using Statefulsets and revert to advertising pod IP addresses.
+
+## [0.15.18] - 2025-06-26
+- Update WarpStream Agent to v669
+
+## [0.15.17] - 2025-06-25
+- Update WarpStream Agent to v668
+- set terminationGracePeriodSeconds for warpstream-agent to 600
+
+## [0.15.16] - 2025-06-24
+- Update WarpStream Agent to v667
+
+## [0.15.15] - 2025-06-18
+- Update WarpStream Agent to v666
+
+## [0.15.14] - 2025-06-17
+- Update WarpStream Agent to v665
+
+## [0.15.13] - 2025-06-16
+- Update WarpStream Agent to v664
+
+## [0.15.12] - 2025-06-12
+- Update WarpStream Agent to v663
+
+## [0.15.11] - 2025-06-09
+- Update WarpStream Agent to v662
+
+## [0.15.10] - 2025-06-09
+- Update WarpStream Agent to v661
+
+## [0.15.9] - 2025-06-06
+- Update WarpStream Agent to v660
+
+## [0.15.8] - 2025-06-04
+- Update WarpStream Agent to v659
+
+## [0.15.7] - 2025-06-03
+- Add `dnsConfig` variable to support changing the WarpStream Pod's dns configuration. See https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-dns-config for details.
+
+## [0.15.6] - 2025-06-02
+- Add ability to scrape [hosted prometheus endpoint](https://docs.warpstream.com/warpstream/byoc/monitor-the-warpstream-agents/hosted-prometheus-endpoint) with the prometheus operator [ScrapeConfig CRD](https://prometheus-operator.dev/docs/developer/scrapeconfig/)
+- Fix Prometheus Service monitor to only scrape 1 service preventing duplicate metrics in prometheus
+
+## [0.15.5] - 2025-05-30
+- Update WarpStream Agent to v658
+
+## [0.15.4] - 2025-05-22
+- Update WarpStream Agent to v657
+
+## [0.15.3] - 2025-05-20
+- Update WarpStream Agent to v656
+
+## [0.15.2] - 2025-05-20
+- Update WarpStream Agent to v655
+
+## [0.15.1] - 2025-05-15
+- Update WarpStream Agent to v654
+
+## [0.15.0] - 2025-05-13
+- Add Network Policies template
+
+## [0.14.20] - 2025-05-09
+- Update WarpStream Agent to v653
+
+## [0.14.19] - 2025-05-02
+- Update WarpStream Agent to v650
+
+## [0.14.18] - 2025-04-29
+- Update WarpStream Agent to v649
+
+## [0.14.17] - 2025-04-29
+- Support `annotations` variable in all resources
+  - For resources that have their own annotations field i.e `.Values.serviceAccount.annotations` the annotations will be merged together with the resource specific annotations taking priority
+- Remove `deploymentAnnotations` variable as now it can be controlled via `annotations`.
+
+## [0.14.16] - 2025-04-24
+- Added `deploymentAnnotations` variable to set annotations of the deployment and statefulset
+
+## [0.14.15] - 2025-04-18
+- Update WarpStream Agent to v648
+
+## [0.14.14] - 2025-04-16
+- Added image pull secrets to test connection pods
+
+## [0.14.13] - 2025-04-10
+- Update WarpStream Agent to v647
+
+## [0.14.12] - 2025-04-09
+- Update WarpStream Agent to v646
+
+## [0.14.11] - 2025-04-08
+- Update WarpStream Agent to v645
+
+## [0.14.10] - 2025-04-08
+- Update WarpStream Agent to v644
+
+## [0.14.9] - 2025-04-08
+- Update WarpStream Agent to v643
+
+## [0.14.8] - 2025-04-07
+- Update WarpStream Agent to v642
+
+## [0.14.7] - 2025-04-07
+- Update WarpStream Agent to v641
+
+## [0.14.6] - 2025-04-03
+- Updating readme, dummy version bump so CI passes
+
+## [0.14.5] - 2025-04-02
+- Update WarpStream Agent to v640
+
+## [0.14.4] - 2025-03-24
+- Update WarpStream Agent to v639
+
+## [0.14.3] - 2025-03-21
+- Update WarpStream Agent to v638
+
+## [0.14.2] - 2025-03-21
+- Update WarpStream Agent to v637
+
+## [0.14.1] - 2025-03-18
+- Update WarpStream Agent to v636
+
+## [0.14.0] - 2025-03-12
+- Update WarpStream Agent to v635
+
+## [0.13.101] - 2025-03-12
+- Update WarpStream Agent to v634
+
+## [0.13.100] - 2025-03-11
+- Update WarpStream Agent to v633
+
+## [0.13.99] - 2025-03-10
+- Add `availabilityZoneSelector` to make it easier to deploy the chart into a single zone.
+
+## [0.13.98] - 2025-03-10
+- Update WarpStream Agent to v632
+
+## [0.13.97] - 2025-03-07
+- Fix test-connection.yaml for Kyverno policy compliance:
+  - Add CPU and memory resource requests/limits for test pods
+  - Add nodeSelector for architecture in test pods (configurable via values.yaml)
+  - Add emptyDir volume to prevent hostPath Kyverno policy violations
+  - Make all test pod settings configurable via values.yaml
+
+## [0.13.95] - 2025-03-06
+- Update WarpStream Agent to v630
+
+## [0.13.94] - 2025-02-28
+- Deprecate `apiKey` and `apiKeySecretKeyRef`
+- Add `agentKey` and `agentKeySecretKeyRef`
+
+## [0.13.93] - 2025-02-28
+- Update WarpStream Agent to v629
+
+## [0.13.92] - 2025-02-19
+- Update WarpStream Agent to v628
+
+## [0.13.91] - 2025-02-18
+- Update WarpStream Agent to v627
+
+## [0.13.90] - 2025-02-18
+- Update WarpStream Agent to v626
+
+## [0.13.89] - 2025-02-14
+- Add support for low latancy clusters. Ref: https://docs.warpstream.com/warpstream/byoc/advanced-agent-deployment-options/low-latency-clusters
+
+## [0.13.88] - 2025-02-14
+- Dummy release since the last release errored pushing to gh-pages
+
+## [0.13.87] - 2025-02-12
+- Update WarpStream Agent to v625
+
+## [0.13.86] - 2025-02-10
+- Update WarpStream Agent to v623
+
+## [0.13.85] - 2025-02-06
+- Update WarpStream Agent to v622
+
+## [0.13.84] - 2025-02-05
+- Update WarpStream Agent to v621
+
+## [0.13.83] - 2025-02-03
+- Update WarpStream Agent to v620
+
+## [0.13.82] - 2025-02-02
 - Update WarpStream Agent to v619
 
 ## [0.13.81] - 2025-01-31

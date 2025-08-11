@@ -27,6 +27,16 @@ extraEnv:
   - name: WARPSTREAM_ADVERTISE_HOSTNAME_STRATEGY
     value: auto-ip4  # playground mode defaults to local so we need to override it for tests to pass
 
+# Override dns configuration
+dnsConfig:
+  options:
+    - name: ndots
+      value: "1"
+    - name: timeout
+      value: "5"
+    - name: single-request
+    - name: single-request-reopen
+
 # Test resource settings
 test:
   resources:
