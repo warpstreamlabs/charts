@@ -132,6 +132,18 @@ and a solution to force Kubernetes to equally spread the pods across nodes and z
 
 ## Other Deployment Options
 
+### Managed Data Pipelines
+
+Managed Data Pipelines is a feature that enables WarpStream to connect to external systems using simple, declarative configuration, with the configuration managed by WarpStream. Managed Data Pipelines can also do lightweight, stateless stream processing. Managed Data Pipelines is powered by [Bento](https://warpstreamlabs.github.io/bento/). 
+
+Managed Data Pipelines is off by default. Enable Managed Data Pipelines by setting the `WARPSTREAM_ENABLE_MANAGED_PIPELINES` variable:
+
+```yaml
+extraEnv:
+  - name: WARPSTREAM_ENABLE_MANAGED_PIPELINES
+    value: "true"
+```
+
 ### LoadBalancer Service
 
 The stateless nature of the WarpStream agents allows them to be deployed behind a network load balancer using `type: LoadBalancer` in your Service configuration. See the [Kubernetes Service documentation](https://kubernetes.io/docs/concepts/services-networking/service/#loadbalancer) for details.
