@@ -2,6 +2,9 @@ config:
   playground: true
   configMapEnabled: false
 
+  # Set to 80s for tests so the tests don't take forever
+  gracefulShutdownDuration: 80s
+
 deploymentStrategy:
   type: RollingUpdate
   rollingUpdate: null  # setting rollingUpdate to null so helm will fail if pod doesn't start

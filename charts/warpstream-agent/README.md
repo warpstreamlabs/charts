@@ -492,6 +492,7 @@ kubectl logs deployment/warpstream-agent
 | config.agentGroup | string | ` ` | The optional agent group to use Ref: https://docs.warpstream.com/warpstream/byoc/advanced-agent-deployment-options/agent-groups |
 | config.ingestionBucketURL | string | ` ` | The optional ingestion bucket URL, usually used for low latency clusters https://docs.warpstream.com/warpstream/byoc/advanced-agent-deployment-options/low-latency-clusters |
 | config.compactionBucketURL | string | ` ` | The optional compaction bucket URL, usually used for low latency clusters https://docs.warpstream.com/warpstream/byoc/advanced-agent-deployment-options/low-latency-clusters |
+| config.gracefulShutdownDuration | string | `300s` | The graceful shutdown period the WarpStream Agents will wait until shutting down. This is to allow clients enough time to disconnect gracefully |
 | enforceProductionResourceRequirements | bool | `true` | Enforce production resource requirements, 1:4 CPU to memory ratios |
 | resources.requests.cpu | string | `4` | |
 | resources.requests.memory | string | `16Gi` | |
