@@ -2,8 +2,8 @@ apiVersion: v2
 name: warpstream-benchmark
 description: WarpStream Benchmark for Kubernetes.
 type: application
-version: 0.1.2
-appVersion: v652
+version: 0.1.3
+appVersion: v694
 icon: https://avatars.githubusercontent.com/u/132156278
 home: https://docs.warpstream.com/warpstream/
 sources:
