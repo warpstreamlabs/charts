@@ -157,7 +157,7 @@ spec:
               value: {{ $goMaxProcs | quote }}
               {{- else }}
               value: {{ .Values.goMaxProcs | quote }}
-              {{- end -}}
+              {{- end }}
             - name: WARPSTREAM_GRACEFUL_SHUTDOWN_DURATION
               value: {{ .Values.config.gracefulShutdownDuration | default "300s" | quote }}
           {{- if .Values.extraEnv }}
