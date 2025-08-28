@@ -220,7 +220,7 @@ config:
 
   # Graceful shutdown configuration for WarpStream Agents
   # Ref: https://docs.warpstream.com/warpstream/byoc/deploy/rolling-restarts-and-upgrades#graceful-shutdown
-  # When increasing this also increase terminationGracePeriodSeconds otherwise Kubernetes will kill the pod 
+  # When increasing this also increase terminationGracePeriodSeconds otherwise Kubernetes will kill the pod
   # before WarpStream's graceful shutdown can finish
   gracefulShutdownDuration: 300s
 
