@@ -107,6 +107,7 @@ certificate:
       name: ""
       key: ""
 
+# Should be at minimum 1 minute longer then config.gracefulShutdownDuration
 terminationGracePeriodSeconds: 600
 
 serviceAccount:
@@ -216,6 +217,12 @@ config:
   # The compaction bucket URL should be a single classic S3 Bucket following the normal format:
   # s3://my-bucket?region=us-east-1
   # compactionBucketURL: ""
+
+  # Graceful shutdown configuration for WarpStream Agents
+  # Ref: https://docs.warpstream.com/warpstream/byoc/deploy/rolling-restarts-and-upgrades#graceful-shutdown
+  # When increasing this also increase terminationGracePeriodSeconds otherwise Kubernetes will kill the pod
+  # before WarpStream's graceful shutdown can finish
+  gracefulShutdownDuration: 300s
 
 # Ensures that the Agents are configured with the recommended resources for production
 # usage. We recommend that you do not set this to false except for in staging/dev

@@ -4,6 +4,9 @@ fullnameOverride: "playground-sts-cert-manager"
 config:
   playground: true
 
+  # Set to 80s for tests so the tests don't take forever
+  gracefulShutdownDuration: 80s
+
 # testing with statefulset
 deploymentKind: StatefulSet
 

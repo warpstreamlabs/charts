@@ -11,6 +11,9 @@ config:
   region: "us-east1"
   apiKey: "${DefaultVirtualClusterAgentKeySecret}"
 
+  # Set to 80s for tests so the tests don't take forever
+  gracefulShutdownDuration: 80s
+
 # overriding resources so it fits on a runner
 resources:
   requests:
@@ -45,6 +48,9 @@ config:
   virtualClusterID: "${DefaultVirtualClusterID}"
   region: "us-east1"
   agentKey: "${DefaultVirtualClusterAgentKeySecret}"
+
+  # Set to 80s for tests so the tests don't take forever
+  gracefulShutdownDuration: 80s
 
 # overriding resources so it fits on a runner
 resources:
@@ -83,6 +89,9 @@ config:
     name: external-secret
     key: agentkey
 
+  # Set to 80s for tests so the tests don't take forever
+  gracefulShutdownDuration: 80s
+
 # overriding resources so it fits on a runner
 resources:
   requests:
@@ -120,6 +129,9 @@ config:
     name: external-secret
     key: agentkey
 
+  # Set to 80s for tests so the tests don't take forever
+  gracefulShutdownDuration: 80s
+
 # overriding resources so it fits on a runner
 resources:
   requests:
@@ -155,6 +167,9 @@ config:
   region: "us-east1"
   agentKey: "${DefaultVirtualClusterAgentKeySecret}"
   agentGroup: "my-group"
+
+  # Set to 80s for tests so the tests don't take forever
+  gracefulShutdownDuration: 80s
 
 # overriding resources so it fits on a runner
 resources:
@@ -192,6 +207,9 @@ config:
   ingestionBucketURL: "warpstream_multi://mem://mem_bucket<>mem://mem_bucket<>mem://mem_bucket"
   compactionBucketURL: "mem://mem_bucket"
 
+  # Set to 80s for tests so the tests don't take forever
+  gracefulShutdownDuration: 80s
+
 # overriding resources so it fits on a runner
 resources:
   requests:
@@ -228,6 +246,9 @@ config:
   agentKeySecretKeyRef:
     name: external-secret
     key: agentkey
+
+  # Set to 80s for tests so the tests don't take forever
+  gracefulShutdownDuration: 80s
 
 # overriding resources so it fits on a runner
 resources:
@@ -272,6 +293,9 @@ config:
   virtualClusterID: "${DefaultVirtualClusterID}"
   metadataURL: "https://metadata.default.us-east1.gcp.warpstream.com"
   agentKey: "${DefaultVirtualClusterAgentKeySecret}"
+
+  # Set to 80s for tests so the tests don't take forever
+  gracefulShutdownDuration: 80s
 
 # overriding resources so it fits on a runner
 resources:
