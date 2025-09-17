@@ -127,6 +127,10 @@ securityContext: {}
   #   - ALL
   # runAsNonRoot: true
 
+containerPortKafka: 9092
+containerPortHTTP: 8080
+containerPortSchemaRegistry: 9094
+
 service:
   type: ClusterIP
   port: 9092

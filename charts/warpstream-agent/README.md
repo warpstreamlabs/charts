@@ -412,6 +412,36 @@ Obtain the temporary WarpStream console URL:
 kubectl logs deployment/warpstream-agent
 ```
 
+### Using a different Kafka port
+
+When deploying WarpStream agents it may be desired to change the kafka port that the agents listen on.
+
+**Note:** This is only supported on chart version `0.15.59` or higher.
+
+To change the port to `16500` for example, set the following values:
+
+```yaml
+# Set environment variable to tell the agent to listen on 16500.
+extraEnv:
+  - name: WARPSTREAM_KAFKA_PORT
+    value: "16500"
+
+# Update the container port to 16500 so Kubernetes can route traffic correctly.
+containerPortKafka: 16500
+```
+
+If it is also desired to change the service or kafka service ports set the following values:
+
+```yaml
+# Optionally update the service port to 16500 if desired.
+service:
+  port: 16500
+
+# Optionally update kafkaService port to 16500 if enabled.
+kafkaService:
+  port: 16500
+```
+
 ## Values
 
 | Key | Type | Default | Description |
@@ -464,6 +494,9 @@ kubectl logs deployment/warpstream-agent
 | serviceAccount.annotations | object | `{}` | Additional annotations to add to the created service account |
 | serviceAccount.name | string | `null` | Override the name of the created service account |
 | rbac.create | bool | `true` | |
+| containerPortKafka | number | 9092 | The port on the container for Kafka |
+| containerPortHTTP | number | 9092 | The port on the container for internal agent to agent communication |
+| containerPortSchemaRegistry | number | 9092 | The port on the container for schema registry |
 | service.type | string | `ClusterIP` | |
 | service.port | number | `9092` | |
 | service.httpPort | number | `8080` | |
