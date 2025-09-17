@@ -322,3 +322,48 @@ EOM
 set -e
 
 echo "${ci_test_metadataURL}" | envsubst > charts/warpstream-agent/ci/metadataURL-values.yaml
+
+# Test for setting kafka port and container port
+set +e
+read -r -d '' ci_test_kafkaport << EOM
+config:
+  bucketURL: "mem://mem_bucket"
+  virtualClusterID: "${DefaultVirtualClusterID}"
+  region: "us-east1"
+  agentKey: "${DefaultVirtualClusterAgentKeySecret}"
+
+  # Set to 80s for tests so the tests don't take forever
+  gracefulShutdownDuration: 80s
+
+# overriding resources so it fits on a runner
+resources:
+  requests:
+    cpu: 500m
+    memory: 2Gi
+    # we do not need the disk space, but Kubernetes will count some logs that it emits
+    # about our containers towards our containers ephemeral usage and if we requested
+    # 0 storage we could end up getting evicted unnecessarily when the node is under disk pressure.
+    ephemeral-storage: "100Mi"
+  limits:
+    memory: 2Gi
+
+extraEnv:
+  - name: WARPSTREAM_KAFKA_PORT
+    value: "16500"
+
+# Update the container port to 16500.
+containerPortKafka: 16500
+
+# Test resource settings
+test:
+  resources:
+    requests:
+      cpu: 1m
+      memory: 128Mi
+    limits:
+      cpu: 100m
+      memory: 256Mi
+EOM
+set -e
+
+echo "${ci_test_kafkaport}" | envsubst > charts/warpstream-agent/ci/kafkaport-values.yaml
