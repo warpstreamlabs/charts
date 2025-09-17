@@ -173,14 +173,16 @@ spec:
           {{- end }}
           ports:
             - name: kafka
-              containerPort: 9092
+              containerPort: {{ .Values.containerPortKafka | default 9092 }}
               protocol: TCP
             - name: http
-              containerPort: 8080
+              containerPort: {{ .Values.containerPortHTTP | default 8080 }}
               protocol: TCP
+            {{- if or (.Values.config.playground) (hasPrefix "vci_sr_" (.Values.config.virtualClusterID | default "")) }}
             - name: schema-registry
-              containerPort: 9094
+              containerPort: {{ .Values.containerPortSchemaRegistry | default 9094 }}
               protocol: TCP
+            {{- end }}
           {{- if or (.Values.volumeMounts) (not .Values.config.playground) (.Values.certificate) }}
           volumeMounts:
             {{- if not .Values.config.playground }}
