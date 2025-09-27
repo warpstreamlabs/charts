@@ -396,6 +396,10 @@ hostAliases: []
 # Labels to be added to each agent pod
 podLabels: {}
 
+# Optional sidecarContainers definition
+# Each of these will be added to the pod as another container
+sidecarContainers: []
+
 # Optional initContainers definition
 initContainers: []
 
