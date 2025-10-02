@@ -393,6 +393,9 @@ hostAliases: []
   #   - "foo.local"
   #   - "bar.local"
 
+# Labels to be added to each agent deployment
+deploymentLabels: {}
+
 # Labels to be added to each agent pod
 podLabels: {}
 
