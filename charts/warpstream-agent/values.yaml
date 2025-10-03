@@ -144,7 +144,7 @@ service:
   # loadBalancerSourceRanges: []
 
   # If using type LoadBalancer set an optional loadBalancerClass
-  # https://kubernetes.io/docs/concepts/services-networking/service/#load-balancer-class 
+  # https://kubernetes.io/docs/concepts/services-networking/service/#load-balancer-class
   # loadBalancerClass: ""
 
   # Create services per pod, this can be used in combination with deploymentKind=StatefulSet and statefulSetConfig.clusterDomain
@@ -166,7 +166,7 @@ kafkaService:
   # loadBalancerSourceRanges: []
 
   # If using type LoadBalancer set an optional loadBalancerClass
-  # https://kubernetes.io/docs/concepts/services-networking/service/#load-balancer-class 
+  # https://kubernetes.io/docs/concepts/services-networking/service/#load-balancer-class
   # loadBalancerClass: ""
 
 # A service that only contains the Schema Registry TCP port
@@ -182,7 +182,7 @@ schemaRegistryService:
   # loadBalancerSourceRanges: []
 
   # If using type LoadBalancer set an optional loadBalancerClass
-  # https://kubernetes.io/docs/concepts/services-networking/service/#load-balancer-class 
+  # https://kubernetes.io/docs/concepts/services-networking/service/#load-balancer-class
   # loadBalancerClass: ""
 
 bentoService:
@@ -196,7 +196,7 @@ bentoService:
     #   protocol: TCP
 
   # If using type LoadBalancer set an optional loadBalancerClass
-  # https://kubernetes.io/docs/concepts/services-networking/service/#load-balancer-class 
+  # https://kubernetes.io/docs/concepts/services-networking/service/#load-balancer-class
   # loadBalancerClass: ""
 
 rbac:
