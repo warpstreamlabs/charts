@@ -144,7 +144,7 @@ extraEnv:
     value: "true"
 ```
 
-### LoadBalancer Service
+### Kafka LoadBalancer Service
 
 The stateless nature of the WarpStream agents allows them to be deployed behind a network load balancer using `type: LoadBalancer` in your Service configuration. See the [Kubernetes Service documentation](https://kubernetes.io/docs/concepts/services-networking/service/#loadbalancer) for details.
 
@@ -162,7 +162,7 @@ extraEnv:
 
 Follow your cloud provider's load balancer documentation to complete the configuration.
 
-**Note**: If your load balancer is exposed to the internet, enabling authentication on the WarpStream agents is highly recommended. See [Authentication](https://docs.warpstream.com/warpstream/byoc/advanced-agent-deployment-options/enable-agent-auth) for more details, including how to create the client credentials in the WarpStream console.
+**Note**: If your load balancer is exposed to the internet, enabling authentication on the WarpStream agents is highly recommended. See [Manage Security](https://docs.warpstream.com/warpstream/kafka/manage-security) for more details, including how to create the client credentials in the WarpStream console.
 
 Enable authentication by setting the `WARPSTREAM_REQUIRE_AUTHENTICATION` variable:
 
@@ -174,14 +174,36 @@ kafkaService:
 extraEnv: 
   - name: WARPSTREAM_DISCOVERY_KAFKA_HOSTNAME_OVERRIDE
     value: <LOAD_BALANCER_DNS_HOSTNAME>
-  - name: WARPSTREAM_REQUIRE_AUTHENTICATION
+  # Optionally require SASL authentication (or WARPSTREAM_REQUIRE_MTLS_AUTHENTICATION for mTLS authentication)
+  - name: WARPSTREAM_REQUIRE_SASL_AUTHENTICATION
     value: "true"
 ```
 
-**Note:** This helm chart has multiple services it is recommended to only set `kafkaService` to `LoadBalancer` and
-leave the other services as `ClusterIP`. Setting the other services in this helm chart to `LoadBalancer` could
-expose internal WarpStream Agent functionality like the agent-to-agent communication endpoints or the Bento Managed
-pipeline endpoints.
+**Note:** This helm chart has multiple services it is recommended to only set the required services to `LoadBalancer` and leave the other services as `ClusterIP`. Setting the other services in this helm chart to 
+`LoadBalancer` could expose internal WarpStream Agent functionality like the agent-to-agent communication endpoints 
+or the Bento Managed pipeline endpoints.
+
+### Schema Registry LoadBalancer Service
+
+If may be desirable to deploy a load balancer infront of WarpStream Schema Registry. This can be done byusing `type: 
+LoadBalancer` in your Service configuration. See the [Kubernetes Service documentation](https://kubernetes.io/docs/concepts/services-networking/service/#loadbalancer) for details.
+
+**Note**: If your load balancer is exposed to the internet, enabling authentication on the WarpStream agents is highly recommended. See [Manage Security](https://docs.warpstream.com/warpstream/schema-registry/manage-security) for more details, including how to create the client credentials in the WarpStream console.
+
+```yaml
+schemaRegistryService:
+  enabled: true
+  type: LoadBalancer
+
+extraEnv: 
+  # Optionally require basic auth authentication
+  - name: WARPSTREAM_SCHEMA_REGISTRY_BASIC_AUTH_ENABLED
+    value: "true"
+```
+
+**Note:** This helm chart has multiple services it is recommended to only set the required services to `LoadBalancer` and leave the other services as `ClusterIP`. Setting the other services in this helm chart to 
+`LoadBalancer` could expose internal WarpStream Agent functionality like the agent-to-agent communication endpoints 
+or the Bento Managed pipeline endpoints.
 
 ### Metrics
 
@@ -498,6 +520,7 @@ kafkaService:
 | containerPortHTTP | number | 9092 | The port on the container for internal agent to agent communication |
 | containerPortSchemaRegistry | number | 9092 | The port on the container for schema registry |
 | service.type | string | `ClusterIP` | |
+| service.loadBalancerClass | string | `` | Optional load balancer class |
 | service.port | number | `9092` | |
 | service.httpPort | number | `8080` | |
 | service.schemaRegistryPort | number | `9094` | |
@@ -507,12 +530,18 @@ kafkaService:
 | headlessService.enabled | bool | `false` | Enable the headless service |
 | kafkaService.enabled | bool | `false` | Enable the additional kafka service |
 | kafkaService.type | string | `ClusterIP` | |
+| kafkaService.loadBalancerClass | string | `` | Optional load balancer class |
 | kafkaService.port | number | `9092` | |
 | kafkaService.loadBalancerSourceRanges | list | `[]` | |
 | bentoService.enabled | bool | `false` | Enable the additional bento service |
 | bentoService.type | string | `ClusterIP` | |
+| bentoService.loadBalancerClass | string | `` | Optional load balancer class |
 | bentoService.port | number | `4195` | |
 | bentoService.extraPorts | list | `[]` | Additional ports to add to the bento service |
+| schemaRegistryService.enabled | bool | `false` | Enable the additional schema registry service |
+| schemaRegistryService.type | string | `ClusterIP` | |
+| schemaRegistryService.loadBalancerClass | string | `` | Optional load balancer class |
+| schemaRegistryService.port | number | `9094` | |
 | config.configMapEnabled | bool | `true` | Enable create the configmap to configure the WarpStream Agents, only set to `false` if you are configuring the agent via `extraEnv` or `extraEnvFrom` |
 | config.playground | bool | `false` | Enable playground mode Ref: https://docs.warpstream.com/warpstream/reference/cli-reference/warpstream-playground |
 | config.bucketURL | string | ` ` | The bucket URL to use for storage |

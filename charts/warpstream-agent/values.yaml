@@ -143,6 +143,10 @@ service:
   # More info: https://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/
   # loadBalancerSourceRanges: []
 
+  # If using type LoadBalancer set an optional loadBalancerClass
+  # https://kubernetes.io/docs/concepts/services-networking/service/#load-balancer-class
+  # loadBalancerClass: ""
+
   # Create services per pod, this can be used in combination with deploymentKind=StatefulSet and statefulSetConfig.clusterDomain
   # to expose each pod outside of the cluster when using Kong or Isto ingresses.
   # See https://github.com/warpstreamlabs/charts/pull/156 for details
@@ -161,6 +165,26 @@ kafkaService:
   # More info: https://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/
   # loadBalancerSourceRanges: []
 
+  # If using type LoadBalancer set an optional loadBalancerClass
+  # https://kubernetes.io/docs/concepts/services-networking/service/#load-balancer-class
+  # loadBalancerClass: ""
+
+# A service that only contains the Schema Registry TCP port
+# Typically used to help with exposing only Schema Registry via a Load Balancer
+schemaRegistryService:
+  enabled: false
+  type: ClusterIP
+  port: 9094
+
+  # If specified and supported by the platform, this will restrict traffic through the cloud-provider load-balancer will be restricted
+  # to the specified client IPs. This field will be ignored if the cloud-provider does not support the feature.
+  # More info: https://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/
+  # loadBalancerSourceRanges: []
+
+  # If using type LoadBalancer set an optional loadBalancerClass
+  # https://kubernetes.io/docs/concepts/services-networking/service/#load-balancer-class
+  # loadBalancerClass: ""
+
 bentoService:
   enabled: false
   type: ClusterIP
@@ -170,6 +194,10 @@ bentoService:
     #   port: 9999
     #   targetPort: 9999
     #   protocol: TCP
+
+  # If using type LoadBalancer set an optional loadBalancerClass
+  # https://kubernetes.io/docs/concepts/services-networking/service/#load-balancer-class
+  # loadBalancerClass: ""
 
 rbac:
   create: true

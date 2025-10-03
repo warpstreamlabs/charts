@@ -1,0 +1,33 @@
+{{- if .Values.schemaRegistryService }}
+{{- if .Values.schemaRegistryService.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "warpstream-agent.fullname" . }}-sr
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "warpstream-agent.labels" . | nindent 4 }}
+  {{- with (mergeOverwrite (default (dict) .Values.annotations) (default (dict) .Values.schemaRegistryService.annotations)) }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.schemaRegistryService.type }}
+  {{- if .Values.schemaRegistryService.loadBalancerClass }}
+  loadBalancerClass: {{ .Values.schemaRegistryService.loadBalancerClass }}
+  {{- end }}
+  ports:
+    - port: {{ .Values.schemaRegistryService.port }}
+      targetPort: schema-registry
+      protocol: TCP
+      name: schema-registry
+  selector:
+    {{- include "warpstream-agent.selectorLabels" . | nindent 4 }}
+  {{- with .Values.schemaRegistryService.loadBalancerSourceRanges }}
+  loadBalancerSourceRanges:
+    {{- range . }}
+    - {{ . }}
+    {{- end }}
+  {{- end }}
+{{- end}}
+{{- end}}

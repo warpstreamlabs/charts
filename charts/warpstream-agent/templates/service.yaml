@@ -16,6 +16,9 @@ metadata:
   {{- end }}
 spec:
   type: {{ .Values.service.type }}
+  {{- if .Values.service.loadBalancerClass }}
+  loadBalancerClass: {{ .Values.service.loadBalancerClass }}
+  {{- end }}
   ports:
     {{- if or (.Values.config.playground) (not (hasPrefix "vci_sr_" (.Values.config.virtualClusterID | default ""))) }}
     - port: {{ .Values.service.port }}
@@ -63,6 +66,9 @@ metadata:
   {{- end }}
 spec:
   type: {{ .Values.service.type }}
+  {{- if .Values.service.loadBalancerClass }}
+  loadBalancerClass: {{ .Values.service.loadBalancerClass }}
+  {{- end }}
   ports:
     {{- if or (.Values.config.playground) (not (hasPrefix "vci_sr_" (.Values.config.virtualClusterID | default ""))) }}
     - port: {{ .Values.service.port }}

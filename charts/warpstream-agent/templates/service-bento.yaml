@@ -12,6 +12,9 @@ metadata:
   {{- end }}
 spec:
   type: {{ .Values.bentoService.type }}
+  {{- if .Values.bentoService.loadBalancerClass }}
+  loadBalancerClass: {{ .Values.bentoService.loadBalancerClass }}
+  {{- end }}
   ports:
     - port: {{ .Values.bentoService.port }}
       targetPort: {{ .Values.bentoService.port }}
