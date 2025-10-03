@@ -13,6 +13,9 @@ metadata:
   {{- end }}
 spec:
   type: {{ .Values.kafkaService.type }}
+  {{- if .Values.kafkaService.loadBalancerClass }}
+  loadBalancerClass: {{ .Values.kafkaService.loadBalancerClass }}
+  {{- end }}
   ports:
     - port: {{ .Values.kafkaService.port }}
       targetPort: kafka
