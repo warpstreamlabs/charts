@@ -6,6 +6,9 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     {{- include "warpstream-agent.labels" . | nindent 4 }}
+    {{- if not (empty .Values.deploymentLabels) }}
+      {{- toYaml .Values.deploymentLabels | nindent 4 }}
+    {{- end }}
   {{- with .Values.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
