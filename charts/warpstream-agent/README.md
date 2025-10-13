@@ -469,6 +469,7 @@ kafkaService:
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | podLabels | object | `{}` | Additional labels to add to WarpStream Agent pods |
+| deploymentLabels | object | `{}` | Additional labels to add to WarpStream Agent deployment |
 | annotations | object | `{}` | Additional annotations to add to all created resources |
 | image.repository | string | `public.ecr.aws/warpstream-labs/warpstream_agent` | The container image to use |
 | image.pullPolicy | string | `IfNotPresent` | The image pull policy |
