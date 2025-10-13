@@ -424,6 +424,9 @@ hostAliases: []
 # Labels to be added to each agent pod
 podLabels: {}
 
+# Labels to be added to each agent deployment
+deploymentLabels: {}
+
 # Optional sidecarContainers definition
 # Each of these will be added to the pod as another container
 sidecarContainers: []
