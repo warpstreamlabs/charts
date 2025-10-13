@@ -569,6 +569,7 @@ kafkaService:
 | autoscaling.targetCPU | string | `60` | The target CPU percentage to keep the pods scaled at |
 | autoscaling.targetMemory | string | ` ` | The target memory percentage to keep the pods scaled at |
 | autoscaling.behavior | object | ` ` | The scale up and down behavior, see `values.yaml` for defaults |
+| podSecurityContext | object | `{}` | specify a pod level security context (vs a container level with with `securityContext`) | 
 | pdb.create | bool | `true` | Create a pod disruption budget |
 | pdb.maxUnavailable | number | `1` | |
 | serviceMonitor.enabled | bool | `false` | Enable creating a prometheus operator service monitor |
