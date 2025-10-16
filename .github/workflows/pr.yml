@@ -3,39 +3,25 @@ name: Lint & Test Charts
 on: pull_request
 
 jobs:
-  pull_request:
+  lint:
     runs-on: ubuntu-latest
+    outputs:
+      changed: ${{ steps.list-changed.outputs.changed }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
       - name: Set up Helm
         uses: azure/setup-helm@v4
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: 3.13
 
       - name: Set up chart-testing
-        uses: helm/chart-testing-action@v2.6.1
-
-      - name: Create Playground Account for Tests
-        run: |
-          playground_account_raw=`curl https://console.warpstream.com/api/v1/signup -X POST -H "Content-Type: application/json" -d '{"primary_user_first_name": "chart-ci", "primary_user_last_name": "Account", "tenant_name": "chart-ci-organization-'$(uuidgen)'", "primary_user_email": "chart-ci-email@'$(uuidgen)'", "primary_user_password": "chart-ci-password-'$(uuidgen)'", "is_demo": true}'`
-
-          export DefaultVirtualClusterID=`echo ${playground_account_raw} | jq -r .DefaultVirtualClusterID`
-          export DefaultVirtualClusterAgentKeySecret=`echo ${playground_account_raw} | jq -r .DefaultVirtualClusterAgentKeySecret`
-          export DefaultVirtualClusterMetadataURL=`echo ${playground_account_raw} | jq -r .DefaultVirtualClusterMetadataURL`
-
-          echo "DefaultVirtualClusterID=${DefaultVirtualClusterID}" >> $GITHUB_ENV
-          echo "DefaultVirtualClusterAgentKeySecret=${DefaultVirtualClusterAgentKeySecret}" >> $GITHUB_ENV
-          echo "DefaultVirtualClusterMetadataURL=${DefaultVirtualClusterMetadataURL}" >> $GITHUB_ENV
-
-      - name: Generate Tests
-        run: |
-          ./hack/ci/scripts/generate-tests.sh
+        uses: helm/chart-testing-action@v2.7.0
 
       - name: Run chart-testing (list-changed)
         id: list-changed
@@ -49,8 +35,48 @@ jobs:
         if: steps.list-changed.outputs.changed == 'true'
         run: ct lint --target-branch ${{ github.event.repository.default_branch }}
 
+  test:
+    runs-on: ubuntu-latest
+    needs: lint
+    if: needs.lint.outputs.changed
+    strategy:
+      matrix:
+        # When adding or removing shards don't forget to update the `--shard-count` flag bellow
+        shard: [1, 2, 3, 4, 5]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v4
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: 3.13
+
+      - name: Create Playground Account for Tests
+        run: |
+          playground_account_raw=`curl https://console.warpstream.com/api/v1/signup -X POST -H "Content-Type: application/json" -d '{"primary_user_first_name": "chart-ci", "primary_user_last_name": "Account", "tenant_name": "chart-ci-organization-'$(uuidgen)'", "primary_user_email": "chart-ci-email@'$(uuidgen)'", "primary_user_password": "chart-ci-password-'$(uuidgen)'", "is_demo": true}'`
+
+          export DefaultVirtualClusterID=`echo ${playground_account_raw} | jq -r .DefaultVirtualClusterID`
+          export DefaultVirtualClusterAgentKeySecret=`echo ${playground_account_raw} | jq -r .DefaultVirtualClusterAgentKeySecret`
+          export DefaultVirtualClusterMetadataURL=`echo ${playground_account_raw} | jq -r .DefaultVirtualClusterMetadataURL`
+
+          echo "DefaultVirtualClusterID=${DefaultVirtualClusterID}" >> $GITHUB_ENV
+          echo "DefaultVirtualClusterAgentKeySecret=${DefaultVirtualClusterAgentKeySecret}" >> $GITHUB_ENV
+          echo "DefaultVirtualClusterMetadataURL=${DefaultVirtualClusterMetadataURL}" >> $GITHUB_ENV
+
+      - name: Create Secret for Tests from Playground Account
+        run: |
+          kubectl create secret generic external-secret --from-literal=agentkey=${DefaultVirtualClusterAgentKeySecret}
+
+      - name: Generate Tests
+        run: |
+          ./hack/ci/scripts/generate-tests.sh
+
       - name: Create kind cluster
-        if: steps.list-changed.outputs.changed == 'true'
         uses: helm/kind-action@v1
 
       - name: Install Prometheus Operator
@@ -70,7 +96,6 @@ jobs:
           kubectl get secret root-secret -n cert-manager -o yaml | sed 's/namespace: cert-manager/namespace: default/' | kubectl apply -f -
 
       - name: Setup WarpStream Playground Cluster for benchmark test
-        if: steps.list-changed.outputs.changed == 'true'
         run: |
           kubectl create ns warpstream-benchmark-playground
           kubectl create deployment -n warpstream-benchmark-playground warpstream-benchmark-playground --image=public.ecr.aws/warpstream-labs/warpstream_agent:latest -- /warpstream playground
@@ -78,14 +103,8 @@ jobs:
           kubectl create svc clusterip -n warpstream-benchmark-playground warpstream-benchmark-playground --tcp=9092:9092
           sleep 30
           kubectl exec -it -n warpstream-benchmark-playground deployments/warpstream-benchmark-playground -- /warpstream cli create-topic -topic ws-benchmark
-          
-      - name: Create Secret for Tests from Playground Account
-        if: steps.list-changed.outputs.changed == 'true'
-        run: |
-          kubectl create secret generic external-secret --from-literal=agentkey=${DefaultVirtualClusterAgentKeySecret}
 
       - name: Generate Certificate for TLS testing
-        if: steps.list-changed.outputs.changed == 'true'
         run: |
           mkdir /tmp/certificates
           cd /tmp/certificates
@@ -116,6 +135,18 @@ jobs:
           kubectl create secret tls ci-certificate-client --cert=client/client_cert.pem --key=client/private/client_key.pem
           kubectl create secret generic ci-certificate-ca --from-file=ca.crt=ca/ca_cert.pem
 
+      - name: Clone chart testing fork
+        uses: actions/checkout@v5
+        with:
+          repository: warpstreamlabs/chart-testing
+          ref: sharding
+          fetch-depth: 0
+          path: chart-testing
+            
+      - name: Install Chart Testing
+        run: |
+          cd ./chart-testing
+          go install ./ct/
+
       - name: Run chart-testing (install)
-        if: steps.list-changed.outputs.changed == 'true'
-        run: ct install --namespace default --target-branch ${{ github.event.repository.default_branch }} --upgrade --skip-missing-values
+        run: ~/go/bin/ct install install --namespace default --target-branch ${{ github.event.repository.default_branch }} --upgrade --skip-missing-values --shard-count 5 --shard-num ${{ matrix.shard }}
