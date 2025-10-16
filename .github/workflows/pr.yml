@@ -68,16 +68,16 @@ jobs:
           echo "DefaultVirtualClusterAgentKeySecret=${DefaultVirtualClusterAgentKeySecret}" >> $GITHUB_ENV
           echo "DefaultVirtualClusterMetadataURL=${DefaultVirtualClusterMetadataURL}" >> $GITHUB_ENV
 
-      - name: Create Secret for Tests from Playground Account
-        run: |
-          kubectl create secret generic external-secret --from-literal=agentkey=${DefaultVirtualClusterAgentKeySecret}
-
       - name: Generate Tests
         run: |
           ./hack/ci/scripts/generate-tests.sh
 
       - name: Create kind cluster
         uses: helm/kind-action@v1
+
+      - name: Create Secret for Tests from Playground Account
+        run: |
+          kubectl create secret generic external-secret --from-literal=agentkey=${DefaultVirtualClusterAgentKeySecret}
 
       - name: Install Prometheus Operator
         run: |
