@@ -181,7 +181,7 @@ spec:
           ports:
             - name: kafka
               containerPort: {{ .Values.containerPortKafka | default 9092 }}
-              {{-if .Values.hostPortKafka }}
+              {{- if .Values.hostPortKafka }}
               hostPort: {{ .Values.hostPortKafka }}
               {{- end }}
               protocol: TCP
