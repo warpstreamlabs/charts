@@ -468,7 +468,7 @@ kafkaService:
 
 In some network setups it may be desired to expose the WarpStream Agent as a hostPort on the Kubernetes node.
 
-Using a host port does add lots of complexity to a WarpStream deployment and is only recommended for environments that absolutely 
+Using a host port adds lots of complexity to a WarpStream deployment and is only recommended for environments that absolutely 
 require it.
 
 To do this set the following values:
@@ -478,7 +478,8 @@ hostPortKafka: 16500
 ```
 
 This alone however will not give the desired result as the WarpStream Agents have to be told about the port and to advertise the 
-Kubernetes node address.
+Kubernetes node address. This is not done automatically by the helm chart when `hostPortKafka` is set and must be done by setting 
+additional values. Full examples of the required values are bellow.
 
 A basic setup would be the following:
 
