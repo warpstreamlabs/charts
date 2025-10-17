@@ -367,3 +367,55 @@ EOM
 set -e
 
 echo "${ci_test_kafkaport}" | envsubst > charts/warpstream-agent/ci/kafkaport-values.yaml
+
+# Test for setting kafka host port with hostname override to k8s host ip
+set +e
+read -r -d '' ci_test_kafkahostport << EOM
+config:
+  bucketURL: "mem://mem_bucket"
+  virtualClusterID: "${DefaultVirtualClusterID}"
+  region: "us-east1"
+  agentKey: "${DefaultVirtualClusterAgentKeySecret}"
+
+  # Set to 80s for tests so the tests don't take forever
+  gracefulShutdownDuration: 80s
+
+# overriding resources so it fits on a runner
+resources:
+  requests:
+    cpu: 500m
+    memory: 2Gi
+    # we do not need the disk space, but Kubernetes will count some logs that it emits
+    # about our containers towards our containers ephemeral usage and if we requested
+    # 0 storage we could end up getting evicted unnecessarily when the node is under disk pressure.
+    ephemeral-storage: "100Mi"
+  limits:
+    memory: 2Gi
+
+extraEnv:
+  # Setting warpstream kafka port to match container & hostport
+  - name: WARPSTREAM_KAFKA_PORT
+    value: "16500"
+  # Setting discovery hostname override so clients connect to the k8s host instead of the pod
+  - name: WARPSTREAM_DISCOVERY_KAFKA_HOSTNAME_OVERRIDE
+    valueFrom:
+      fieldRef:
+        fieldPath: status.hostIP
+
+# Optionally set Container Port and hostport set to same thing, they can be different.
+containerPortKafka: 16500
+hostPortKafka: 16500
+
+# Test resource settings
+test:
+  resources:
+    requests:
+      cpu: 1m
+      memory: 128Mi
+    limits:
+      cpu: 100m
+      memory: 256Mi
+EOM
+set -e
+
+echo "${ci_test_kafkahostport}" | envsubst > charts/warpstream-agent/ci/kafkahostport-values.yaml

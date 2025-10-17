@@ -464,6 +464,85 @@ kafkaService:
   port: 16500
 ```
 
+### Using a host port for the Kafka port
+
+In some network setups it may be desired to expose the WarpStream Agent as a hostPort on the Kubernetes node.
+
+Using a host port adds lots of complexity to a WarpStream deployment and is only recommended for environments that absolutely 
+require it.
+
+To do this set the following values:
+
+```yaml
+hostPortKafka: 16500
+```
+
+This alone however will not give the desired result as the WarpStream Agents have to be told about the port and to advertise the 
+Kubernetes node address. This is not done automatically by the helm chart when `hostPortKafka` is set and must be done by setting 
+additional values. Full examples of the required values are bellow.
+
+A basic setup would be the following:
+
+```yaml
+extraEnv:
+  # Setting warpstream kafka port to match container & hostport
+  - name: WARPSTREAM_KAFKA_PORT
+    value: "16500"
+  # Setting discovery hostname override so clients connect to the k8s host instead of the pod
+  - name: WARPSTREAM_DISCOVERY_KAFKA_HOSTNAME_OVERRIDE
+    valueFrom:
+      fieldRef:
+        fieldPath: status.hostIP
+
+# Set the kafka container port to the desired port
+containerPortKafka: 16500
+
+# Set the kafka host port to the desired port
+hostPortKafka: 16500
+```
+
+This sets the WarpStream Kafka port and the host port to 16500. We also set `WARPSTREAM_KAFKA_PORT` to tell WarpStream to listen
+on that port and set `WARPSTREAM_DISCOVERY_KAFKA_HOSTNAME_OVERRIDE` to advertise the Kubernetes host IP.
+
+With all this set a Kafka client outside of Kubernetes can connect to the Kubernetes host where WarpStream is running directly.
+
+In a production setup typically `WARPSTREAM_DISCOVERY_KAFKA_HOSTNAME_OVERRIDE` would be a DNS name that is set to the 
+Kubernetes node's hostname using a tool like [external-dns](https://github.com/kubernetes-sigs/external-dns).
+
+Note: external-dns is an open source project that is not maintained by WarpStream and we cannot provide support for any 
+external-dns related issues.
+
+See external-dns hostport documentation [here](https://github.com/kubernetes-sigs/external-dns/blob/master/docs/tutorials/hostport.md).
+
+A production setup using external-dns would look like the following:
+
+Add `--fqdn-template={{ .Name }}.{{ .Namespace }}.example.org` to your external-dns deployment, change `example.org` to your 
+domain.
+
+```yaml
+headlessService:
+  annotations:
+    # Change 'example.org` to your domain
+    external-dns.alpha.kubernetes.io/hostname: example.org
+    # Use the node's public IP, set to 'HostIP' to use the internal IP
+    external-dns.alpha.kubernetes.io/endpoints-type: NodeExternalIP
+
+extraEnv:
+  # Set to the desired port
+  - name: WARPSTREAM_KAFKA_PORT
+    value: "16500"
+  # Leave '$(POD_NAME).$(POD_NAMESPACE)' as is, the WarpStream deployment already sets these variables. 
+  # Only change 'example.org' to the same domain you set external-dns to.
+  - name: WARPSTREAM_DISCOVERY_KAFKA_HOSTNAME_OVERRIDE
+    value: $(POD_NAME).$(POD_NAMESPACE).example.org
+
+# Set the kafka container port to the desired port
+containerPortKafka: 16500
+
+# Set the kafka host port to the same desired port
+hostPortKafka: 16500
+```
+
 ## Values
 
 | Key | Type | Default | Description |
@@ -520,6 +599,7 @@ kafkaService:
 | containerPortKafka | number | 9092 | The port on the container for Kafka |
 | containerPortHTTP | number | 9092 | The port on the container for internal agent to agent communication |
 | containerPortSchemaRegistry | number | 9092 | The port on the container for schema registry |
+| hostPortKafka | number | `` | The host port for Kafka |
 | service.type | string | `ClusterIP` | |
 | service.loadBalancerClass | string | `` | Optional load balancer class |
 | service.port | number | `9092` | |
