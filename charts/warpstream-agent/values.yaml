@@ -131,6 +131,11 @@ containerPortKafka: 9092
 containerPortHTTP: 8080
 containerPortSchemaRegistry: 9094
 
+# Set to enable exposing the WarpStream Agent Kafka port as a hostPort
+# This is typically not needed outside of rare networking cases
+# Ref: https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#ports
+# hostPortKafka: 9092
+
 service:
   type: ClusterIP
   port: 9092
