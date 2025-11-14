@@ -516,16 +516,28 @@ See external-dns hostport documentation [here](https://github.com/kubernetes-sig
 
 A production setup using external-dns would look like the following:
 
-Add `--fqdn-template={{ .Name }}.{{ .Namespace }}.example.org` to your external-dns deployment, change `example.org` to your 
-domain.
+For example add `--fqdn-template={{ .Name }}.{{ .Namespace }}.example.org` to your external-dns deployment, change 
+`example.org` to your domain and leave `{{ .Name }}.{{ .Namespace }}` as is. 
+
+See documentation [here](https://github.com/kubernetes-sigs/external-dns/blob/master/docs/advanced/fqdn-templating.md) 
+on external-dns fqdn templating.
 
 ```yaml
+# StatefulSet must be used as external-dns uses the `hostname` field present on pods, deployments don't set that field.
+deploymentKind: StatefulSet
+
 headlessService:
   annotations:
     # Change 'example.org` to your domain
     external-dns.alpha.kubernetes.io/hostname: example.org
     # Use the node's public IP, set to 'HostIP' to use the internal IP
     external-dns.alpha.kubernetes.io/endpoints-type: NodeExternalIP
+
+statefulSetConfig:
+  # Disabling the automatic hostname override that WarpStream StatefulSet's do
+  # This is because we want make sure our WARPSTREAM_DISCOVERY_KAFKA_HOSTNAME_OVERRIDE format
+  # matches the --fqdn-template that is given to external-dns.
+  disableAutomaticHostnameOverride: true
 
 extraEnv:
   # Set to the desired port
