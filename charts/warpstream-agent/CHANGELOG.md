@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.15.88] - 2025-11-24
+- Update WarpStream Agent to v729
+
+## [0.15.87] - 2025-11-21
+- Update WarpStream Agent to v728
+
+## [0.15.86] - 2025-11-19
+- Make `config.bucketURL` not be required if deploying tableflow agents
+
+## [0.15.85] - 2025-11-19
+- Update WarpStream Agent to v727
+
+## [0.15.84] - 2025-11-18
+- Update WarpStream Agent to v726
+
+## [0.15.83] - 2025-11-14
+- Update WarpStream Agent to v725
+
+## [0.15.82] - 2025-11-06
+- Update WarpStream Agent to v724
+
 ## [0.15.81] - 2025-11-04
 - Update WarpStream Agent to v723
 

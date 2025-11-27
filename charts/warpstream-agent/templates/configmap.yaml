@@ -26,7 +26,7 @@ data:
   WARPSTREAM_INGESTION_BUCKET_URL: {{ .Values.config.ingestionBucketURL | quote }}
   WARPSTREAM_COMPACTION_BUCKET_URL: {{ .Values.config.compactionBucketURL | quote }}
     {{- else }}
-      {{- if not .Values.config.bucketURL }}
+      {{- if and (not .Values.config.bucketURL) (not (hasPrefix "vci_dl" .Values.config.virtualClusterID)) }}
         {{- fail "bucketURL or ingestionBucketURL configuration value must be set" }}
       {{- end }}
   WARPSTREAM_BUCKET_URL: {{ .Values.config.bucketURL | quote }}
