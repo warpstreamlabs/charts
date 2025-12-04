@@ -9,6 +9,7 @@ metadata:
     {{- with .Values.service.labels }}
     {{- toYaml . | nindent 4 }}
     {{- end }}
+    app.kubernetes.io/component: headless
   {{- with (mergeOverwrite (default (dict) .Values.annotations) (default (dict) .Values.headlessService.annotations)) }}
   annotations:
     {{- toYaml . | nindent 4 }}
