@@ -10,6 +10,7 @@ metadata:
     {{- toYaml . | nindent 4 }}
     {{- end }}
     prometheus: "true"
+    app.kubernetes.io/component: agent
   {{- with (mergeOverwrite (default (dict) .Values.annotations) (default (dict) .Values.service.annotations)) }}
   annotations:
     {{- toYaml . | nindent 4 }}

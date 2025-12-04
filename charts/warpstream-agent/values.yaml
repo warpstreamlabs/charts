@@ -190,6 +190,8 @@ schemaRegistryService:
   # https://kubernetes.io/docs/concepts/services-networking/service/#load-balancer-class
   # loadBalancerClass: ""
 
+# Enable if using the HTTP Bento Component https://warpstreamlabs.github.io/bento/docs/components/http/about/
+# when using WarpStream's Managed Data Pipelines
 bentoService:
   enabled: false
   type: ClusterIP

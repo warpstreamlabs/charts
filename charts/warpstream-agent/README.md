@@ -626,7 +626,7 @@ hostPortKafka: 16500
 | kafkaService.loadBalancerClass | string | `` | Optional load balancer class |
 | kafkaService.port | number | `9092` | |
 | kafkaService.loadBalancerSourceRanges | list | `[]` | |
-| bentoService.enabled | bool | `false` | Enable the additional bento service |
+| bentoService.enabled | bool | `false` | Enable if using the HTTP Bento Component https://warpstreamlabs.github.io/bento/docs/components/http/about/ when using WarpStream's Managed Data Pipelines |
 | bentoService.type | string | `ClusterIP` | |
 | bentoService.loadBalancerClass | string | `` | Optional load balancer class |
 | bentoService.port | number | `4195` | |

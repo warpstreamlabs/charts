@@ -7,6 +7,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     {{- include "warpstream-agent.labels" . | nindent 4 }}
+    app.kubernetes.io/component: kafka
   {{- with (mergeOverwrite (default (dict) .Values.annotations) (default (dict) .Values.kafkaService.annotations)) }}
   annotations:
     {{- toYaml . | nindent 4 }}
