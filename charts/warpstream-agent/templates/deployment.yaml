@@ -96,6 +96,9 @@ spec:
             {{- range .Values.extraArgs }}
             - {{ . }}
             {{- end }}
+            {{- if .Values.dedicatedMetricsPod.enabled }}
+            - -disablePublishMetricsJob
+            {{- end }}
             {{- with .Values.certificate }}
             {{- if .enableTLS }}
             - -kafkaTLS=true
