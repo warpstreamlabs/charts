@@ -509,3 +509,18 @@ dedicatedMetricsPod:
       memory: 2Gi
       # We don't limit ephemeral-storage because its coorelated with how many logs the
       # Agents are emitting which is impossible to predict.
+  serviceMonitor:
+    ## If true, a ServiceMonitor CRD is created for a prometheus operator
+    ## https://github.com/coreos/prometheus-operator
+    ##
+    enabled: false
+    path: /metrics
+    labels: {}
+    interval: 30s
+    scheme: http
+    tlsConfig: {}
+    scrapeTimeout: 30s
+    relabelings: []
+    metricRelabelings: []
+    targetLabels: []
+    honorLabels: true

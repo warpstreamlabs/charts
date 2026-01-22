@@ -1,0 +1,57 @@
+{{- if .Values.dedicatedMetricsPod.enabled -}}
+{{- if .Values.dedicatedMetricsPod.serviceMonitor.enabled }}
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "warpstream-agent.fullname" . }}-metrics
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "warpstream-agent.labels" . | nindent 4 }}
+    {{- with .Values.dedicatedMetricsPod.serviceMonitor.labels }}
+    {{- tpl (toYaml . | nindent 4) $ }}
+    {{- end }}
+    app.kubernetes.io/component: agent-metrics
+  {{- with .Values.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  endpoints:
+  - port: http
+    {{- with .Values.dedicatedMetricsPod.serviceMonitor.interval }}
+    interval: {{ . }}
+    {{- end }}
+    {{- with .Values.dedicatedMetricsPod.serviceMonitor.scrapeTimeout }}
+    scrapeTimeout: {{ . }}
+    {{- end }}
+    honorLabels: {{ .Values.dedicatedMetricsPod.serviceMonitor.honorLabels }}
+    path: {{ .Values.dedicatedMetricsPod.serviceMonitor.path }}
+    scheme: {{ .Values.dedicatedMetricsPod.serviceMonitor.scheme }}
+    {{- with .Values.dedicatedMetricsPod.serviceMonitor.tlsConfig }}
+    tlsConfig:
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
+    {{- with .Values.dedicatedMetricsPod.serviceMonitor.relabelings }}
+    relabelings:
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
+    {{- with .Values.dedicatedMetricsPod.serviceMonitor.metricRelabelings }}
+    metricRelabelings:
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
+  jobLabel: app.kubernetes.io/name
+  selector:
+    matchLabels:
+      {{- include "warpstream-agent.selectorLabels" . | nindent 6 }}
+      prometheus: "true"
+      app.kubernetes.io/component: agent-metrics
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
+  {{- with .Values.dedicatedMetricsPod.serviceMonitor.targetLabels }}
+  targetLabels:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+{{- end }}
+{{- end }}
