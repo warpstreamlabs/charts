@@ -3,11 +3,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "warpstream-agent.fullname" . }}
+  name: {{ include "warpstream-agent.fullname" . }}-metrics
   namespace: {{ .Release.Namespace }}
   labels:
     {{- include "warpstream-agent.labels" . | nindent 4 }}
-    {{- with .Values.service.labels }}
+    {{- with .Values.dedicatedMetricsPod.service.labels }}
     {{- toYaml . | nindent 4 }}
     {{- end }}
     prometheus: "true"
@@ -17,18 +17,19 @@ metadata:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
-  type: {{ .Values.service.type }}
-  {{- if .Values.service.loadBalancerClass }}
-  loadBalancerClass: {{ .Values.service.loadBalancerClass }}
+  type: {{ .Values.dedicatedMetricsPod.service.type }}
+  {{- if .Values.dedicatedMetricsPod.service.loadBalancerClass }}
+  loadBalancerClass: {{ .Values.dedicatedMetricsPod.service.loadBalancerClass }}
   {{- end }}
   ports:
-    - port: {{ .Values.service.httpPort }}
+    - port: {{ .Values.dedicatedMetricsPod.service.httpPort }}
       targetPort: http
       protocol: TCP
       name: http
   selector:
     {{- include "warpstream-agent.selectorLabels" . | nindent 4 }}
-  {{- with .Values.service.loadBalancerSourceRanges }}
+    app.kubernetes.io/component: agent-metrics
+  {{- with .Values.dedicatedMetricsPod.service.loadBalancerSourceRanges }}
   loadBalancerSourceRanges:
     {{- range . }}
     - {{ . }}
