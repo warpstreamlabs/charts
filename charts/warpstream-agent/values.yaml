@@ -522,12 +522,6 @@ dedicatedMetricsPod:
     # If using type LoadBalancer set an optional loadBalancerClass
     # https://kubernetes.io/docs/concepts/services-networking/service/#load-balancer-class
     # loadBalancerClass: ""
-
-    # Create services per pod, this can be used in combination with deploymentKind=StatefulSet and statefulSetConfig.clusterDomain
-    # to expose each pod outside of the cluster when using Kong or Isto ingresses.
-    # See https://github.com/warpstreamlabs/charts/pull/156 for details
-    perPod:
-      enabled: false
   serviceMonitor:
     ## If true, a ServiceMonitor CRD is created for a prometheus operator
     ## https://github.com/coreos/prometheus-operator
