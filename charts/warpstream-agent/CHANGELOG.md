@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [0.15.107] - 2026-01-23
-- Update WarpStream Agent to v755
+- Update WarpStream Agent to v745
 
 ## [0.15.106] - 2026-01-23
 - Introduce a new `dedicatedMetricsPod` configuration block to spawn a dedicated pod in charge of publishing metrics through Prometheus and/or Datadog
