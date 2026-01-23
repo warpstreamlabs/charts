@@ -209,6 +209,8 @@ or the Bento Managed pipeline endpoints.
 
 WarpStream supports exposing metrics with Prometheus and Datadog. For more information see [Monitoring](https://docs.warpstream.com/warpstream/byoc/monitor-the-warpstream-agents) and [Important Metrics and Logs](https://docs.warpstream.com/warpstream/byoc/monitor-the-warpstream-agents/important-metrics-and-logs).
 
+By default, any agent can publish "cluster level" metrics by polling a job submitted by WarpStream control plane. This can cause weird behaviors as the same metric will be published by different agent pods with inconsistent values. A workaround is to set `dedicatedMetricsPod.enabled` to `true`: it will disable the control plane job, and instead spawn a dedicated deployment of size 1 with a pod that will do the same thing by scrapping WarpStream API. 
+
 #### Prometheus Operator
 
 The helm chart has native support for creating service monitors and scrape configurations for the [Prometheus Operator](https://github.com/prometheus-operator/prometheus-operator).

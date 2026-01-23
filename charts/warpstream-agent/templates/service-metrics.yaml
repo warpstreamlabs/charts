@@ -1,0 +1,39 @@
+{{- if .Values.dedicatedMetricsPod.enabled -}}
+{{- if .Values.dedicatedMetricsPod.serviceMonitor.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "warpstream-agent.fullname" . }}-metrics
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "warpstream-agent.labels" . | nindent 4 }}
+    {{- with .Values.dedicatedMetricsPod.service.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+    prometheus: "true"
+    app.kubernetes.io/component: agent-metrics
+  {{- with (mergeOverwrite (default (dict) .Values.annotations) (default (dict) .Values.service.annotations)) }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.dedicatedMetricsPod.service.type }}
+  {{- if .Values.dedicatedMetricsPod.service.loadBalancerClass }}
+  loadBalancerClass: {{ .Values.dedicatedMetricsPod.service.loadBalancerClass }}
+  {{- end }}
+  ports:
+    - port: {{ .Values.dedicatedMetricsPod.service.httpPort }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "warpstream-agent.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: agent-metrics
+  {{- with .Values.dedicatedMetricsPod.service.loadBalancerSourceRanges }}
+  loadBalancerSourceRanges:
+    {{- range . }}
+    - {{ . }}
+    {{- end }}
+  {{- end }}
+{{- end }}
+{{- end }}
