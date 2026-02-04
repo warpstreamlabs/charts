@@ -598,7 +598,9 @@ hostPortKafka: 16500
 | statefulSetConfig.disableAutomaticHostnameOverride | bool | `false` | Disables setting WARPSTREAM_DISCOVERY_KAFKA_HOSTNAME_OVERRIDE automatically to the pod hostname |
 | certificate.enableTLS | bool | `false` | Enable TLS termination on the WarpStream Agents |
 | certificate.certManager.create | bool | `false` | Enable cert-manager to manage the certificates |
-| certificate.certManager.subject | object | `{}` | X509 Certificate Subject Ref: https://cert-manager.io/docs/reference/api-docs/#cert-manager.io/v1.X509Subject | 
+| certificate.certManager.subject | object | `{}` | X509 Certificate Subject Ref: https://cert-manager.io/docs/reference/api-docs/#cert-manager.io/v1.X509Subject |
+| certificate.certManager.commonName | string | ` ` | X509 Common Name for the certificate |
+| certificate.certManager.privateKey | object | `{}` | Private key configuration (algorithm: RSA/ECDSA/Ed25519, size: key size) Ref: https://cert-manager.io/docs/reference/api-docs/#cert-manager.io/v1.CertificatePrivateKey | 
 | certificate.certManager.issuer.ref | object | `{}` | |
 | certificate.certManager.dnsNames | list | `[]` | Override the default DNS names used to create the certificate |
 | certificate.secretName | string | ` ` | The TLS Kubernetes secret name containing the certificate. Only used when not using cert-manager Ref: https://kubernetes.io/docs/concepts/configuration/secret/#tls-secrets |

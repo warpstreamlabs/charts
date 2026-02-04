@@ -7,6 +7,9 @@ metadata:
   labels:
     {{- include "warpstream-agent.labels" . | nindent 4 }}
 spec:
+  {{- if .Values.certificate.certManager.commonName }}
+  commonName: {{ .Values.certificate.certManager.commonName }}
+  {{- end }}
   {{- if .Values.certificate.certManager.dnsNames }}
   dnsNames: {{ toJson .Values.certificate.certManager.dnsNames }}
   {{- else }}
@@ -19,6 +22,10 @@ spec:
   {{- if .Values.certificate.certManager.subject }}
   subject:
     {{- toYaml .Values.certificate.certManager.subject | nindent 4 }}
+  {{- end }}
+  {{- if .Values.certificate.certManager.privateKey }}
+  privateKey:
+    {{- toYaml .Values.certificate.certManager.privateKey | nindent 4 }}
   {{- end }}
   issuerRef:
     {{- if not .Values.certificate.certManager.issuer.ref }}
