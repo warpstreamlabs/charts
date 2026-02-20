@@ -1,4 +1,5 @@
 {{- if .Values.headlessService.enabled }}
+{{- if not (hasKey .Values "customDeployments") }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -36,4 +37,5 @@ spec:
     {{- end }}
   selector:
     {{- include "warpstream-agent.selectorLabels" . | nindent 4 }}
+{{- end }}
 {{- end }}

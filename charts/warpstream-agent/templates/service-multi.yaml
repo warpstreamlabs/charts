@@ -1,0 +1,102 @@
+{{- if hasKey .Values "customDeployments" }}
+{{- range $customDeployment := .Values.customDeployments }}
+{{- $fullName := printf "%s-%s" (include "warpstream-agent.fullname" $) .name }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $fullName }}
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    {{- include "warpstream-agent.labels" $ | nindent 4 }}
+    {{- with $.Values.service.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+    prometheus: "true"
+    app.kubernetes.io/component: agent
+  {{- with (mergeOverwrite (default (dict) $.Values.annotations) (default (dict) $.Values.service.annotations)) }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ $.Values.service.type }}
+  {{- if $.Values.service.loadBalancerClass }}
+  loadBalancerClass: {{ $.Values.service.loadBalancerClass }}
+  {{- end }}
+  ports:
+    {{- if or ($.Values.config.playground) (not (hasPrefix "vci_sr_" ($.Values.config.virtualClusterID | default ""))) }}
+    - port: {{ $.Values.service.port }}
+      targetPort: kafka
+      protocol: TCP
+      name: kafka
+    {{- end }}
+    - port: {{ $.Values.service.httpPort }}
+      targetPort: http
+      protocol: TCP
+      name: http
+    {{- if or ($.Values.config.playground) (hasPrefix "vci_sr_" ($.Values.config.virtualClusterID | default "")) }}
+    - port: {{ $.Values.service.schemaRegistryPort | default 9094 }}
+      targetPort: schema-registry
+      protocol: TCP
+      name: schema-registry
+    {{- end }}
+  selector:
+    {{- include "warpstream-agent.selectorLabels" $ | nindent 4 }}
+    warpstream.com/name:  {{ $fullName }}
+  {{- with $.Values.service.loadBalancerSourceRanges }}
+  loadBalancerSourceRanges:
+    {{- range . }}
+    - {{ . }}
+    {{- end }}
+  {{- end }}
+...
+{{- if $.Values.service.perPod }}
+{{- if and (eq (include "warpstream-agent.deploymentKind" $) "StatefulSet") ($.Values.service.perPod.enabled) }}
+{{ $replicas := ($.Values.replicas | int) }}
+{{- range $i, $e := until $replicas }}
+{{- with $ }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $fullName }}-{{ $i }}
+  labels:
+    {{- include "warpstream-agent.labels" $ | nindent 4 }}
+    {{- with .Values.service.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- with $.Values.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ $.Values.service.type }}
+  {{- if $.Values.service.loadBalancerClass }}
+  loadBalancerClass: {{ $.Values.service.loadBalancerClass }}
+  {{- end }}
+  ports:
+    {{- if or ($.Values.config.playground) (not (hasPrefix "vci_sr_" ($.Values.config.virtualClusterID | default ""))) }}
+    - port: {{ $.Values.service.port }}
+      targetPort: kafka
+      protocol: TCP
+      name: kafka
+    {{- end }}
+    - port: {{ $.Values.service.httpPort }}
+      targetPort: http
+      protocol: TCP
+      name: http
+    {{- if or ($.Values.config.playground) (hasPrefix "vci_sr_" ($.Values.config.virtualClusterID | default "")) }}
+    - port: {{ $.Values.service.schemaRegistryPort | default 9094 }}
+      targetPort: schema-registry
+      protocol: TCP
+      name: schema-registry
+    {{- end }}
+  selector:
+    statefulset.kubernetes.io/pod-name: {{ $fullName }}-{{ $i }}
+...
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}

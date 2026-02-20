@@ -4,6 +4,30 @@ image:
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
 
+customDeployments:
+  - name: proxy-zone-a
+    overrides:
+      zone: "us-east-1a"
+      roles: proxy
+      agentGroup: default
+  - name: jobs-zone-a
+    overrides:
+      zone: "us-east-1a"
+      roles: jobs
+      agentGroup: default
+#  - name: all-one-b
+#    overrides:
+#      zone: "us-east-1b"
+#      roles: all
+# -  name: all-zone-c
+#    overrides:
+#      zone: "us-east-1c"
+#      roles: all
+# -  name: query-zone-a
+#    overrides:
+#      zone: "us-east-1a"
+#      roles: query
+
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
