@@ -1,3 +1,4 @@
+{{- if not (hasKey .Values "customDeployments") }}
 ---
 apiVersion: v1
 kind: Service
@@ -90,6 +91,7 @@ spec:
   selector:
     statefulset.kubernetes.io/pod-name: {{ include "warpstream-agent.fullname" . }}-{{ $i }}
 ...
+{{- end }}
 {{- end }}
 {{- end }}
 {{- end }}

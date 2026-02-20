@@ -1,4 +1,5 @@
 {{- if and (.Values.autoscaling.enabled) (not .Values.config.playground) }}
+{{- if not (hasKey .Values "customDeployments") }}
 apiVersion: {{ include "warpstream-agent.hpa.apiVersion" . }}
 kind: HorizontalPodAutoscaler
 metadata:
@@ -44,4 +45,5 @@ spec:
   {{- if .Values.autoscaling.behavior }}
   behavior: {{ toYaml .Values.autoscaling.behavior | nindent 4 }}
   {{- end }}
+{{- end }}
 {{- end }}
