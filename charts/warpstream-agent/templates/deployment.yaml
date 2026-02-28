@@ -1,3 +1,4 @@
+{{- if not (hasKey .Values "customDeployments") }}
 {{- $fullName := (include "warpstream-agent.fullname" .) }}
 apiVersion: apps/v1
 kind: {{ include "warpstream-agent.deploymentKind" . }}
@@ -27,6 +28,7 @@ spec:
   {{- end }}
   selector:
     matchLabels:
+      app.kubernetes.io/name: {{ include "warpstream-agent.name" . }}
       {{- include "warpstream-agent.selectorLabels" . | nindent 6 }}
   {{- if eq (include "warpstream-agent.deploymentKind" .) "Deployment" }}
   {{- with .Values.deploymentStrategy }}
@@ -55,6 +57,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
+        app.kubernetes.io/name: {{ include "warpstream-agent.name" . }}
         {{- include "warpstream-agent.selectorLabels" . | nindent 8 }}
         {{- if not (empty .Values.podLabels) }}
           {{- toYaml .Values.podLabels | nindent 8 }}
@@ -287,3 +290,4 @@ spec:
         {{- toYaml . | nindent 8 }}
         {{- end }}
       {{- end }}
+{{- end }}
