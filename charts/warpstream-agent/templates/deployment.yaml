@@ -155,7 +155,7 @@ spec:
                   fieldPath: metadata.name
             {{ if and (eq (include "warpstream-agent.deploymentKind" $) "StatefulSet") (not $.Values.statefulSetConfig.disableAutomaticHostnameOverride) (not (include "warpstream-agent.hostnameOverride" $)) }}
             - name: WARPSTREAM_DISCOVERY_KAFKA_HOSTNAME_OVERRIDE
-              value: $(MY_POD_NAME).{{ $fullName }}-headless.{{ .Release.Namespace }}.svc.{{ .Values.statefulSetConfig.clusterDomain }}
+              value: $(MY_POD_NAME).{{ $fullName }}-headless.{{ $.Release.Namespace }}.svc.{{ $.Values.statefulSetConfig.clusterDomain }}
             {{ end -}}
             - name: POD_NAME
               valueFrom:
