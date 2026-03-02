@@ -1,49 +1,53 @@
 {{- if and (.Values.autoscaling.enabled) (not .Values.config.playground) }}
-{{- if not (hasKey .Values "customDeployments") }}
-apiVersion: {{ include "warpstream-agent.hpa.apiVersion" . }}
+{{- $defaultDeployments := include "warpstream-agent.customDeploymentsDefault" . | fromYaml -}}
+{{- $deployments := .Values.customDeployments | default $defaultDeployments.deployments -}}
+{{- range $customDeployment := $deployments }}
+{{- $suffix := (hasKey $.Values "customDeployments") | ternary (printf "-%s" .name) "" }}
+{{- $fullName := printf "%s%s" (include "warpstream-agent.fullname" $) $suffix }}
+apiVersion: {{ include "warpstream-agent.hpa.apiVersion" $ }}
 kind: HorizontalPodAutoscaler
 metadata:
-  name: {{ include "warpstream-agent.fullname" . }}
-  namespace: {{ .Release.Namespace }}
-  labels: {{ include "warpstream-agent.labels" . | nindent 4 }}
-  {{- with .Values.annotations }}
+  name: {{ $fullName }}
+  namespace: {{ $.Release.Namespace }}
+  labels: {{ include "warpstream-agent.labels" $ | nindent 4 }}
+  {{- with $.Values.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
-    kind: {{ include "warpstream-agent.deploymentKind" . }}
-    name: {{ include "warpstream-agent.fullname" . }}
-  minReplicas: {{ .Values.autoscaling.minReplicas }}
-  maxReplicas: {{ .Values.autoscaling.maxReplicas }}
+    kind: {{ include "warpstream-agent.deploymentKind" $ }}
+    name: {{ $fullName }}
+  minReplicas: {{ $.Values.autoscaling.minReplicas }}
+  maxReplicas: {{ $.Values.autoscaling.maxReplicas }}
   metrics:
-    {{- if .Values.autoscaling.targetMemory }}
+    {{- if $.Values.autoscaling.targetMemory }}
     - type: Resource
       resource:
         name: memory
-        {{- if eq (include "warpstream-agent.hpa.apiVersion" .) "autoscaling/v2beta1" }}
-        targetAverageUtilization: {{ .Values.autoscaling.targetMemory }}
+        {{- if eq (include "warpstream-agent.hpa.apiVersion" $) "autoscaling/v2beta1" }}
+        targetAverageUtilization: {{ $.Values.autoscaling.targetMemory }}
         {{- else }}
         target:
           type: Utilization
-          averageUtilization: {{ .Values.autoscaling.targetMemory }}
+          averageUtilization: {{ $.Values.autoscaling.targetMemory }}
         {{- end }}
     {{- end }}
-    {{- if .Values.autoscaling.targetCPU }}
+    {{- if $.Values.autoscaling.targetCPU }}
     - type: Resource
       resource:
         name: cpu
-        {{- if eq (include "warpstream-agent.hpa.apiVersion" .) "autoscaling/v2beta1" }}
-        targetAverageUtilization: {{ .Values.autoscaling.targetCPU }}
+        {{- if eq (include "warpstream-agent.hpa.apiVersion" $) "autoscaling/v2beta1" }}
+        targetAverageUtilization: {{ $.Values.autoscaling.targetCPU }}
         {{- else }}
         target:
           type: Utilization
-          averageUtilization: {{ .Values.autoscaling.targetCPU }}
+          averageUtilization: {{ $.Values.autoscaling.targetCPU }}
         {{- end }}
     {{- end }}
-  {{- if .Values.autoscaling.behavior }}
-  behavior: {{ toYaml .Values.autoscaling.behavior | nindent 4 }}
+  {{- if $.Values.autoscaling.behavior }}
+  behavior: {{ toYaml $.Values.autoscaling.behavior | nindent 4 }}
   {{- end }}
 {{- end }}
 {{- end }}

@@ -1,44 +1,47 @@
-{{- if not (hasKey .Values "customDeployments") }}
-{{- $fullName := (include "warpstream-agent.fullname" .) }}
+{{- $defaultDeployments := include "warpstream-agent.customDeploymentsDefault" . | fromYaml -}}
+{{- $deployments := .Values.customDeployments | default $defaultDeployments.deployments -}}
+{{- range $customDeployment := $deployments }}
+{{- $suffix := (hasKey $.Values "customDeployments") | ternary (printf "-%s" .name) "" }}
+{{- $fullName := printf "%s%s" (include "warpstream-agent.fullname" $) $suffix }}
 apiVersion: apps/v1
-kind: {{ include "warpstream-agent.deploymentKind" . }}
+kind: {{ include "warpstream-agent.deploymentKind" $ }}
 metadata:
-  name: {{ include "warpstream-agent.fullname" . }}
-  namespace: {{ .Release.Namespace }}
+  name: {{ $fullName }}
+  namespace: {{ $.Release.Namespace }}
   labels:
-    {{- include "warpstream-agent.labels" . | nindent 4 }}
-    {{- if not (empty .Values.deploymentLabels) }}
-      {{- toYaml .Values.deploymentLabels | nindent 4 }}
+    {{- include "warpstream-agent.labels" $ | nindent 4 }}
+    {{- if not (empty $.Values.deploymentLabels) }}
+      {{- toYaml $.Values.deploymentLabels | nindent 4 }}
     {{- end }}
-  {{- with .Values.annotations }}
+    warpstream.com/name:  {{ $fullName }}
+  {{- with $.Values.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
-  {{- if .Values.config.playground }}
+  {{- if $.Values.config.playground }}
   replicas: 1
-  {{- else if and (not .Values.autoscaling.enabled) (.Values.replicas) }}
-  replicas: {{ .Values.replicas }}
+  {{- else if and (not $.Values.autoscaling.enabled) ($.Values.replicas) }}
+  replicas: {{ $.Values.replicas }}
   {{- end }}
-  {{- if eq (include "warpstream-agent.deploymentKind" .) "StatefulSet" }}
-  serviceName: {{ include "warpstream-agent.fullname" . }}-headless
+  {{- if eq (include "warpstream-agent.deploymentKind" $) "StatefulSet" }}
+  serviceName: {{ $fullName }}-headless
   {{- end }}
-  {{- if eq (include "warpstream-agent.deploymentKind" .) "Deployment" }}
-  revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
+  {{- if eq (include "warpstream-agent.deploymentKind" $) "Deployment" }}
+  revisionHistoryLimit: {{ $.Values.revisionHistoryLimit }}
   {{- end }}
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ include "warpstream-agent.name" . }}
-      {{- include "warpstream-agent.selectorLabels" . | nindent 6 }}
-  {{- if eq (include "warpstream-agent.deploymentKind" .) "Deployment" }}
-  {{- with .Values.deploymentStrategy }}
+      {{- include "warpstream-agent.selectorLabels" $ | nindent 6 }}
+  {{- if eq (include "warpstream-agent.deploymentKind" $) "Deployment" }}
+  {{- with $.Values.deploymentStrategy }}
   strategy:
     {{- toYaml . | trim | nindent 4 }}
   {{- end }}
   {{- end }}
-  {{- if eq (include "warpstream-agent.deploymentKind" .) "StatefulSet" }}
-  podManagementPolicy: {{ .Values.statefulSetConfig.podManagementPolicy }}
-  {{- with .Values.statefulSetConfig.updateStrategy }}
+  {{- if eq (include "warpstream-agent.deploymentKind" $) "StatefulSet" }}
+  podManagementPolicy: {{ $.Values.statefulSetConfig.podManagementPolicy }}
+  {{- with $.Values.statefulSetConfig.updateStrategy }}
   updateStrategy:
     {{- toYaml . | trim | nindent 4 }}
   {{- end }}
@@ -46,63 +49,62 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum   }}
-        {{- if .Values.config.apiKey }}
-        checksum/secret-deprecated-api-key: {{ include (print $.Template.BasePath "/secret-deprecated-api-key.yaml") . | sha256sum }}
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") $ | sha256sum   }}
+        {{- if $.Values.config.apiKey }}
+        checksum/secret-deprecated-api-key: {{ include (print $.Template.BasePath "/secret-deprecated-api-key.yaml") $ | sha256sum }}
         {{- end }}
-        {{- if .Values.config.agentKey }}
-        checksum/secret-agent-key: {{ include (print $.Template.BasePath "/secret-agent-key.yaml") . | sha256sum }}
+        {{- if $.Values.config.agentKey }}
+        checksum/secret-agent-key: {{ include (print $.Template.BasePath "/secret-agent-key.yaml") $ | sha256sum }}
         {{- end }}
-      {{- with .Values.podAnnotations }}
+      {{- with $.Values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        app.kubernetes.io/name: {{ include "warpstream-agent.name" . }}
-        {{- include "warpstream-agent.selectorLabels" . | nindent 8 }}
-        {{- if not (empty .Values.podLabels) }}
-          {{- toYaml .Values.podLabels | nindent 8 }}
+        {{- include "warpstream-agent.selectorLabels" $ | nindent 8 }}
+        {{- if not (empty $.Values.podLabels) }}
+          {{- toYaml $.Values.podLabels | nindent 8 }}
         {{- end }}
     spec:
-      {{- with .Values.imagePullSecrets }}
+      {{- with $.Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.schedulerName }}
+      {{- with $.Values.schedulerName }}
       schedulerName: {{ . }}
       {{- end }}
-      serviceAccountName: {{ include "warpstream-agent.serviceAccountName" . }}
-      {{- if .Values.priorityClassName }}
-      priorityClassName: {{ .Values.priorityClassName | quote }}
+      serviceAccountName: {{ include "warpstream-agent.serviceAccountName" $ }}
+      {{- if $.Values.priorityClassName }}
+      priorityClassName: {{ $.Values.priorityClassName | quote }}
       {{- end }}
-      terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
-      {{- with .Values.dnsConfig }}
+      terminationGracePeriodSeconds: {{ $.Values.terminationGracePeriodSeconds }}
+      {{- with $.Values.dnsConfig }}
       dnsConfig:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.podSecurityContext }}
+      {{- with $.Values.podSecurityContext }}
       securityContext:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       containers:
-        - name: {{ .Chart.Name }}
+        - name: {{ $.Chart.Name }}
           securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
-          image: {{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+            {{- toYaml $.Values.securityContext | nindent 12 }}
+          image: {{ $.Values.image.repository }}:{{ $.Values.image.tag | default $.Chart.AppVersion }}
+          imagePullPolicy: {{ $.Values.image.pullPolicy }}
           args:
-            {{- if .Values.config.playground }}
+            {{- if $.Values.config.playground }}
             - playground
             {{- else }}
             - agent
-            - -agentKeyPath=/app/agent-key/{{ include "warpstream-agent.agentKey.secretKey" . }}
+            - -agentKeyPath=/app/agent-key/{{ include "warpstream-agent.agentKey.secretKey" $ }}
             {{- end }}
-            {{- range .Values.extraArgs }}
+            {{- range $.Values.extraArgs }}
             - {{ . }}
             {{- end }}
-            {{- if .Values.dedicatedMetricsPod.enabled }}
+            {{- if $.Values.dedicatedMetricsPod.enabled }}
             - -disablePublishMetricsJob
             {{- end }}
-            {{- with .Values.certificate }}
+            {{- with $.Values.certificate }}
             {{- if .enableTLS }}
             - -kafkaTLS=true
             - -tlsServerCertFile=/etc/private/ssl/agent/tls.crt
@@ -115,8 +117,11 @@ spec:
             {{- end }}
             {{- end }}
             {{- end }}
-            {{- if .Values.config.agentGroup }}
-            - -agentGroup={{ .Values.config.agentGroup }}
+            {{- if and (hasKey . "overrides") (hasKey .overrides "agentGroup") }}
+            - -agentGroup={{ .overrides.agentGroup }}
+            {{- end }}
+            {{- if and (hasKey . "overrides") (hasKey .overrides "roles") }}
+            - -roles={{ .overrides.roles }}
             {{- end }}
           readinessProbe:
             httpGet:
@@ -132,9 +137,9 @@ spec:
             failureThreshold: 5
             periodSeconds: 5
           resources:
-            {{- if .Values.enforceProductionResourceRequirements}}
-              {{- $cpuMillicoresRequest := .Values.resources.requests.cpu | include "convertToMillicores" -}}
-              {{- $memoryRequest := .Values.resources.requests.memory | include "convertToBytes" -}}
+            {{- if $.Values.enforceProductionResourceRequirements}}
+              {{- $cpuMillicoresRequest := $.Values.resources.requests.cpu | include "convertToMillicores" -}}
+              {{- $memoryRequest := $.Values.resources.requests.memory | include "convertToBytes" -}}
               {{- $memoryPerMillicore := divf $memoryRequest $cpuMillicoresRequest -}}
               {{- $memoryPerCPU := mulf $memoryPerMillicore 1000.0 -}}
               {{- $minMemoryPerCPU := 4000000000.0 -}}
@@ -142,15 +147,15 @@ spec:
                 {{ fail (printf "Memory request per CPU (%.2f GiB) is less than the required 4 GiB per CPU. Please increase the memory request." (divf $memoryPerCPU 1073741824)) }}
               {{- end -}}
             {{- end -}}
-            {{- toYaml .Values.resources | nindent 12 }}
+            {{- toYaml $.Values.resources | nindent 12 }}
           env:
             - name: MY_POD_NAME
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
-            {{ if and (eq (include "warpstream-agent.deploymentKind" .) "StatefulSet") (not .Values.statefulSetConfig.disableAutomaticHostnameOverride) (not (include "warpstream-agent.hostnameOverride" .)) }}
+            {{ if and (eq (include "warpstream-agent.deploymentKind" $) "StatefulSet") (not $.Values.statefulSetConfig.disableAutomaticHostnameOverride) (not (include "warpstream-agent.hostnameOverride" $)) }}
             - name: WARPSTREAM_DISCOVERY_KAFKA_HOSTNAME_OVERRIDE
-              value: $(MY_POD_NAME).{{ include "warpstream-agent.fullname" . }}-headless.{{ .Release.Namespace }}.svc.{{ .Values.statefulSetConfig.clusterDomain }}
+              value: $(MY_POD_NAME).{{ $fullName }}-headless.{{ .Release.Namespace }}.svc.{{ .Values.statefulSetConfig.clusterDomain }}
             {{ end -}}
             - name: POD_NAME
               valueFrom:
@@ -163,50 +168,50 @@ spec:
                   apiVersion: v1
                   fieldPath: metadata.namespace
             - name: GOMAXPROCS
-              {{- if not .Values.goMaxProcs }}
-              {{- $cpuMillicoresRequest := .Values.resources.requests.cpu | include "convertToMillicores" -}}
+              {{- if not $.Values.goMaxProcs }}
+              {{- $cpuMillicoresRequest := $.Values.resources.requests.cpu | include "convertToMillicores" -}}
               {{- $goMaxProcs := divf $cpuMillicoresRequest 1000 -}}
               {{- $goMaxProcs := ceil $goMaxProcs }}
               value: {{ $goMaxProcs | quote }}
               {{- else }}
-              value: {{ .Values.goMaxProcs | quote }}
+              value: {{ $.Values.goMaxProcs | quote }}
               {{- end }}
             - name: WARPSTREAM_GRACEFUL_SHUTDOWN_DURATION
-              value: {{ .Values.config.gracefulShutdownDuration | default "300s" | quote }}
-          {{- if .Values.extraEnv }}
-            {{- toYaml .Values.extraEnv | nindent 12 }}
+              value: {{ $.Values.config.gracefulShutdownDuration | default "300s" | quote }}
+          {{- if $.Values.extraEnv }}
+            {{- toYaml $.Values.extraEnv | nindent 12 }}
           {{- end }}
           envFrom:
-          {{- if ne .Values.config.configMapEnabled false }}
+          {{- if ne $.Values.config.configMapEnabled false }}
             - configMapRef:
-                name: {{ include "warpstream-agent.fullname" . }}
+                name: {{ include "warpstream-agent.fullname" $ }}
           {{- end }}
-          {{- with .Values.extraEnvFrom }}
+          {{- with $.Values.extraEnvFrom }}
           {{ toYaml . | nindent 12 }}
           {{- end }}
           ports:
             - name: kafka
-              containerPort: {{ .Values.containerPortKafka | default 9092 }}
-              {{- if .Values.hostPortKafka }}
-              hostPort: {{ .Values.hostPortKafka }}
+              containerPort: {{ $.Values.containerPortKafka | default 9092 }}
+              {{- if $.Values.hostPortKafka }}
+              hostPort: {{ $.Values.hostPortKafka }}
               {{- end }}
               protocol: TCP
             - name: http
-              containerPort: {{ .Values.containerPortHTTP | default 8080 }}
+              containerPort: {{ $.Values.containerPortHTTP | default 8080 }}
               protocol: TCP
-            {{- if or (.Values.config.playground) (hasPrefix "vci_sr_" (.Values.config.virtualClusterID | default "")) }}
+            {{- if or ($.Values.config.playground) (hasPrefix "vci_sr_" ($.Values.config.virtualClusterID | default "")) }}
             - name: schema-registry
-              containerPort: {{ .Values.containerPortSchemaRegistry | default 9094 }}
+              containerPort: {{ $.Values.containerPortSchemaRegistry | default 9094 }}
               protocol: TCP
             {{- end }}
-          {{- if or (.Values.volumeMounts) (not .Values.config.playground) (.Values.certificate) }}
+          {{- if or ($.Values.volumeMounts) (not $.Values.config.playground) ($.Values.certificate) }}
           volumeMounts:
-            {{- if not .Values.config.playground }}
+            {{- if not $.Values.config.playground }}
             - name: agent-key
               mountPath: /app/agent-key
               readOnly: true
             {{- end }}
-            {{- with .Values.certificate }}
+            {{- with $.Values.certificate }}
             {{- if .enableTLS }}
             - name: agent-certs
               mountPath: "/etc/private/ssl/agent"
@@ -218,57 +223,53 @@ spec:
             {{- end }}
             {{- end }}
             {{- end }}
-            {{- with .Values.volumeMounts }}
+            {{- with $.Values.volumeMounts }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
           {{- end }}
-        {{- with .Values.sidecarContainers }}
+        {{- with $.Values.sidecarContainers }}
           {{- toYaml . | nindent 8 }}
         {{- end }}
-      {{- with .Values.initContainers }}
+      {{- with $.Values.initContainers }}
       initContainers:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- if hasKey .Values "availabilityZoneSelector" }}
-      {{- if or .Values.nodeSelector .Values.availabilityZoneSelector.enabled }}
+      {{- if and (hasKey . "overrides") (hasKey .overrides "zone") }}
       nodeSelector:
-      {{- with .Values.nodeSelector }}
+      {{- with $.Values.nodeSelector }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- if .Values.availabilityZoneSelector.enabled }}
-        {{ .Values.availabilityZoneSelector.nodeZoneLabel }}: {{ .Values.availabilityZoneSelector.zone }}
-      {{- end }}
-      {{- end }}
+        {{  $.Values.availabilityZoneSelector.nodeZoneLabel }}: {{  .overrides.zone }}
       {{- else }}
-      {{- with .Values.nodeSelector }}
+      {{- with $.Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       {{- end }}
-      {{- with .Values.affinity }}
+      {{- with $.Values.affinity }}
       affinity:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.tolerations }}
+      {{- with $.Values.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.hostAliases  }}
+      {{- with $.Values.hostAliases  }}
       hostAliases:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.topologySpreadConstraints }}
+      {{- with $.Values.topologySpreadConstraints }}
       topologySpreadConstraints:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- if or (.Values.volumes) (not .Values.config.playground) (.Values.certificate) }}
+      {{- if or ($.Values.volumes) (not $.Values.config.playground) ($.Values.certificate) }}
       volumes:
-        {{- if not .Values.config.playground }}
+        {{- if not $.Values.config.playground }}
         - name: agent-key
           secret:
-            secretName: {{ include "warpstream-agent.agentKey.secretName" . }}
+            secretName: {{ include "warpstream-agent.agentKey.secretName" $ }}
         {{- end }}
-        {{- with .Values.certificate }}
+        {{- with $.Values.certificate }}
         {{- if .enableTLS }}
         {{- if and .certManager .certManager.create }}
         - name: agent-certs
@@ -286,7 +287,7 @@ spec:
         {{- end }}
         {{- end }}
         {{- end }}
-        {{- with .Values.volumes }}
+        {{- with $.Values.volumes }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
       {{- end }}

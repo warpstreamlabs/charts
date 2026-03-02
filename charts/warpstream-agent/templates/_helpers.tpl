@@ -31,6 +31,14 @@ Create chart name and version as used by the chart label.
 {{- end }}
 
 {{/*
+Create default custom deployments in case our values.yaml is not used
+*/}}
+{{- define "warpstream-agent.customDeploymentsDefault" -}}
+deployments:
+  - name: default
+{{- end -}}
+
+{{/*
 Common labels
 */}}
 {{- define "warpstream-agent.labels" -}}
