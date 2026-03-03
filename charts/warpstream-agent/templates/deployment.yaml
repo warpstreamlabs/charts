@@ -64,6 +64,7 @@ spec:
         {{- if not (empty $.Values.podLabels) }}
           {{- toYaml $.Values.podLabels | nindent 8 }}
         {{- end }}
+        warpstream.com/name:  {{ $fullName }}
     spec:
       {{- with $.Values.imagePullSecrets }}
       imagePullSecrets:
