@@ -5,13 +5,20 @@ image:
   tag: ""
 
 # Customize this list to get custom deployments with different agent roles/groups/zone affinity in the same chart.
+# Each of those deployments will inherit from all the other configurations. An env var defined in `extraEnv`
+# will have precedence over what the same one defined in the root `extraEnv`.
 # customDeployments:
-#   - name: proxy-zone-a
-#     overrides:
-#       zone: "us-east-1a"
-#       roles: proxy
-#       agentGroup: default
-#   - name: jobs-zone-a
+#  - name: proxy-zone-a
+#    overrides:
+#      zone: "us-east-1a"
+#      roles: proxy
+#      agentGroup: default
+#    extraEnv:
+#    - name: WARPSTREAM_SCHEMA_REGISTRY_BASIC_AUTH_ENABLED
+#      value: "true"
+#    extraArgs:
+#    - -enableDatadogMetrics
+#  - name: jobs-zone-a
 #     overrides:
 #       zone: "us-east-1a"
 #       roles: jobs

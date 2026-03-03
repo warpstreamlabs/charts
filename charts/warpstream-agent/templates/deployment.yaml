@@ -102,6 +102,11 @@ spec:
             {{- range $.Values.extraArgs }}
             - {{ . }}
             {{- end }}
+            {{- if hasKey . "extraArgs"}}
+            {{- range .extraArgs }}
+            - {{ . }}
+            {{- end }}
+            {{- end }}
             {{- if $.Values.dedicatedMetricsPod.enabled }}
             - -disablePublishMetricsJob
             {{- end }}
@@ -181,6 +186,9 @@ spec:
               value: {{ $.Values.config.gracefulShutdownDuration | default "300s" | quote }}
           {{- if $.Values.extraEnv }}
             {{- toYaml $.Values.extraEnv | nindent 12 }}
+          {{- end }}
+          {{- if hasKey . "extraEnv" }}
+            {{- toYaml .extraEnv | nindent 12 }}
           {{- end }}
           envFrom:
           {{- if ne $.Values.config.configMapEnabled false }}
