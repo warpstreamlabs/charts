@@ -1,16 +1,22 @@
 {{- if .Values.headlessService.enabled }}
+{{- $defaultDeployments := include "warpstream-agent.customDeploymentsDefault" . | fromYaml -}}
+{{- $deployments := .Values.customDeployments | default $defaultDeployments.deployments -}}
+{{- range $customDeployment := $deployments }}
+{{- $suffix := (hasKey $.Values "customDeployments") | ternary (printf "-%s" .name) "" }}
+{{- $fullName := printf "%s%s" (include "warpstream-agent.fullname" $) $suffix }}
+---
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "warpstream-agent.fullname" . }}-headless
-  namespace: {{ .Release.Namespace }}
+  name: {{ $fullName }}-headless
+  namespace: {{ $.Release.Namespace }}
   labels:
-    {{- include "warpstream-agent.labels" . | nindent 4 }}
-    {{- with .Values.service.labels }}
+    {{- include "warpstream-agent.labels" $ | nindent 4 }}
+    {{- with $.Values.service.labels }}
     {{- toYaml . | nindent 4 }}
     {{- end }}
     app.kubernetes.io/component: headless
-  {{- with (mergeOverwrite (default (dict) .Values.annotations) (default (dict) .Values.headlessService.annotations)) }}
+  {{- with (mergeOverwrite (default (dict) $.Values.annotations) (default (dict) $.Values.headlessService.annotations)) }}
   annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
@@ -18,22 +24,26 @@ spec:
   type: ClusterIP
   clusterIP: None
   ports:
-    {{- if or (.Values.config.playground) (not (hasPrefix "vci_sr_" (.Values.config.virtualClusterID | default ""))) }}
-    - port: {{ .Values.service.port }}
+    {{- if or ($.Values.config.playground) (not (hasPrefix "vci_sr_" ($.Values.config.virtualClusterID | default ""))) }}
+    - port: {{ $.Values.service.port }}
       targetPort: kafka
       protocol: TCP
       name: kafka
     {{- end }}
-    - port: {{ .Values.service.httpPort }}
+    - port: {{ $.Values.service.httpPort }}
       targetPort: http
       protocol: TCP
       name: http
-    {{- if or (.Values.config.playground) (hasPrefix "vci_sr_" (.Values.config.virtualClusterID | default "")) }}
-    - port: {{ .Values.service.schemaRegistryPort | default 9094 }}
+    {{- if or ($.Values.config.playground) (hasPrefix "vci_sr_" ($.Values.config.virtualClusterID | default "")) }}
+    - port: {{ $.Values.service.schemaRegistryPort | default 9094 }}
       targetPort: schema-registry
       protocol: TCP
       name: schema-registry
     {{- end }}
   selector:
-    {{- include "warpstream-agent.selectorLabels" . | nindent 4 }}
+    {{- include "warpstream-agent.selectorLabels" $ | nindent 4 }}
+    {{- if hasKey $.Values "customDeployments" }}
+    warpstream.com/name:  {{ $fullName }}
+    {{- end }}
+{{- end }}
 {{- end }}
