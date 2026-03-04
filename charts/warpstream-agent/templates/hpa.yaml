@@ -4,6 +4,7 @@
 {{- range $customDeployment := $deployments }}
 {{- $suffix := (hasKey $.Values "customDeployments") | ternary (printf "-%s" .name) "" }}
 {{- $fullName := printf "%s%s" (include "warpstream-agent.fullname" $) $suffix }}
+---
 apiVersion: {{ include "warpstream-agent.hpa.apiVersion" $ }}
 kind: HorizontalPodAutoscaler
 metadata:

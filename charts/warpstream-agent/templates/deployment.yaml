@@ -3,6 +3,7 @@
 {{- range $customDeployment := $deployments }}
 {{- $suffix := (hasKey $.Values "customDeployments") | ternary (printf "-%s" .name) "" }}
 {{- $fullName := printf "%s%s" (include "warpstream-agent.fullname" $) $suffix }}
+---
 apiVersion: apps/v1
 kind: {{ include "warpstream-agent.deploymentKind" $ }}
 metadata:

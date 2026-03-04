@@ -8,33 +8,30 @@ image:
 # Each of those deployments will inherit from all the other configurations. An env var defined in `extraEnv`
 # will have precedence over what the same one defined in the root `extraEnv`.
 # customDeployments:
-#  - name: proxy-zone-a
+# - name: proxy-zone-a
+#   overrides:
+#     zone: "us-east-1a"
+#     roles: proxy
+#     agentGroup: default
+#   extraEnv:
+#   - name: WARPSTREAM_SCHEMA_REGISTRY_BASIC_AUTH_ENABLED
+#     value: "true"
+# - name: jobs-zone-a
+#   overrides:
+#     zone: "us-east-1a"
+#     roles: jobs
+#     agentGroup: default
+# - name: all-zone-b
+#   overrides:
+#     zone: "us-east-1b"
+#     agentGroup: test
+# -  name: all-zone-c
+#    overrides:
+#      zone: "us-east-1c"
+# -  name: query-zone-a
 #    overrides:
 #      zone: "us-east-1a"
-#      roles: proxy
-#      agentGroup: default
-#    extraEnv:
-#    - name: WARPSTREAM_SCHEMA_REGISTRY_BASIC_AUTH_ENABLED
-#      value: "true"
-#    extraArgs:
-#    - -enableDatadogMetrics
-#  - name: jobs-zone-a
-#     overrides:
-#       zone: "us-east-1a"
-#       roles: jobs
-#       agentGroup: default
-#   - name: all-one-b
-#     overrides:
-#       zone: "us-east-1b"
-#       roles: all
-#  -  name: all-zone-c
-#     overrides:
-#       zone: "us-east-1c"
-#       roles: all
-#  -  name: query-zone-a
-#     overrides:
-#       zone: "us-east-1a"
-#       roles: query
+#      roles: query
 
 imagePullSecrets: []
 nameOverride: ""
