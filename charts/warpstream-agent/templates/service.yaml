@@ -44,7 +44,9 @@ spec:
     {{- end }}
   selector:
     {{- include "warpstream-agent.selectorLabels" $ | nindent 4 }}
+    {{- if hasKey $.Values "customDeployments" }}
     warpstream.com/name:  {{ $fullName }}
+    {{- end }}
   {{- with $.Values.service.loadBalancerSourceRanges }}
   loadBalancerSourceRanges:
     {{- range . }}

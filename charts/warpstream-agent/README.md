@@ -557,6 +557,43 @@ containerPortKafka: 16500
 hostPortKafka: 16500
 ```
 
+### Defining custom deployments
+
+You can define a section like this to have our charts deploy multiple agent deployments:
+
+```yaml
+customDeployments:
+ - name: proxy-zone-a
+   overrides:
+     zone: "us-east-1a"
+     roles: proxy
+     agentGroup: default
+   extraEnv: 
+   - name: WARPSTREAM_SCHEMA_REGISTRY_BASIC_AUTH_ENABLED
+     value: "true"
+   extraArgs:
+   - -enableDatadogMetrics
+ - name: jobs-zone-a
+    overrides:
+      zone: "us-east-1a"
+      roles: jobs
+      agentGroup: default
+  - name: all-one-b
+    overrides:
+      zone: "us-east-1b"
+      roles: all
+ -  name: all-zone-c
+    overrides:
+      zone: "us-east-1c"
+      roles: all
+ -  name: query-zone-a
+    overrides:
+      zone: "us-east-1a"
+      roles: query
+```
+
+It is important to note that if you were already using our charts and you want to start defining custom deployments, you have to first deploy a version more recent or equal than `1.0.0`, and only in a second phase add custom deployments and redeploy. If you do not follow those recommendations, then the WarpStream Agent kubernetes service will experience a short interruption of service.
+
 ## Values
 
 | Key | Type | Default | Description |
