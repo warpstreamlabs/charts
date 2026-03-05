@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [1.0.0] - 2026-03-04
+There is no breaking change in this version despite what the versioning bump may imply. We are just officially coming out of beta as we have been ready for production usecases for a while.
 - Add support of custom deployments
 
 ## [0.16.11] - 2026-03-03
