@@ -452,6 +452,99 @@ extraEnv:
 **Note:** Datadog Agents can also be configured to pull metrics from the WarpStream Agents, however we recommend
 using the above push setup for most installtions.
 
+#### Datadog Hosted Prometheus Endpoint
+
+WarpStream provides a [hosted Prometheus endpoint](https://docs.warpstream.com/warpstream/agent-setup/monitor-the-warpstream-agents/hosted-prometheus-endpoint) that exposes cluster-level metrics. Datadog can scrape this endpoint using a [cluster check](https://docs.datadoghq.com/integrations/guide/prometheus-host-collection/) with the OpenMetrics integration.
+
+Since the Datadog Agent is typically already installed in your cluster, no changes to the WarpStream Helm chart are needed. Instead, configure a cluster check on your existing Datadog installation.
+
+Replace `<YOUR_VIRTUAL_CLUSTER_ID>` with your WarpStream virtual cluster ID and `<YOUR_WARPSTREAM_API_KEY>` with your WarpStream API key in the examples below.
+
+##### Using the Datadog Operator
+
+If you manage Datadog with the [Datadog Operator](https://docs.datadoghq.com/getting_started/containers/datadog_operator/), add a cluster check to your `DatadogAgent` resource:
+
+```yaml
+apiVersion: datadoghq.com/v2alpha1
+kind: DatadogAgent
+metadata:
+  name: datadog
+spec:
+  features:
+    clusterChecks:
+      enabled: true
+  override:
+    clusterAgent:
+      extraConfd:
+        configDataMap:
+          warpstream.yaml: |-
+            cluster_check: true
+            init_config:
+            instances:
+              - openmetrics_endpoint: "https://api.warpstream.com/api/v1/monitoring/prometheus/virtual_clusters/<YOUR_VIRTUAL_CLUSTER_ID>"
+                namespace: "warpstream"
+                metrics:
+                  - ".*"
+                headers:
+                  Authorization: "Bearer <YOUR_WARPSTREAM_API_KEY>"
+                # min_collection_interval: 15
+                # timeout: 10
+```
+
+##### Using the Datadog Helm Chart
+
+If you installed Datadog using the [Datadog Helm chart](https://github.com/DataDog/helm-charts/tree/main/charts/datadog) without the operator, enable cluster checks and add the check configuration in your Datadog `values.yaml`:
+
+```yaml
+datadog:
+  clusterChecks: true
+
+clusterAgent:
+  confd:
+    warpstream.yaml: |-
+      cluster_check: true
+      init_config:
+      instances:
+        - openmetrics_endpoint: "https://api.warpstream.com/api/v1/monitoring/prometheus/virtual_clusters/<YOUR_VIRTUAL_CLUSTER_ID>"
+          namespace: "warpstream"
+          metrics:
+            - ".*"
+          headers:
+            Authorization: "Bearer <YOUR_WARPSTREAM_API_KEY>"
+          # min_collection_interval: 15
+          # timeout: 10
+```
+
+##### Manual Datadog Agent Installation
+
+If you installed the Datadog Agent manually (e.g., via DaemonSet manifests), you can configure the cluster check by creating a ConfigMap in the Datadog Cluster Agent's namespace:
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: datadog-cluster-agent-confd
+  annotations:
+    ad.datadoghq.com/endpoints.check_names: '["openmetrics"]'
+data:
+  warpstream.yaml: |-
+    cluster_check: true
+    init_config:
+    instances:
+      - openmetrics_endpoint: "https://api.warpstream.com/api/v1/monitoring/prometheus/virtual_clusters/<YOUR_VIRTUAL_CLUSTER_ID>"
+        namespace: "warpstream"
+        metrics:
+          - ".*"
+        headers:
+          Authorization: "Bearer <YOUR_WARPSTREAM_API_KEY>"
+        # min_collection_interval: 15
+        # timeout: 10
+```
+
+Mount this ConfigMap into the Datadog Cluster Agent container at `/conf.d`. Ensure that [cluster checks are enabled](https://docs.datadoghq.com/agent/cluster_agent/clusterchecks/) in your Cluster Agent configuration by setting `DD_CLUSTER_CHECKS_ENABLED=true`.
+
+For more details on configuring Datadog to scrape Prometheus endpoints, see the [Datadog Prometheus host collection guide](https://docs.datadoghq.com/integrations/guide/prometheus-host-collection/).
+
 ### Deployment vs Statefulset
 
 Use StatefulSet when TLS is needed for an easier time managing certificates due to stable hostnames.
