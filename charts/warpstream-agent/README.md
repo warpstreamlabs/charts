@@ -121,6 +121,209 @@ WarpStream supports secure authentication and encryption via SASL and TLS, altho
 
 If you plan to expose the WarpStream Agents outside your VPC (i.e., to the public internet), enabling both is highly recommended. See the [Authentication](https://docs.warpstream.com/warpstream/byoc/advanced-agent-deployment-options/enable-agent-auth) documentation for more details.
 
+### TLS Encryption
+
+WarpStream supports TLS encryption to protect data in motion between Kafka clients and WarpStream Agents. TLS can also be enabled for the Schema Registry protocol. See the [TLS documentation](https://docs.warpstream.com/warpstream/kafka/manage-security/protect-data-in-motion-with-tls-encryption) for full details.
+
+**Important:** WarpStream uses modern x509 certificate parsing which requires certificates to have both the Common Name and Subject Alternative Names (SAN) set. The Common Name must also be included in the SAN list.
+
+When using TLS, it is recommended to use a `StatefulSet` deployment for stable hostnames which simplifies certificate management. See [Deployment vs StatefulSet](#deployment-vs-statefulset) for more details.
+
+#### TLS with a Kubernetes Secret
+
+Create a Kubernetes TLS secret containing your certificate and private key, then reference it in the chart configuration.
+
+The certificate SANs must include the following DNS names (replace `warpstream-agent` with your Helm release name and `warpstream` with your namespace):
+
+- `warpstream-agent`
+- `warpstream-agent-kafka`
+- `warpstream-agent.warpstream.svc.cluster.local`
+- `*.warpstream-agent-headless.warpstream.svc.cluster.local`
+
+1. Create the TLS secret:
+
+```shell
+kubectl create secret tls warpstream-agent-tls \
+    --namespace warpstream \
+    --cert=tls.crt \
+    --key=tls.key
+```
+
+2. Configure the chart:
+
+```yaml
+deploymentKind: StatefulSet
+
+certificate:
+  enableTLS: true
+  secretName: "warpstream-agent-tls"
+```
+
+#### TLS with cert-manager
+
+[cert-manager](https://cert-manager.io) can automatically provision and manage TLS certificates. The chart has native support for creating cert-manager `Certificate` resources.
+
+When using cert-manager, the chart automatically sets the certificate's DNS SANs to:
+
+- `<fullname>`
+- `<fullname>-kafka`
+- `<fullname>.<namespace>.svc.cluster.local`
+- `*.<fullname>-headless.<namespace>.svc.cluster.local`
+
+You can override these using `certificate.certManager.dnsNames`.
+
+1. Ensure cert-manager is installed and an `Issuer` or `ClusterIssuer` is configured in your cluster.
+
+2. Configure the chart:
+
+```yaml
+deploymentKind: StatefulSet
+
+certificate:
+  enableTLS: true
+
+  certManager:
+    create: true
+    issuer:
+      ref:
+        kind: ClusterIssuer
+        name: my-cluster-issuer
+```
+
+Optionally, configure additional cert-manager options:
+
+```yaml
+certificate:
+  enableTLS: true
+
+  certManager:
+    create: true
+    commonName: "warpstream-agent"
+    privateKey:
+      algorithm: RSA
+      size: 4096
+    subject:
+      organizations:
+        - "My Organization"
+    issuer:
+      ref:
+        kind: ClusterIssuer
+        name: my-cluster-issuer
+    # Override default DNS SANs if needed
+    # dnsNames:
+    #   - "custom-hostname.example.com"
+```
+
+#### Schema Registry TLS
+
+To enable TLS for the Schema Registry protocol in addition to Kafka, set the `WARPSTREAM_SCHEMA_REGISTRY_TLS_ENABLED` environment variable:
+
+```yaml
+deploymentKind: StatefulSet
+
+certificate:
+  enableTLS: true
+  secretName: "warpstream-agent-tls"
+
+extraEnv:
+  - name: WARPSTREAM_SCHEMA_REGISTRY_TLS_ENABLED
+    value: "true"
+```
+
+The Schema Registry will use the same certificate configured via `certificate.secretName` or cert-manager.
+
+#### TLS Profiles
+
+WarpStream supports configurable TLS profiles to control the minimum TLS version and cipher suites. Set the profile using the `WARPSTREAM_TLS_PROFILE` environment variable:
+
+```yaml
+extraEnv:
+  - name: WARPSTREAM_TLS_PROFILE
+    value: "intermediate"  # Options: golang-default, old, intermediate, modern
+```
+
+| Profile | Min TLS Version | Description |
+|---------|----------------|-------------|
+| `golang-default` | Go default | Uses Go's default TLS settings (default) |
+| `old` | TLS 1.0 | Broad compatibility with legacy clients |
+| `intermediate` | TLS 1.2 | Recommended balance of security and compatibility |
+| `modern` | TLS 1.3 | Maximum security, requires modern clients |
+
+### mTLS Authentication
+
+Mutual TLS (mTLS) provides bidirectional authentication where the WarpStream Agent verifies client certificates and clients verify the agent's certificate. mTLS requires agent-terminated TLS and cannot be combined with load balancer TLS termination.
+
+See the [mTLS documentation](https://docs.warpstream.com/warpstream/byoc/authentication/mutual-tls-mtls) for full details.
+
+#### mTLS with Kubernetes Secrets
+
+1. Create a TLS secret for the agent's server certificate:
+
+```shell
+kubectl create secret tls warpstream-agent-tls \
+    --namespace warpstream \
+    --cert=tls.crt \
+    --key=tls.key
+```
+
+2. Create a secret containing the Certificate Authority (CA) public key used to verify client certificates:
+
+```shell
+kubectl create secret generic warpstream-agent-ca \
+    --namespace warpstream \
+    --from-file=ca.crt=ca.crt
+```
+
+3. Configure the chart:
+
+```yaml
+deploymentKind: StatefulSet
+
+certificate:
+  enableTLS: true
+  secretName: "warpstream-agent-tls"
+
+  mtls:
+    enabled: true
+    certificateAuthoritySecretKeyRef:
+      name: "warpstream-agent-ca"
+      key: "ca.crt"
+```
+
+#### mTLS with cert-manager
+
+1. Create a secret containing the CA public key used to verify client certificates (this is separate from the cert-manager managed server certificate):
+
+```shell
+kubectl create secret generic warpstream-agent-ca \
+    --namespace warpstream \
+    --from-file=ca.crt=ca.crt
+```
+
+2. Configure the chart:
+
+```yaml
+deploymentKind: StatefulSet
+
+certificate:
+  enableTLS: true
+
+  certManager:
+    create: true
+    issuer:
+      ref:
+        kind: ClusterIssuer
+        name: my-cluster-issuer
+
+  mtls:
+    enabled: true
+    certificateAuthoritySecretKeyRef:
+      name: "warpstream-agent-ca"
+      key: "ca.crt"
+```
+
+**Note:** If `certificateAuthoritySecretKeyRef` is not set, the container's root certificate pool will be used for client certificate verification. It is strongly recommended to always set this to your CA's public key rather than relying on the root certificate pool.
+
 ### Kubernetes Equal Spread
 
 Ideally, when deploying WarpStream, Kubernetes will equally distribute pods across all nodes and zones. However, in some
