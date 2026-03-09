@@ -126,6 +126,8 @@ spec:
             {{- end }}
             {{- if and (hasKey . "overrides") (hasKey .overrides "agentGroup") }}
             - -agentGroup={{ .overrides.agentGroup }}
+            {{- else if $.Values.config.agentGroup }}
+            - -agentGroup={{ $.Values.config.agentGroup }}
             {{- end }}
             {{- if and (hasKey . "overrides") (hasKey .overrides "roles") }}
             - -roles={{ .overrides.roles }}
