@@ -31,6 +31,19 @@ Create chart name and version as used by the chart label.
 {{- end }}
 
 {{/*
+Resolve the image tag: explicit tag > stable appVersion > appVersion.
+*/}}
+{{- define "warpstream-agent.imageTag" -}}
+{{- if .Values.image.tag -}}
+{{- .Values.image.tag -}}
+{{- else if .Values.image.useStableImage -}}
+{{- .Chart.Annotations.appVersionStable | default .Chart.AppVersion -}}
+{{- else -}}
+{{- .Chart.AppVersion -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Create default custom deployments in case our values.yaml is not used
 */}}
 {{- define "warpstream-agent.customDeploymentsDefault" -}}

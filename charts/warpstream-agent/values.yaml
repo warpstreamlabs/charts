@@ -3,6 +3,9 @@ image:
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
+  # If no `image.tag` override is set, the chart will use the chart's appVersion if `useStableImage` is false, otherwise it will use appVersionStable.
+  # appVersionStable is the latest warpstream agent version that is at least one month older than the chart's appVersion.
+  useStableImage: false
 
 # Customize this list to get custom deployments with different agent roles/groups/zone affinity in the same chart.
 # Each of those deployments will inherit from all the other configurations. An env var defined in `extraEnv`
