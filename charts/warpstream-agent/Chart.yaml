@@ -5,7 +5,7 @@ type: application
 version: 1.0.6
 appVersion: v768
 annotations:
-  appVersionStable: v751
+  appVersionStable: v749
 icon: https://avatars.githubusercontent.com/u/132156278
 home: https://docs.warpstream.com/warpstream/
 sources:
