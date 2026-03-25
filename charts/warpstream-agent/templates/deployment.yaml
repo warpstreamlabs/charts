@@ -246,17 +246,19 @@ spec:
       initContainers:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- if and (hasKey . "overrides") (hasKey .overrides "zone") }}
+      {{- $hasNodeSelector := not (empty $.Values.nodeSelector) -}}
+      {{- $hasAZSelector := $.Values.availabilityZoneSelector.enabled -}}
+      {{- $hasOverrideZone := and (hasKey . "overrides") (hasKey .overrides "zone") -}}
+      {{- if or $hasNodeSelector $hasAZSelector $hasOverrideZone }}
       nodeSelector:
-      {{- with $.Values.nodeSelector }}
+        {{- with $.Values.nodeSelector }}
         {{- toYaml . | nindent 8 }}
-      {{- end }}
-        {{  $.Values.availabilityZoneSelector.nodeZoneLabel }}: {{  .overrides.zone }}
-      {{- else }}
-      {{- with $.Values.nodeSelector }}
-      nodeSelector:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
+        {{- end }}
+        {{- if $hasOverrideZone }}
+        topology.kubernetes.io/zone: {{ .overrides.zone }}
+        {{- else if $hasAZSelector }}
+        {{ $.Values.availabilityZoneSelector.nodeZoneLabel }}: {{ $.Values.availabilityZoneSelector.zone }}
+        {{- end }}
       {{- end }}
       {{- with $.Values.affinity }}
       affinity:
