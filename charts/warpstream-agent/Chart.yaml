@@ -3,7 +3,7 @@ name: warpstream-agent
 description: WarpStream Agent for Kubernetes.
 type: application
 version: 1.0.15
-appVersion: v776
+appVersion: v777
 annotations:
   appVersionStable: v758
 icon: https://avatars.githubusercontent.com/u/132156278
