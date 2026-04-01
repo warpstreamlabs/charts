@@ -22,6 +22,8 @@ consumer:
   fetchMaxBytes: 50000000
   fetchMaxPartitionBytes: 25000000
 
+  consumerGroup: ""
+
 producer:
   enabled: true
   replicaCount: 1

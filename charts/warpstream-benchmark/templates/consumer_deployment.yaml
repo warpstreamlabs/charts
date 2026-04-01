@@ -46,6 +46,9 @@ spec:
             - -num-clients={{ .Values.consumer.numClients }}
             - -fetch-max-bytes={{ int64 .Values.consumer.fetchMaxBytes }}
             - -fetch-max-partition-bytes={{ int64 .Values.consumer.fetchMaxPartitionBytes }}
+            {{- if .Values.consumer.consumerGroup }}
+            - -consumer-group={{ .Values.consumer.consumerGroup }}
+            {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           ports:
