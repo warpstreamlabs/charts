@@ -83,12 +83,11 @@ jobs:
 
       - name: Install Prometheus Operator
         run: |
-          LATEST=$(curl -s https://api.github.com/repos/prometheus-operator/prometheus-operator/releases/latest | jq -cr .tag_name)
-          curl -sL https://github.com/prometheus-operator/prometheus-operator/releases/download/${LATEST}/bundle.yaml | kubectl create -f -
+          curl -sL https://github.com/prometheus-operator/prometheus-operator/releases/download/v0.90.1/bundle.yaml | kubectl create -f -
 
       - name: Install & Initialize Cert Manager
         run: |
-          kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.18.0/cert-manager.yaml
+          kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.20.1/cert-manager.yaml
           # Wait for cert manager to start
           sleep 30
           kubectl apply -f hack/ci/manifests/cert-manager-ca.yaml

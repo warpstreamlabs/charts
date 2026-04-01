@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.4] - 2026-04-1
 - Updated warpstream version to v778
 - Add `consumerGroup` value to consumer config
+- Add default resource requests and limits
+- Update default values to achieve roughly 100MiB/s throughput
 
 ## [0.1.1] - 2025-05-12
 - Added configuration for producer `-num-records` flag, defaulting to unlimited.
