@@ -19,3 +19,11 @@ producer:
   # Using a low number of records per second to not explode the local agent
   maxRecordsPerSecond: 3
   producerMaxBytes: 16000000
+
+# overriding resources so it fits on a runner
+resources:
+  requests:
+    cpu: 250m
+    memory: 1Gi
+  limits:
+    memory: 1Gi
