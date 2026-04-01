@@ -22,6 +22,7 @@ consumer:
   fetchMaxBytes: 50000000
   fetchMaxPartitionBytes: 25000000
 
+  # If empty no consumer group will be used.
   consumerGroup: ""
 
 producer:
