@@ -10,7 +10,9 @@ kind: HorizontalPodAutoscaler
 metadata:
   name: {{ $fullName }}
   namespace: {{ $.Release.Namespace }}
-  labels: {{ include "warpstream-agent.labels" $ | nindent 4 }}
+  labels: 
+    {{- include "warpstream-agent.labels" $ | nindent 4 }}
+    warpstream.com/name:  {{ $fullName }}
   {{- with $.Values.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
