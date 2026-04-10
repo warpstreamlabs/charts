@@ -7,7 +7,7 @@ config:
 deploymentStrategy:
   type: RollingUpdate
   rollingUpdate: null  # setting rollingUpdate to null so helm will fail if pod doesn't start
-
+# test
 annotations:
   foo: bar
 
