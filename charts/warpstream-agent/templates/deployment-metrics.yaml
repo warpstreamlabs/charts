@@ -93,8 +93,8 @@ spec:
               {{- $goMaxProcs := divf $cpuMillicoresRequest 1000 -}}
               {{- $goMaxProcs := ceil $goMaxProcs }}
               value: {{ $goMaxProcs | quote }}
-          {{- if .Values.extraEnv }}
-            {{- toYaml .Values.extraEnv | nindent 12 }}
+          {{- if .Values.dedicatedMetricsPod.extraEnv }}
+            {{- toYaml .Values.dedicatedMetricsPod.extraEnv | nindent 12 }}
           {{- end }}
           envFrom:
           {{- if ne .Values.config.configMapEnabled false }}
