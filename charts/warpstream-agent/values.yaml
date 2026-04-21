@@ -534,6 +534,8 @@ networkPolicy:
 
 dedicatedMetricsPod:
   enabled: false
+  prometheusEnabled: true
+  datadogEnabled: false
   resources:
     # This pod should not require too much memory.
     requests:
@@ -553,6 +555,9 @@ dedicatedMetricsPod:
     labels: {}
   # Add additional environment settings to the pod. The one at the top level is not used toe dedicated metrics pod.
   extraEnv: []
+  # Add additional args settings to the pod.  The one at the top level is not used toe dedicated metrics pod.
+  extraArgs: []
+
 
     # If specified and supported by the platform, this will restrict traffic through the cloud-provider load-balancer will be restricted
     # to the specified client IPs. This field will be ignored if the cloud-provider does not support the feature.
