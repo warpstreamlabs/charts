@@ -26,8 +26,8 @@ data:
   WARPSTREAM_INGESTION_BUCKET_URL: {{ .Values.config.ingestionBucketURL | quote }}
   WARPSTREAM_COMPACTION_BUCKET_URL: {{ .Values.config.compactionBucketURL | quote }}
     {{- else }}
-      {{- if and (not .Values.config.bucketURL) (not (hasPrefix "vci_dl" .Values.config.virtualClusterID)) }}
-        {{- fail "bucketURL or ingestionBucketURL configuration value must be set" }}
+      {{- if not .Values.config.bucketURL }}
+        {{- fail "bucketURL or both ingestionBucketURL and compactionBucketURL configuration values must be set (including for Tableflow clusters)" }}
       {{- end }}
   WARPSTREAM_BUCKET_URL: {{ .Values.config.bucketURL | quote }}
       {{- if not .Values.config.virtualClusterID }}
