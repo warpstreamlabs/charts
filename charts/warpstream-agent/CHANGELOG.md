@@ -6,14 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [1.0.26] - 2026-04-21
-- Add a new "dedicatedMetricsPod.extraEnv" value the ability to override env variables only for the dedicated metrics pod, and ignore the top level value now for this pod.
-- Add "dedicatedMetricsPod.prometheus" (true by default) and "dedicatedMetricsPod.datadogEnabled" (false by default) values to easily control what metrics settings are enabled when using the dedicated metrics pod.
+- Add a new "dedicatedMetricsPod.extraEnv" value to override env variables only for the dedicated metrics pod, and ignore the top level value now for this pod.
+- Add "dedicatedMetricsPod.prometheusEnabled" (true by default) and "dedicatedMetricsPod.datadogEnabled" (false by default) values to easily control what metrics settings are enabled when using the dedicated metrics pod.
 
 ## [1.0.25] - 2026-04-20
 - Update WarpStream Agent to v784
 
 ## [1.0.24] - 2026-04-17
-- Add a new "dedicatedMetricsPod.extraEnv" value the ability to override env variables only for the dedicated metrics pod, and ignore the top level value now for this pod.
+- Add a new "dedicatedMetricsPod.extraEnv" value to override env variables only for the dedicated metrics pod, and ignore the top level value now for this pod.
 
 ## [1.0.23] - 2026-04-16
 - Update WarpStream Agent to v783
