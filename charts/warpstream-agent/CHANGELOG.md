@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [1.0.27] - 2026-04-21
-- Require `config.bucketURL` or both `config.ingestionBucketURL` and `config.compactionBucketURL`, including for tableflow agents.
+- **Breaking for Tableflow**: Require `config.bucketURL` or both `config.ingestionBucketURL` and `config.compactionBucketURL`, including for tableflow agents.
 
 ## [1.0.26] - 2026-04-21
 - Add a new "dedicatedMetricsPod.extraEnv" value to override env variables only for the dedicated metrics pod, and ignore the top level value now for this pod.
