@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.28] - 2026-04-22
+- Add new config values to ease Datadog setup.
+
 ## [1.0.27] - 2026-04-21
 - **Breaking for Tableflow**: Require `config.bucketURL` or both `config.ingestionBucketURL` and `config.compactionBucketURL`, including for tableflow agents.
 
