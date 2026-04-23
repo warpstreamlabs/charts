@@ -412,7 +412,9 @@ or the Bento Managed pipeline endpoints.
 
 WarpStream supports exposing metrics with Prometheus and Datadog. For more information see [Monitoring](https://docs.warpstream.com/warpstream/byoc/monitor-the-warpstream-agents) and [Important Metrics and Logs](https://docs.warpstream.com/warpstream/byoc/monitor-the-warpstream-agents/important-metrics-and-logs).
 
-By default, any agent can publish "cluster level" metrics by polling a job submitted by WarpStream control plane. This can cause weird behaviors as the same metric will be published by different agent pods with inconsistent values. A workaround is to set `dedicatedMetricsPod.enabled` to `true`: it will disable the control plane job, and instead spawn a dedicated deployment of size 1 with a pod that will do the same thing by scrapping WarpStream API. 
+In our charts, we provide values to control easily whether Prometheus and/or Datadog is enabled (see `prometheusEnabled` and `datadogEnabled` in our `values.yaml`).
+
+By default, any agent can publish "cluster level" metrics by polling a job submitted by WarpStream control plane. This can cause weird behaviors as the same metric will be published by different agent pods with inconsistent values. A workaround is to set `dedicatedMetricsPod.enabled` to `true`: it will disable the control plane job, and instead spawn a dedicated deployment of size 1 with a pod that will do the same thing by scrapping WarpStream API. There are flags to control Prometheus and Datadog under `dedicatedMetricsPod` as well.
 
 #### Prometheus Operator
 
@@ -912,6 +914,9 @@ It is important to note that if you were already using our charts and you want t
 | hostAliases | list | `[]` | |
 | initContainers | list | `[]` | |
 | dnsConfig | object | `{}` | |
+| prometheusEnabled | bool | `true` | Enable/disable Prometheus metrics in agents |
+| datadogEnabled | bool | `false` | Enable/disable Datadog metrics in agents |
+| datadogDefaultAgentHost| bool | `true` | Enable/disable setting the env var DD_AGENT_HOST derived from the underlying host IP when Datadog metrics is enabled |
 | deploymentStrategy.type | string | `RollingUpdate` | |
 | deploymentStrategy.rollingUpdate.maxSurge | number | `1` | |
 | deploymentStrategy.rollingUpdate.maxUnavailable | number | `1` | |
@@ -998,6 +1003,10 @@ It is important to note that if you were already using our charts and you want t
 | networkPolicy.enabled | bool | `false` | Create a network policy |
 | networkPolicy.ingressRules | object | `{}` | The network policy ingress rules |
 | networkPolicy.egressRules | object | `{}` | The network policy egress rules |
+| dedicatedMetricsPod.enabled | bool | `false` | Enable/disable the metrics mode where there is one dedicated pod to handle cluster level metrics publishing |
+| dedicatedMetricsPod.prometheusEnabled | bool | `true` | Enable/disable Prometheus metrics in agents |
+| dedicatedMetricsPod.datadogEnabled | bool | `false` | Enable/disable Datadog metrics in agents |
+| dedicatedMetricsPod.datadogDefaultAgentHost| bool | `true` | Enable/disable setting the env var DD_AGENT_HOST derived from the underlying host IP when Datadog metrics is enabled |
 
 ## Development
 

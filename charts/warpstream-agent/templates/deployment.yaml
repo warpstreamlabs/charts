@@ -188,6 +188,20 @@ spec:
               {{- else }}
               value: {{ $.Values.goMaxProcs | quote }}
               {{- end }}
+            {{ if $.Values.prometheusEnabled }}
+            - name: WARPSTREAM_ENABLE_PROMETHEUS_METRICS
+              value: "true"
+            {{ end -}}
+            {{ if $.Values.datadogEnabled }}
+            - name: WARPSTREAM_ENABLE_DATADOG_METRICS
+              value: "true"
+            {{ if $.Values.datadogDefaultAgentHost }}
+            - name: DD_AGENT_HOST
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+            {{ end -}}
+            {{ end -}}
             - name: WARPSTREAM_GRACEFUL_SHUTDOWN_DURATION
               value: {{ $.Values.config.gracefulShutdownDuration | default "300s" | quote }}
           {{- if $.Values.extraEnv }}

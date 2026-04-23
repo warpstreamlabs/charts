@@ -70,6 +70,14 @@ deploymentKind: Deployment  # or StatefulSet
 # Only used in Deployments
 revisionHistoryLimit: 10
 
+# Enable/disable Prometheus metrics in agents.
+prometheusEnabled: true
+# Enable/disable Datadog metrics in agents.
+# Enabling this does not disable Prometheus, unless you specifically need both it is better to also disable Prometheus to save some CPU.
+datadogEnabled: false
+# Enable/disable setting the env var DD_AGENT_HOST derived from the underlying host IP when Datadog metrics is enabled.
+datadogDefaultAgentHost: true
+
 deploymentStrategy:
   type: RollingUpdate
   rollingUpdate:
@@ -534,8 +542,13 @@ networkPolicy:
 
 dedicatedMetricsPod:
   enabled: false
+  # Enable/disable Prometheus metrics in agents.
   prometheusEnabled: true
+  # Enable/disable Datadog metrics in metrics mode pod.
+  # Enabling this does not disable Prometheus, unless you specifically need both it is better to also disable Prometheus to save some CPU.
   datadogEnabled: false
+  # Enable/disable setting the env var DD_AGENT_HOST derived from the underlying host IP when Datadog metrics is enabled.
+  datadogDefaultAgentHost: true
   resources:
     # This pod should not require too much memory.
     requests:
