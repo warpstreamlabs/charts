@@ -15,11 +15,17 @@ spec:
   {{- if .Values.bentoService.loadBalancerClass }}
   loadBalancerClass: {{ .Values.bentoService.loadBalancerClass }}
   {{- end }}
+  {{- with .Values.bentoService.externalTrafficPolicy }}
+  externalTrafficPolicy: {{ . }}
+  {{- end }}
   ports:
     - port: {{ .Values.bentoService.port }}
       targetPort: {{ .Values.bentoService.port }}
       protocol: TCP
       name: http
+      {{- with .Values.bentoService.nodePort }}
+      nodePort: {{ . }}
+      {{- end }}
     {{- with .Values.bentoService.extraPorts }}
     {{- toYaml . | nindent 4 }}
     {{- end }}

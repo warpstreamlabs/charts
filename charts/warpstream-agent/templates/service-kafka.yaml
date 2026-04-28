@@ -17,11 +17,17 @@ spec:
   {{- if .Values.kafkaService.loadBalancerClass }}
   loadBalancerClass: {{ .Values.kafkaService.loadBalancerClass }}
   {{- end }}
+  {{- with .Values.kafkaService.externalTrafficPolicy }}
+  externalTrafficPolicy: {{ . }}
+  {{- end }}
   ports:
     - port: {{ .Values.kafkaService.port }}
       targetPort: kafka
       protocol: TCP
       name: kafka
+      {{- with .Values.kafkaService.nodePort }}
+      nodePort: {{ . }}
+      {{- end }}
   selector:
     {{- include "warpstream-agent.selectorLabels" . | nindent 4 }}
   {{- with .Values.kafkaService.loadBalancerSourceRanges }}

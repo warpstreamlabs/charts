@@ -17,11 +17,17 @@ spec:
   {{- if .Values.schemaRegistryService.loadBalancerClass }}
   loadBalancerClass: {{ .Values.schemaRegistryService.loadBalancerClass }}
   {{- end }}
+  {{- with .Values.schemaRegistryService.externalTrafficPolicy }}
+  externalTrafficPolicy: {{ . }}
+  {{- end }}
   ports:
     - port: {{ .Values.schemaRegistryService.port }}
       targetPort: schema-registry
       protocol: TCP
       name: schema-registry
+      {{- with .Values.schemaRegistryService.nodePort }}
+      nodePort: {{ . }}
+      {{- end }}
   selector:
     {{- include "warpstream-agent.selectorLabels" . | nindent 4 }}
   {{- with .Values.schemaRegistryService.loadBalancerSourceRanges }}

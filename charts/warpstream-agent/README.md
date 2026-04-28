@@ -408,6 +408,59 @@ extraEnv:
 `LoadBalancer` could expose internal WarpStream Agent functionality like the agent-to-agent communication endpoints 
 or the Bento Managed pipeline endpoints.
 
+### Restricting LoadBalancer Target Nodes with `externalTrafficPolicy` and Static NodePorts
+
+When exposing the WarpStream Agent through a cloud load balancer (for example an AWS NLB) using `type: LoadBalancer` with `targetType: instance`, the load balancer registers **every** node in the cluster as a target by default (`externalTrafficPolicy: Cluster`). With NLB client IP preservation, this requires you to open the NodePort range (30000-32767) on the security group of every node in the cluster, which exposes nodes that are not running WarpStream to public traffic. The dynamically allocated NodePort also makes it hard to manage security group rules in tools like Terraform.
+
+Setting `externalTrafficPolicy: Local` causes the LoadBalancer to only register nodes that are actually running WarpStream pods (other nodes will fail health checks and be deregistered). Pairing this with a static `nodePort` lets you predefine security group rules that don't change between deploys.
+
+```yaml
+kafkaService:
+  enabled: true
+  type: LoadBalancer
+  # Only register nodes running WarpStream pods as LB targets.
+  externalTrafficPolicy: Local
+  # Use a static nodePort so security group rules are stable across deploys.
+  nodePort: 30093
+
+extraEnv:
+  - name: WARPSTREAM_DISCOVERY_KAFKA_HOSTNAME_OVERRIDE
+    value: <LOAD_BALANCER_DNS_HOSTNAME>
+```
+
+The same pattern works for the other services. The main `service` exposes multiple ports so its `nodePort` is a map keyed by port name:
+
+```yaml
+service:
+  type: LoadBalancer
+  externalTrafficPolicy: Local
+  nodePorts:
+    kafka: 30092
+    http: 30080
+    schemaRegistry: 30094
+
+schemaRegistryService:
+  enabled: true
+  type: LoadBalancer
+  externalTrafficPolicy: Local
+  nodePort: 30094
+
+bentoService:
+  enabled: true
+  type: LoadBalancer
+  externalTrafficPolicy: Local
+  nodePort: 30095
+
+dedicatedMetricsPod:
+  enabled: true
+  service:
+    type: NodePort
+    externalTrafficPolicy: Local
+    nodePort: 30081
+```
+
+**Note:** `externalTrafficPolicy` and `nodePort` are only valid for services of type `NodePort` or `LoadBalancer` and will be rejected by the Kubernetes API if set on a `ClusterIP` service. Using `externalTrafficPolicy: Local` requires healthy WarpStream pods on a node for that node to receive traffic; pair this with anti-affinity or topology spread constraints if you need traffic distributed across zones.
+
 ### Metrics
 
 WarpStream supports exposing metrics with Prometheus and Datadog. For more information see [Monitoring](https://docs.warpstream.com/warpstream/byoc/monitor-the-warpstream-agents) and [Important Metrics and Logs](https://docs.warpstream.com/warpstream/byoc/monitor-the-warpstream-agents/important-metrics-and-logs).
@@ -951,6 +1004,10 @@ It is important to note that if you were already using our charts and you want t
 | service.schemaRegistryPort | number | `9094` | |
 | service.labels | object | `{}` | Additional labels to add to the service |
 | service.loadBalancerSourceRanges | list | `[]` | |
+| service.externalTrafficPolicy | string | `` | Optional `externalTrafficPolicy` (`Cluster` or `Local`). Only valid for type `NodePort` or `LoadBalancer`. Use `Local` to restrict LoadBalancer target nodes to those running WarpStream pods. Ref: https://kubernetes.io/docs/reference/networking/virtual-ips/#external-traffic-policy |
+| service.nodePorts.kafka | number | `` | Optional static nodePort for the kafka port. Only valid for type `NodePort` or `LoadBalancer`. |
+| service.nodePorts.http | number | `` | Optional static nodePort for the http port. Only valid for type `NodePort` or `LoadBalancer`. |
+| service.nodePorts.schemaRegistry | number | `` | Optional static nodePort for the schema-registry port. Only valid for type `NodePort` or `LoadBalancer`. |
 | service.perPod | bool | `false` | Create a unique service for each Kubernetes pod, typically only used when using Kong or Istio ingresses |
 | headlessService.enabled | bool | `false` | Enable the headless service |
 | kafkaService.enabled | bool | `false` | Enable the additional kafka service |
@@ -958,15 +1015,21 @@ It is important to note that if you were already using our charts and you want t
 | kafkaService.loadBalancerClass | string | `` | Optional load balancer class |
 | kafkaService.port | number | `9092` | |
 | kafkaService.loadBalancerSourceRanges | list | `[]` | |
+| kafkaService.externalTrafficPolicy | string | `` | Optional `externalTrafficPolicy` (`Cluster` or `Local`). Only valid for type `NodePort` or `LoadBalancer`. Use `Local` to restrict LoadBalancer target nodes to those running WarpStream pods. Ref: https://kubernetes.io/docs/reference/networking/virtual-ips/#external-traffic-policy |
+| kafkaService.nodePort | number | `` | Optional static nodePort. Only valid for type `NodePort` or `LoadBalancer`. |
 | bentoService.enabled | bool | `false` | Enable if using the HTTP Bento Component https://warpstreamlabs.github.io/bento/docs/components/http/about/ when using WarpStream's Managed Data Pipelines |
 | bentoService.type | string | `ClusterIP` | |
 | bentoService.loadBalancerClass | string | `` | Optional load balancer class |
 | bentoService.port | number | `4195` | |
 | bentoService.extraPorts | list | `[]` | Additional ports to add to the bento service |
+| bentoService.externalTrafficPolicy | string | `` | Optional `externalTrafficPolicy` (`Cluster` or `Local`). Only valid for type `NodePort` or `LoadBalancer`. Ref: https://kubernetes.io/docs/reference/networking/virtual-ips/#external-traffic-policy |
+| bentoService.nodePort | number | `` | Optional static nodePort. Only valid for type `NodePort` or `LoadBalancer`. |
 | schemaRegistryService.enabled | bool | `false` | Enable the additional schema registry service |
 | schemaRegistryService.type | string | `ClusterIP` | |
 | schemaRegistryService.loadBalancerClass | string | `` | Optional load balancer class |
 | schemaRegistryService.port | number | `9094` | |
+| schemaRegistryService.externalTrafficPolicy | string | `` | Optional `externalTrafficPolicy` (`Cluster` or `Local`). Only valid for type `NodePort` or `LoadBalancer`. Use `Local` to restrict LoadBalancer target nodes to those running WarpStream pods. Ref: https://kubernetes.io/docs/reference/networking/virtual-ips/#external-traffic-policy |
+| schemaRegistryService.nodePort | number | `` | Optional static nodePort. Only valid for type `NodePort` or `LoadBalancer`. |
 | config.configMapEnabled | bool | `true` | Enable create the configmap to configure the WarpStream Agents, only set to `false` if you are configuring the agent via `extraEnv` or `extraEnvFrom` |
 | config.playground | bool | `false` | Enable playground mode Ref: https://docs.warpstream.com/warpstream/reference/cli-reference/warpstream-playground |
 | config.bucketURL | string | ` ` | The bucket URL to use for storage |
@@ -1007,6 +1070,8 @@ It is important to note that if you were already using our charts and you want t
 | dedicatedMetricsPod.prometheusEnabled | bool | `true` | Enable/disable Prometheus metrics in agents |
 | dedicatedMetricsPod.datadogEnabled | bool | `false` | Enable/disable Datadog metrics in agents |
 | dedicatedMetricsPod.datadogDefaultAgentHost| bool | `true` | Enable/disable setting the env var DD_AGENT_HOST derived from the underlying host IP when Datadog metrics is enabled |
+| dedicatedMetricsPod.service.externalTrafficPolicy | string | `` | Optional `externalTrafficPolicy` (`Cluster` or `Local`). Only valid for type `NodePort` or `LoadBalancer`. Ref: https://kubernetes.io/docs/reference/networking/virtual-ips/#external-traffic-policy |
+| dedicatedMetricsPod.service.nodePort | number | `` | Optional static nodePort. Only valid for type `NodePort` or `LoadBalancer`. |
 
 ## Development
 

@@ -21,11 +21,17 @@ spec:
   {{- if .Values.dedicatedMetricsPod.service.loadBalancerClass }}
   loadBalancerClass: {{ .Values.dedicatedMetricsPod.service.loadBalancerClass }}
   {{- end }}
+  {{- with .Values.dedicatedMetricsPod.service.externalTrafficPolicy }}
+  externalTrafficPolicy: {{ . }}
+  {{- end }}
   ports:
     - port: {{ .Values.dedicatedMetricsPod.service.httpPort }}
       targetPort: http
       protocol: TCP
       name: http
+      {{- with .Values.dedicatedMetricsPod.service.nodePort }}
+      nodePort: {{ . }}
+      {{- end }}
   selector:
     {{- include "warpstream-agent.selectorLabels" . | nindent 4 }}
     app.kubernetes.io/component: agent-metrics
