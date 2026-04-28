@@ -198,6 +198,19 @@ service:
   # https://kubernetes.io/docs/concepts/services-networking/service/#load-balancer-class
   # loadBalancerClass: ""
 
+  # Optional externalTrafficPolicy. Only valid for type NodePort or LoadBalancer.
+  # Setting this to "Local" causes the LoadBalancer to only register nodes running
+  # WarpStream pods, which avoids exposing NodePorts on every node in the cluster.
+  # https://kubernetes.io/docs/reference/networking/virtual-ips/#external-traffic-policy
+  # externalTrafficPolicy: ""
+
+  # Optional static nodePort assignment per port. Only valid for type NodePort or LoadBalancer.
+  # When unset, Kubernetes will dynamically allocate a nodePort from the configured range.
+  # nodePorts:
+  #   kafka: 30092
+  #   http: 30080
+  #   schemaRegistry: 30094
+
   # Create services per pod, this can be used in combination with deploymentKind=StatefulSet and statefulSetConfig.clusterDomain
   # to expose each pod outside of the cluster when using Kong or Isto ingresses.
   # See https://github.com/warpstreamlabs/charts/pull/156 for details
@@ -220,6 +233,16 @@ kafkaService:
   # https://kubernetes.io/docs/concepts/services-networking/service/#load-balancer-class
   # loadBalancerClass: ""
 
+  # Optional externalTrafficPolicy. Only valid for type NodePort or LoadBalancer.
+  # Setting this to "Local" causes the LoadBalancer to only register nodes running
+  # WarpStream pods, which avoids exposing NodePorts on every node in the cluster.
+  # https://kubernetes.io/docs/reference/networking/virtual-ips/#external-traffic-policy
+  # externalTrafficPolicy: ""
+
+  # Optional static nodePort. Only valid for type NodePort or LoadBalancer.
+  # When unset, Kubernetes will dynamically allocate a nodePort from the configured range.
+  # nodePort: 30092
+
 # A service that only contains the Schema Registry TCP port
 # Typically used to help with exposing only Schema Registry via a Load Balancer
 schemaRegistryService:
@@ -236,6 +259,16 @@ schemaRegistryService:
   # https://kubernetes.io/docs/concepts/services-networking/service/#load-balancer-class
   # loadBalancerClass: ""
 
+  # Optional externalTrafficPolicy. Only valid for type NodePort or LoadBalancer.
+  # Setting this to "Local" causes the LoadBalancer to only register nodes running
+  # WarpStream pods, which avoids exposing NodePorts on every node in the cluster.
+  # https://kubernetes.io/docs/reference/networking/virtual-ips/#external-traffic-policy
+  # externalTrafficPolicy: ""
+
+  # Optional static nodePort. Only valid for type NodePort or LoadBalancer.
+  # When unset, Kubernetes will dynamically allocate a nodePort from the configured range.
+  # nodePort: 30094
+
 # Enable if using the HTTP Bento Component https://warpstreamlabs.github.io/bento/docs/components/http/about/
 # when using WarpStream's Managed Data Pipelines
 bentoService:
@@ -251,6 +284,16 @@ bentoService:
   # If using type LoadBalancer set an optional loadBalancerClass
   # https://kubernetes.io/docs/concepts/services-networking/service/#load-balancer-class
   # loadBalancerClass: ""
+
+  # Optional externalTrafficPolicy. Only valid for type NodePort or LoadBalancer.
+  # Setting this to "Local" causes the LoadBalancer to only register nodes running
+  # WarpStream pods, which avoids exposing NodePorts on every node in the cluster.
+  # https://kubernetes.io/docs/reference/networking/virtual-ips/#external-traffic-policy
+  # externalTrafficPolicy: ""
+
+  # Optional static nodePort. Only valid for type NodePort or LoadBalancer.
+  # When unset, Kubernetes will dynamically allocate a nodePort from the configured range.
+  # nodePort: 30095
 
 rbac:
   create: true
@@ -566,11 +609,6 @@ dedicatedMetricsPod:
     type: ClusterIP
     httpPort: 8080
     labels: {}
-  # Add additional environment settings to the pod. The one at the top level is not used toe dedicated metrics pod.
-  extraEnv: []
-  # Add additional args settings to the pod.  The one at the top level is not used toe dedicated metrics pod.
-  extraArgs: []
-
 
     # If specified and supported by the platform, this will restrict traffic through the cloud-provider load-balancer will be restricted
     # to the specified client IPs. This field will be ignored if the cloud-provider does not support the feature.
@@ -580,6 +618,20 @@ dedicatedMetricsPod:
     # If using type LoadBalancer set an optional loadBalancerClass
     # https://kubernetes.io/docs/concepts/services-networking/service/#load-balancer-class
     # loadBalancerClass: ""
+
+    # Optional externalTrafficPolicy. Only valid for type NodePort or LoadBalancer.
+    # Setting this to "Local" causes the LoadBalancer to only register nodes running
+    # WarpStream pods, which avoids exposing NodePorts on every node in the cluster.
+    # https://kubernetes.io/docs/reference/networking/virtual-ips/#external-traffic-policy
+    # externalTrafficPolicy: ""
+
+    # Optional static nodePort. Only valid for type NodePort or LoadBalancer.
+    # When unset, Kubernetes will dynamically allocate a nodePort from the configured range.
+    # nodePort: 30081
+  # Add additional environment settings to the pod. The one at the top level is not used toe dedicated metrics pod.
+  extraEnv: []
+  # Add additional args settings to the pod.  The one at the top level is not used toe dedicated metrics pod.
+  extraArgs: []
   serviceMonitor:
     ## If true, a ServiceMonitor CRD is created for a prometheus operator
     ## https://github.com/coreos/prometheus-operator
