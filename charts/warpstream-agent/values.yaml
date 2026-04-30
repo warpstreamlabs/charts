@@ -431,7 +431,7 @@ priorityClassName: ""
 autoscaling:
   enabled: true
   minReplicas: 3
-  maxReplicas: 30
+  maxReplicas: 120
   targetCPU: "60"
   targetMemory: ""
   behavior:
