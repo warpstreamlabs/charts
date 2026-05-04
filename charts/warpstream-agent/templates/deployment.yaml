@@ -305,7 +305,7 @@ spec:
         {{- if and .certManager .certManager.create }}
         - name: agent-certs
           secret:
-            secretName: {{ $fullName }}-cert
+            secretName: {{ include "warpstream-agent.fullname" $ }}-cert
         {{- else }}
         - name: agent-certs
           secret:
