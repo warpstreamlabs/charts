@@ -66,6 +66,72 @@ spec:
     {{- end }}
   {{- end }}
 ...
+{{- end }}
+{{- if and (hasKey .Values "customDeployments") (ne .Values.service.includeAggregateService false) }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "warpstream-agent.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "warpstream-agent.labels" . | nindent 4 }}
+    {{- with .Values.service.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+    prometheus: "true"
+    app.kubernetes.io/component: agent
+  {{- with (mergeOverwrite (default (dict) .Values.annotations) (default (dict) .Values.service.annotations)) }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.service.type }}
+  {{- if .Values.service.loadBalancerClass }}
+  loadBalancerClass: {{ .Values.service.loadBalancerClass }}
+  {{- end }}
+  {{- with .Values.service.externalTrafficPolicy }}
+  externalTrafficPolicy: {{ . }}
+  {{- end }}
+  ports:
+    {{- if or (.Values.config.playground) (not (hasPrefix "vci_sr_" (.Values.config.virtualClusterID | default ""))) }}
+    - port: {{ .Values.service.port }}
+      targetPort: kafka
+      protocol: TCP
+      name: kafka
+      {{- with ((.Values.service.nodePorts).kafka) }}
+      nodePort: {{ . }}
+      {{- end }}
+    {{- end }}
+    - port: {{ .Values.service.httpPort }}
+      targetPort: http
+      protocol: TCP
+      name: http
+      {{- with ((.Values.service.nodePorts).http) }}
+      nodePort: {{ . }}
+      {{- end }}
+    {{- if or (.Values.config.playground) (hasPrefix "vci_sr_" (.Values.config.virtualClusterID | default "")) }}
+    - port: {{ .Values.service.schemaRegistryPort | default 9094 }}
+      targetPort: schema-registry
+      protocol: TCP
+      name: schema-registry
+      {{- with ((.Values.service.nodePorts).schemaRegistry) }}
+      nodePort: {{ . }}
+      {{- end }}
+    {{- end }}
+  selector:
+    {{- include "warpstream-agent.selectorLabels" . | nindent 4 }}
+  {{- with .Values.service.loadBalancerSourceRanges }}
+  loadBalancerSourceRanges:
+    {{- range . }}
+    - {{ . }}
+    {{- end }}
+  {{- end }}
+...
+{{- end }}
+{{- range $customDeployment := $deployments }}
+{{- $suffix := (hasKey $.Values "customDeployments") | ternary (printf "-%s" .name) "" }}
+{{- $fullName := printf "%s%s" (include "warpstream-agent.fullname" $) $suffix }}
 {{- if $.Values.service.perPod }}
 {{- if and (eq (include "warpstream-agent.deploymentKind" $) "StatefulSet") ($.Values.service.perPod.enabled) }}
 {{ $replicas := ($.Values.replicas | int) }}

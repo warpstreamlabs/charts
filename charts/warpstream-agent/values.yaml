@@ -189,6 +189,13 @@ service:
   schemaRegistryPort: 9094
   labels: {}
 
+  # When `customDeployments` is set, the chart also creates an aggregate Service
+  # named after the chart fullname (with no per-deployment suffix) that selects
+  # pods across every customDeployment. This preserves the original Service name
+  # for clients that were pointing at it before customDeployments was enabled.
+  # Set to false to skip creating this aggregate Service.
+  includeAggregateService: true
+
   # If specified and supported by the platform, this will restrict traffic through the cloud-provider load-balancer will be restricted
   # to the specified client IPs. This field will be ignored if the cloud-provider does not support the feature.
   # More info: https://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/
