@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.37] - 2026-05-05
+- Update WarpStream Agent to v790
+
 ## [1.0.36] - 2026-05-04
 - Fix `agent-certs` volume referencing a non-existent secret when `customDeployments` is set with `certificate.certManager.create=true`. The volume now points at the single Certificate (`{fullname}-cert`) instead of incorrectly appending the customDeployment name.
 - When `customDeployments` is set, also create an aggregate Service named after the chart fullname (no per-deployment suffix) that selects pods across every customDeployment. This restores the original Service name for clients that were pointing at it before `customDeployments` was enabled. Set `service.includeAggregateService: false` to opt out.
