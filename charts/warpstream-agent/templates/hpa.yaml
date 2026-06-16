@@ -2,8 +2,15 @@
 {{- $defaultDeployments := include "warpstream-agent.customDeploymentsDefault" . | fromYaml -}}
 {{- $deployments := .Values.customDeployments | default $defaultDeployments.deployments -}}
 {{- range $customDeployment := $deployments }}
+{{- $hasAutoscalingEnabledOverride := and (hasKey . "overrides") (hasKey .overrides "autoscaling") (hasKey .overrides.autoscaling "enabled") }}
+{{- if or (not $hasAutoscalingEnabledOverride) (.overrides.autoscaling.enabled) }}
 {{- $suffix := (hasKey $.Values "customDeployments") | ternary (printf "-%s" .name) "" }}
 {{- $fullName := printf "%s%s" (include "warpstream-agent.fullname" $) $suffix }}
+{{- $hasAutoscalingMinReplicasOverride := and (hasKey . "overrides") (hasKey .overrides "autoscaling") (hasKey .overrides.autoscaling "minReplicas") }}
+{{- $hasAutoscalingMaxReplicasOverride := and (hasKey . "overrides") (hasKey .overrides "autoscaling") (hasKey .overrides.autoscaling "maxReplicas") }}
+{{- $hasAutoscalingTargetMemoryOverride := and (hasKey . "overrides") (hasKey .overrides "autoscaling") (hasKey .overrides.autoscaling "targetMemory") }}
+{{- $hasAutoscalingTargetCPUOverride := and (hasKey . "overrides") (hasKey .overrides "autoscaling") (hasKey .overrides.autoscaling "targetCPU") }}
+{{- $hasAutoscalingBehaviorOverride := and (hasKey . "overrides") (hasKey .overrides "autoscaling") (hasKey .overrides.autoscaling "behavior") }}
 ---
 apiVersion: {{ include "warpstream-agent.hpa.apiVersion" $ }}
 kind: HorizontalPodAutoscaler
@@ -22,35 +29,64 @@ spec:
     apiVersion: apps/v1
     kind: {{ include "warpstream-agent.deploymentKind" $ }}
     name: {{ $fullName }}
+  {{- if $hasAutoscalingMinReplicasOverride }}
+  minReplicas: {{ .overrides.autoscaling.minReplicas }}
+  {{- else }}
   minReplicas: {{ $.Values.autoscaling.minReplicas }}
+  {{- end }}
+  {{- if $hasAutoscalingMaxReplicasOverride }}
+  maxReplicas: {{ .overrides.autoscaling.maxReplicas }}
+  {{- else }}
   maxReplicas: {{ $.Values.autoscaling.maxReplicas }}
+  {{- end }}
   metrics:
-    {{- if $.Values.autoscaling.targetMemory }}
+    {{- if or $.Values.autoscaling.targetMemory $hasAutoscalingTargetMemoryOverride }}
     - type: Resource
       resource:
         name: memory
         {{- if eq (include "warpstream-agent.hpa.apiVersion" $) "autoscaling/v2beta1" }}
+        {{- if $hasAutoscalingTargetMemoryOverride }}
+        targetAverageUtilization: {{ .overrides.autoscaling.targetMemory }}
+        {{- else }}
         targetAverageUtilization: {{ $.Values.autoscaling.targetMemory }}
+        {{- end }}
         {{- else }}
         target:
           type: Utilization
+          {{- if $hasAutoscalingTargetMemoryOverride }}
+          averageUtilization: {{ .overrides.autoscaling.targetMemory }}
+          {{- else }}
           averageUtilization: {{ $.Values.autoscaling.targetMemory }}
+          {{- end }}
         {{- end }}
     {{- end }}
-    {{- if $.Values.autoscaling.targetCPU }}
+    {{- if or $.Values.autoscaling.targetCPU $hasAutoscalingTargetCPUOverride }}
     - type: Resource
       resource:
         name: cpu
         {{- if eq (include "warpstream-agent.hpa.apiVersion" $) "autoscaling/v2beta1" }}
+        {{- if $hasAutoscalingTargetCPUOverride }}
+        targetAverageUtilization: {{ .overrides.autoscaling.targetCPU }}
+        {{- else }}
         targetAverageUtilization: {{ $.Values.autoscaling.targetCPU }}
+        {{- end }}
         {{- else }}
         target:
           type: Utilization
+          {{- if $hasAutoscalingTargetCPUOverride }}
+          averageUtilization: {{ .overrides.autoscaling.targetCPU }}
+          {{- else }}
           averageUtilization: {{ $.Values.autoscaling.targetCPU }}
+          {{- end }}
         {{- end }}
     {{- end }}
-  {{- if $.Values.autoscaling.behavior }}
+  {{- if or $.Values.autoscaling.behavior $hasAutoscalingBehaviorOverride }}
+  {{- if $hasAutoscalingBehaviorOverride }}
+  behavior: {{ toYaml .overrides.autoscaling.behavior | nindent 4 }}
+  {{- else }}
   behavior: {{ toYaml $.Values.autoscaling.behavior | nindent 4 }}
   {{- end }}
+  {{- end }}
+{{- end }}
 {{- end }}
 {{- end }}
