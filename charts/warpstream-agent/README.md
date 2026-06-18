@@ -467,7 +467,7 @@ WarpStream supports exposing metrics with Prometheus and Datadog. For more infor
 
 In our charts, we provide values to control easily whether Prometheus and/or Datadog is enabled (see `prometheusEnabled` and `datadogEnabled` in our `values.yaml`).
 
-By default, any agent can publish "cluster level" metrics by polling a job submitted by WarpStream control plane. This can cause weird behaviors as the same metric will be published by different agent pods with inconsistent values. A workaround is to set `dedicatedMetricsPod.enabled` to `true`: it will disable the control plane job, and instead spawn a dedicated deployment of size 1 with a pod that will do the same thing by scrapping WarpStream API. There are flags to control Prometheus and Datadog under `dedicatedMetricsPod` as well.
+A WarpStream agent can publish "cluster level" metrics by polling a job submitted by WarpStream control plane. This can cause weird behavior as the same metric will be published by different agent pods with inconsistent values. This is why the default way to handle metrics in Kubernetes is to set `dedicatedMetricsPod.enabled` to `true`: it will disable the control plane job, and instead spawn a dedicated deployment of size 1 with a pod that will do the same thing by scrapping the WarpStream API. There are flags to control Prometheus and Datadog under `dedicatedMetricsPod` as well. If you do not want this extra deployment, then you can disable this mode by setting `dedicatedMetricsPod.enabled` to `false`.
 
 #### Prometheus Operator
 
