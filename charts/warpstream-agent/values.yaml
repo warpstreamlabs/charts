@@ -658,10 +658,10 @@ dedicatedMetricsPod:
     # When unset, Kubernetes will dynamically allocate a nodePort from the configured range.
     # nodePort: 30081
   # Add additional environment settings to the pod. The one at the top level is not used for the dedicated metrics pod.
-  extraEnv: 
+  extraEnv:
   # by default let's use the same cardinality as regular agents. You can set extraEnv to [] if you want the partition cardinality and do not need any override.
-   - name: WARPSTREAM_DISABLE_CONSUMER_GROUP_METRICS_TAGS
-     value: "partition"
+  - name: WARPSTREAM_DISABLE_CONSUMER_GROUP_METRICS_TAGS
+    value: "partition"
   # Add additional args settings to the pod.  The one at the top level is not used for the dedicated metrics pod.
   extraArgs: []
   serviceMonitor:
