@@ -14,10 +14,6 @@ config:
   # Set to 80s for tests so the tests don't take forever
   gracefulShutdownDuration: 80s
 
-dedicatedMetricsPod:
-  # don't spawn a 2nd pod in this test
-  enabled: false
-
 # overriding resources so it fits on a runner
 resources:
   requests:
@@ -29,6 +25,14 @@ resources:
     ephemeral-storage: "100Mi"
   limits:
     memory: 2Gi
+
+dedicatedMetricsPod:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 100Mi
+    limits:
+      memory: 100Mi
 
 # Test resource settings
 test:
@@ -56,10 +60,6 @@ config:
   # Set to 80s for tests so the tests don't take forever
   gracefulShutdownDuration: 80s
 
-dedicatedMetricsPod:
-  # don't spawn a 2nd pod in this test
-  enabled: false
-
 # overriding resources so it fits on a runner
 resources:
   requests:
@@ -71,6 +71,14 @@ resources:
     ephemeral-storage: "100Mi"
   limits:
     memory: 2Gi
+
+dedicatedMetricsPod:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 100Mi
+    limits:
+      memory: 100Mi
 
 # Test resource settings
 test:
@@ -100,10 +108,6 @@ config:
   # Set to 80s for tests so the tests don't take forever
   gracefulShutdownDuration: 80s
 
-dedicatedMetricsPod:
-  # don't spawn a 2nd pod in this test
-  enabled: false
-
 # overriding resources so it fits on a runner
 resources:
   requests:
@@ -115,6 +119,14 @@ resources:
     ephemeral-storage: "100Mi"
   limits:
     memory: 2Gi
+
+dedicatedMetricsPod:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 100Mi
+    limits:
+      memory: 100Mi
 
 # Test resource settings
 test:
@@ -144,10 +156,6 @@ config:
   # Set to 80s for tests so the tests don't take forever
   gracefulShutdownDuration: 80s
 
-dedicatedMetricsPod:
-  # don't spawn a 2nd pod in this test
-  enabled: false
-
 # overriding resources so it fits on a runner
 resources:
   requests:
@@ -159,6 +167,14 @@ resources:
     ephemeral-storage: "100Mi"
   limits:
     memory: 2Gi
+
+dedicatedMetricsPod:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 100Mi
+    limits:
+      memory: 100Mi
 
 # Test resource settings
 test:
@@ -187,10 +203,6 @@ config:
   # Set to 80s for tests so the tests don't take forever
   gracefulShutdownDuration: 80s
 
-dedicatedMetricsPod:
-  # don't spawn a 2nd pod in this test
-  enabled: false
-
 # overriding resources so it fits on a runner
 resources:
   requests:
@@ -202,6 +214,14 @@ resources:
     ephemeral-storage: "100Mi"
   limits:
     memory: 2Gi
+
+dedicatedMetricsPod:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 100Mi
+    limits:
+      memory: 100Mi
 
 # Test resource settings
 test:
@@ -230,10 +250,6 @@ config:
   # Set to 80s for tests so the tests don't take forever
   gracefulShutdownDuration: 80s
 
-dedicatedMetricsPod:
-  # don't spawn a 2nd pod in this test
-  enabled: false
-
 # overriding resources so it fits on a runner
 resources:
   requests:
@@ -245,6 +261,14 @@ resources:
     ephemeral-storage: "100Mi"
   limits:
     memory: 2Gi
+
+dedicatedMetricsPod:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 100Mi
+    limits:
+      memory: 100Mi
 
 # Test resource settings
 test:
@@ -274,10 +298,6 @@ config:
   # Set to 80s for tests so the tests don't take forever
   gracefulShutdownDuration: 80s
 
-dedicatedMetricsPod:
-  # don't spawn a 2nd pod in this test
-  enabled: false
-
 # overriding resources so it fits on a runner
 resources:
   requests:
@@ -289,6 +309,14 @@ resources:
     ephemeral-storage: "100Mi"
   limits:
     memory: 2Gi
+
+dedicatedMetricsPod:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 100Mi
+    limits:
+      memory: 100Mi
 
 # Test resource settings
 test:
@@ -325,10 +353,6 @@ config:
   # Set to 80s for tests so the tests don't take forever
   gracefulShutdownDuration: 80s
 
-dedicatedMetricsPod:
-  # don't spawn a 2nd pod in this test
-  enabled: false
-
 # overriding resources so it fits on a runner
 resources:
   requests:
@@ -340,6 +364,14 @@ resources:
     ephemeral-storage: "100Mi"
   limits:
     memory: 2Gi
+
+dedicatedMetricsPod:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 100Mi
+    limits:
+      memory: 100Mi
 
 # Test resource settings
 test:
@@ -367,10 +399,6 @@ config:
   # Set to 80s for tests so the tests don't take forever
   gracefulShutdownDuration: 80s
 
-dedicatedMetricsPod:
-  # don't spawn a 2nd pod in this test
-  enabled: false
-
 # overriding resources so it fits on a runner
 resources:
   requests:
@@ -382,6 +410,14 @@ resources:
     ephemeral-storage: "100Mi"
   limits:
     memory: 2Gi
+
+dedicatedMetricsPod:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 100Mi
+    limits:
+      memory: 100Mi
 
 extraEnv:
   - name: WARPSTREAM_KAFKA_PORT
@@ -416,10 +452,6 @@ config:
   # Set to 80s for tests so the tests don't take forever
   gracefulShutdownDuration: 80s
 
-dedicatedMetricsPod:
-  # don't spawn a 2nd pod in this test
-  enabled: false
-
 # overriding resources so it fits on a runner
 resources:
   requests:
@@ -431,6 +463,14 @@ resources:
     ephemeral-storage: "100Mi"
   limits:
     memory: 2Gi
+
+dedicatedMetricsPod:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 100Mi
+    limits:
+      memory: 100Mi
 
 extraEnv:
   # Setting warpstream kafka port to match container & hostport

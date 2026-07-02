@@ -4,11 +4,6 @@ config:
 
   # Set to 80s for tests so the tests don't take forever
   gracefulShutdownDuration: 80s
-
-dedicatedMetricsPod:
-  # don't spawn a 2nd pod in this test
-  enabled: false
-
 deploymentStrategy:
   type: RollingUpdate
   rollingUpdate: null  # setting rollingUpdate to null so helm will fail if pod doesn't start
@@ -24,6 +19,14 @@ resources:
     ephemeral-storage: "100Mi"
   limits:
     memory: 2Gi
+
+dedicatedMetricsPod:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 100Mi
+    limits:
+      memory: 100Mi
 
 kafkaService:
   enabled: true
