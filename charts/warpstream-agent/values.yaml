@@ -613,7 +613,7 @@ networkPolicy:
 #         protocol: TCP|UDP
 
 dedicatedMetricsPod:
-  enabled: false
+  enabled: true
   # Enable/disable Prometheus metrics in agents.
   prometheusEnabled: true
   # Enable/disable Datadog metrics in metrics mode pod.
@@ -625,13 +625,13 @@ dedicatedMetricsPod:
     # This pod should not require too much memory.
     requests:
       cpu: 1
-      memory: 2Gi
+      memory: 100Mi
       # we do not need the disk space, but Kubernetes will count some logs that it emits
       # about our containers towards our containers ephemeral usage and if we requested
       # 0 storage we could end up getting evicted unnecessarily when the node is under disk pressure.
       ephemeral-storage: "100Mi"
     limits:
-      memory: 2Gi
+      memory: 100Mi
       # We don't limit ephemeral-storage because its coorelated with how many logs the
       # Agents are emitting which is impossible to predict.
   service:
@@ -657,9 +657,12 @@ dedicatedMetricsPod:
     # Optional static nodePort. Only valid for type NodePort or LoadBalancer.
     # When unset, Kubernetes will dynamically allocate a nodePort from the configured range.
     # nodePort: 30081
-  # Add additional environment settings to the pod. The one at the top level is not used toe dedicated metrics pod.
-  extraEnv: []
-  # Add additional args settings to the pod.  The one at the top level is not used toe dedicated metrics pod.
+  # Add additional environment settings to the pod. The one at the top level is not used for the dedicated metrics pod.
+  extraEnv:
+  # by default let's use the same cardinality as regular agents. You can set extraEnv to [] if you want the partition cardinality and do not need any override.
+  - name: WARPSTREAM_DISABLE_CONSUMER_GROUP_METRICS_TAGS
+    value: "partition"
+  # Add additional args settings to the pod.  The one at the top level is not used for the dedicated metrics pod.
   extraArgs: []
   serviceMonitor:
     ## If true, a ServiceMonitor CRD is created for a prometheus operator

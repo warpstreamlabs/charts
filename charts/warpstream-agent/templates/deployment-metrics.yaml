@@ -1,4 +1,4 @@
-{{- if .Values.dedicatedMetricsPod.enabled -}}
+{{- if and (.Values.dedicatedMetricsPod.enabled) (not .Values.config.playground) -}}
 {{- $fullName := (include "warpstream-agent.fullname" .) }}
 apiVersion: apps/v1
 kind: {{ include "warpstream-agent.deploymentKind" . }}
@@ -21,11 +21,13 @@ spec:
     matchLabels:
       {{- include "warpstream-agent.selectorLabels" . | nindent 6 }}
       app.kubernetes.io/component: agent-metrics
+  {{- if eq (include "warpstream-agent.deploymentKind" $) "Deployment" }}
   strategy:
     type: RollingUpdate
     rollingUpdate:
       maxSurge: 0
       maxUnavailable: 1
+  {{- end }}
   template:
     metadata:
       annotations:

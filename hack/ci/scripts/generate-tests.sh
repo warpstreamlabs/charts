@@ -26,6 +26,14 @@ resources:
   limits:
     memory: 2Gi
 
+dedicatedMetricsPod:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 100Mi
+    limits:
+      memory: 100Mi
+
 # Test resource settings
 test:
   resources:
@@ -63,6 +71,14 @@ resources:
     ephemeral-storage: "100Mi"
   limits:
     memory: 2Gi
+
+dedicatedMetricsPod:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 100Mi
+    limits:
+      memory: 100Mi
 
 # Test resource settings
 test:
@@ -104,6 +120,14 @@ resources:
   limits:
     memory: 2Gi
 
+dedicatedMetricsPod:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 100Mi
+    limits:
+      memory: 100Mi
+
 # Test resource settings
 test:
   resources:
@@ -144,6 +168,14 @@ resources:
   limits:
     memory: 2Gi
 
+dedicatedMetricsPod:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 100Mi
+    limits:
+      memory: 100Mi
+
 # Test resource settings
 test:
   resources:
@@ -182,6 +214,14 @@ resources:
     ephemeral-storage: "100Mi"
   limits:
     memory: 2Gi
+
+dedicatedMetricsPod:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 100Mi
+    limits:
+      memory: 100Mi
 
 # Test resource settings
 test:
@@ -222,6 +262,14 @@ resources:
   limits:
     memory: 2Gi
 
+dedicatedMetricsPod:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 100Mi
+    limits:
+      memory: 100Mi
+
 # Test resource settings
 test:
   resources:
@@ -261,6 +309,14 @@ resources:
     ephemeral-storage: "100Mi"
   limits:
     memory: 2Gi
+
+dedicatedMetricsPod:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 100Mi
+    limits:
+      memory: 100Mi
 
 # Test resource settings
 test:
@@ -309,6 +365,14 @@ resources:
   limits:
     memory: 2Gi
 
+dedicatedMetricsPod:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 100Mi
+    limits:
+      memory: 100Mi
+
 # Test resource settings
 test:
   resources:
@@ -346,6 +410,14 @@ resources:
     ephemeral-storage: "100Mi"
   limits:
     memory: 2Gi
+
+dedicatedMetricsPod:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 100Mi
+    limits:
+      memory: 100Mi
 
 extraEnv:
   - name: WARPSTREAM_KAFKA_PORT
@@ -391,6 +463,14 @@ resources:
     ephemeral-storage: "100Mi"
   limits:
     memory: 2Gi
+
+dedicatedMetricsPod:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 100Mi
+    limits:
+      memory: 100Mi
 
 extraEnv:
   # Setting warpstream kafka port to match container & hostport
