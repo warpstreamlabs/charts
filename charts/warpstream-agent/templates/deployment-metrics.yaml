@@ -1,4 +1,4 @@
-{{- if .Values.dedicatedMetricsPod.enabled -}}
+{{- if and (.Values.dedicatedMetricsPod.enabled) (not .Values.config.playground) -}}
 {{- $fullName := (include "warpstream-agent.fullname" .) }}
 apiVersion: apps/v1
 kind: {{ include "warpstream-agent.deploymentKind" . }}

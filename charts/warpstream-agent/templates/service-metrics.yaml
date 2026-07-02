@@ -1,4 +1,4 @@
-{{- if .Values.dedicatedMetricsPod.enabled -}}
+{{- if and (.Values.dedicatedMetricsPod.enabled) (not .Values.config.playground) -}}
 {{- if .Values.dedicatedMetricsPod.serviceMonitor.enabled }}
 apiVersion: v1
 kind: Service

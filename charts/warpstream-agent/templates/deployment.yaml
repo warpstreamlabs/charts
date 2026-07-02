@@ -111,7 +111,7 @@ spec:
             - {{ . }}
             {{- end }}
             {{- end }}
-            {{- if $.Values.dedicatedMetricsPod.enabled }}
+            {{- if and ($.Values.dedicatedMetricsPod.enabled) (not $.Values.config.playground) }}
             - -disablePublishMetricsJob
             {{- end }}
             {{- with $.Values.certificate }}

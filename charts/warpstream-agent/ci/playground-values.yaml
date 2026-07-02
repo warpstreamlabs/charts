@@ -23,14 +23,6 @@ resources:
   limits:
     memory: 2Gi
 
-dedicatedMetricsPod:
-  resources:
-    requests:
-      cpu: 100m
-      memory: 100Mi
-    limits:
-      memory: 100Mi
-
 kafkaService:
   enabled: true
 
