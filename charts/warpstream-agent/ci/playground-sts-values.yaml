@@ -4,6 +4,10 @@ config:
   # Set to 80s for tests so the tests don't take forever
   gracefulShutdownDuration: 80s
 
+dedicatedMetricsPod:
+  # don't spawn a 2nd pod in this test
+  enabled: false
+
 # testing with statefulset
 deploymentKind: StatefulSet
 

@@ -5,6 +5,10 @@ config:
   # Set to 80s for tests so the tests don't take forever
   gracefulShutdownDuration: 80s
 
+dedicatedMetricsPod:
+  # don't spawn a 2nd pod in this test
+  enabled: false
+
 deploymentStrategy:
   type: RollingUpdate
   rollingUpdate: null  # setting rollingUpdate to null so helm will fail if pod doesn't start

@@ -14,6 +14,10 @@ config:
   # Set to 80s for tests so the tests don't take forever
   gracefulShutdownDuration: 80s
 
+dedicatedMetricsPod:
+  # don't spawn a 2nd pod in this test
+  enabled: false
+
 # overriding resources so it fits on a runner
 resources:
   requests:
@@ -51,6 +55,10 @@ config:
 
   # Set to 80s for tests so the tests don't take forever
   gracefulShutdownDuration: 80s
+
+dedicatedMetricsPod:
+  # don't spawn a 2nd pod in this test
+  enabled: false
 
 # overriding resources so it fits on a runner
 resources:
@@ -92,6 +100,10 @@ config:
   # Set to 80s for tests so the tests don't take forever
   gracefulShutdownDuration: 80s
 
+dedicatedMetricsPod:
+  # don't spawn a 2nd pod in this test
+  enabled: false
+
 # overriding resources so it fits on a runner
 resources:
   requests:
@@ -132,6 +144,10 @@ config:
   # Set to 80s for tests so the tests don't take forever
   gracefulShutdownDuration: 80s
 
+dedicatedMetricsPod:
+  # don't spawn a 2nd pod in this test
+  enabled: false
+
 # overriding resources so it fits on a runner
 resources:
   requests:
@@ -170,6 +186,10 @@ config:
 
   # Set to 80s for tests so the tests don't take forever
   gracefulShutdownDuration: 80s
+
+dedicatedMetricsPod:
+  # don't spawn a 2nd pod in this test
+  enabled: false
 
 # overriding resources so it fits on a runner
 resources:
@@ -210,6 +230,10 @@ config:
   # Set to 80s for tests so the tests don't take forever
   gracefulShutdownDuration: 80s
 
+dedicatedMetricsPod:
+  # don't spawn a 2nd pod in this test
+  enabled: false
+
 # overriding resources so it fits on a runner
 resources:
   requests:
@@ -249,6 +273,10 @@ config:
 
   # Set to 80s for tests so the tests don't take forever
   gracefulShutdownDuration: 80s
+
+dedicatedMetricsPod:
+  # don't spawn a 2nd pod in this test
+  enabled: false
 
 # overriding resources so it fits on a runner
 resources:
@@ -297,6 +325,10 @@ config:
   # Set to 80s for tests so the tests don't take forever
   gracefulShutdownDuration: 80s
 
+dedicatedMetricsPod:
+  # don't spawn a 2nd pod in this test
+  enabled: false
+
 # overriding resources so it fits on a runner
 resources:
   requests:
@@ -334,6 +366,10 @@ config:
 
   # Set to 80s for tests so the tests don't take forever
   gracefulShutdownDuration: 80s
+
+dedicatedMetricsPod:
+  # don't spawn a 2nd pod in this test
+  enabled: false
 
 # overriding resources so it fits on a runner
 resources:
@@ -379,6 +415,10 @@ config:
 
   # Set to 80s for tests so the tests don't take forever
   gracefulShutdownDuration: 80s
+
+dedicatedMetricsPod:
+  # don't spawn a 2nd pod in this test
+  enabled: false
 
 # overriding resources so it fits on a runner
 resources:
