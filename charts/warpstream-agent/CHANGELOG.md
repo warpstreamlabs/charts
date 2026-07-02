@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [1.0.62] - 2026-07-01
+- Update WarpStream Agent to v815
 - Enable the dedicated metrics pod by default.
 - Disable the `partition` dimension by default in the dedicated metrics mode to be consistent with the regular agent previous behavior. This can be tuned under the `dedicatedMetricsPod.extraEnv` configuration value.
 
