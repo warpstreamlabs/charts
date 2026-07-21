@@ -717,46 +717,24 @@ must trigger the autoscaling thresholds for pods to be scaled up and down.
 This isn't always ideal, especially in situations when there are more clients in one availability zone. In that
 case only a single zone should be autoscaled while the rest shouldn't.
 
-To acheive this it is recommended to install the warpstream helm chart 3 different times into the same Kubernetes
-cluster each with a unique helm release name but all pointing to the same object storage and all using the same
-virtual cluster ID and agent keys.
+To acheive this we can use the `customDeployments` map.
 
-Then in each chart's `values.yaml` the following should be set
+In your `values.yaml` set the following:
 
 ```yaml
-# Deployment 1
-...
-availabilityZoneSelector:
-  enabled: true
-  zone: "us-east-1a"
-
-  # The node label to select on
-  nodeZoneLabel: topology.kubernetes.io/zone
-
-# Deployment 2
-...
-availabilityZoneSelector:
-  enabled: true
-  zone: "us-east-1b"
-
-  # The node label to select on
-  nodeZoneLabel: topology.kubernetes.io/zone
-
-# Deployment 3
-...
-availabilityZoneSelector:
-  enabled: true
-  zone: "us-east-1c"
-
-  # The node label to select on
-  nodeZoneLabel: topology.kubernetes.io/zone
+customDeployments:
+  - name: zone-a
+    overrides:
+      zone: "us-east-1a"
+  - name: zone-b
+    overrides:
+      zone: "us-east-1b"
+  - name: zone-c
+    overrides:
+      zone: "us-east-1c"
 ```
 
-Change the `zone` to the correct availability zones present in your Kubernetes cluster. 
-
-**Note:** Most Kubernetes cluster deployments will have the zone labeled on zones under the 
-`topology.kubernetes.io/zone` label. If this is different for your deployment set `nodeZoneLabel` to the correct
-value.
+This will create three warpstream deployments each with their own HPA and the ability to autoscale each zone independently.
 
 ### Playground Mode
 
