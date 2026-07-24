@@ -103,6 +103,7 @@ jobs:
           kubectl set env -n warpstream-benchmark-playground deployment/warpstream-benchmark-playground WARPSTREAM_ADVERTISE_HOSTNAME_STRATEGY=auto-ip4
           kubectl create svc clusterip -n warpstream-benchmark-playground warpstream-benchmark-playground --tcp=9092:9092
           kubectl wait --for=condition=available --timeout=120s -n warpstream-benchmark-playground deployment/warpstream-benchmark-playground
+          sleep 30
           kubectl exec -it -n warpstream-benchmark-playground deployments/warpstream-benchmark-playground -- /warpstream cli create-topic -topic ws-benchmark
 
       - name: Generate Certificate for TLS testing
