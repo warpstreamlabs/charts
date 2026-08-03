@@ -99,6 +99,9 @@ spec:
           args:
             {{- if $.Values.config.playground }}
             - playground
+            {{- else if eq (include "warpstream-agent.usesWorkloadIdentity" $) "true" }}
+            - agent
+            - -workloadIdentityTokenSource={{ $.Values.config.workloadIdentityTokenSource }}
             {{- else }}
             - agent
             - -agentKeyPath=/app/agent-key/{{ include "warpstream-agent.agentKey.secretKey" $ }}
@@ -235,7 +238,7 @@ spec:
             {{- end }}
           {{- if or ($.Values.volumeMounts) (not $.Values.config.playground) ($.Values.certificate) }}
           volumeMounts:
-            {{- if not $.Values.config.playground }}
+            {{- if and (not $.Values.config.playground) (ne (include "warpstream-agent.usesWorkloadIdentity" $) "true") }}
             - name: agent-key
               mountPath: /app/agent-key
               readOnly: true
@@ -295,7 +298,7 @@ spec:
       {{- end }}
       {{- if or ($.Values.volumes) (not $.Values.config.playground) ($.Values.certificate) }}
       volumes:
-        {{- if not $.Values.config.playground }}
+        {{- if and (not $.Values.config.playground) (ne (include "warpstream-agent.usesWorkloadIdentity" $) "true") }}
         - name: agent-key
           secret:
             secretName: {{ include "warpstream-agent.agentKey.secretName" $ }}

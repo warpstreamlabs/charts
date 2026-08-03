@@ -362,6 +362,14 @@ config:
   #   name:
   #   key:
   #
+  # Workload Identity Federation: exchange a cloud-native OIDC identity token for Agent
+  # credentials instead of a long-lived Agent Key. Mutually exclusive with agentKey,
+  # agentKeySecretKeyRef, apiKey, and apiKeySecretKeyRef.
+  # The Agent's metrics mode does not support Workload Identity Federation yet, so
+  # dedicatedMetricsPod.enabled must be set to false when this is set.
+  # See https://docs.warpstream.com/warpstream/kafka/advanced-agent-deployment-options/workload-identity-federation
+  # workloadIdentityTokenSource: "" # "aws" or "gcp"
+  #
   # Agent Groups configuration https://docs.warpstream.com/warpstream/byoc/advanced-agent-deployment-options/agent-groups
   # Leave empty for Default group
   agentGroup: ""

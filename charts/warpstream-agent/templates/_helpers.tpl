@@ -204,6 +204,33 @@ apikey
 {{- end }}
 
 {{/*
+Return "true" if the Agent is configured to authenticate with Workload Identity Federation
+(a cloud-native OIDC identity token) instead of a static Agent Key. Fails if
+config.workloadIdentityTokenSource is combined with any static key configuration, since the
+Agent refuses to start in that case.
+*/}}
+{{- define "warpstream-agent.usesWorkloadIdentity" -}}
+{{- if $.Values.config.workloadIdentityTokenSource -}}
+{{- if $.Values.config.agentKey -}}
+{{- fail "Only one of config.agentKey or config.workloadIdentityTokenSource may be set" }}
+{{- end }}
+{{- if $.Values.config.agentKeySecretKeyRef -}}
+{{- fail "Only one of config.agentKeySecretKeyRef or config.workloadIdentityTokenSource may be set" }}
+{{- end }}
+{{- if $.Values.config.apiKey -}}
+{{- fail "Only one of config.apiKey or config.workloadIdentityTokenSource may be set" }}
+{{- end }}
+{{- if $.Values.config.apiKeySecretKeyRef -}}
+{{- fail "Only one of config.apiKeySecretKeyRef or config.workloadIdentityTokenSource may be set" }}
+{{- end }}
+{{- if $.Values.dedicatedMetricsPod.enabled -}}
+{{- fail "dedicatedMetricsPod.enabled is not yet supported together with config.workloadIdentityTokenSource: the Agent's metrics mode does not support Workload Identity Federation yet. Disable dedicatedMetricsPod.enabled or unset config.workloadIdentityTokenSource." }}
+{{- end }}
+{{- print "true" }}
+{{- end }}
+{{- end }}
+
+{{/*
 Return the agent hostname override
 */}}
 {{- define "warpstream-agent.hostnameOverride" -}}

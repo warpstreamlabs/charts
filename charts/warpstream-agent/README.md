@@ -1017,6 +1017,7 @@ It is important to note that if you were already using our charts and you want t
 | config.agentKey | string | ` ` | The agent key, the helm chart will manage the Kubernetes secret that the key is stored in | 
 | config.agentKeySecretKeyRef.name | string | ` ` | The Kubernetes secret name that contains the agent key |
 | config.agentKeySecretKeyRef.key | string | ` ` | The Kubernetes secret key that contains the agent key |
+| config.workloadIdentityTokenSource | string | ` ` | Authenticate via Workload Identity Federation instead of a static Agent Key. Set to `aws` or `gcp`. Mutually exclusive with `config.agentKey`, `config.agentKeySecretKeyRef`, `config.apiKey`, and `config.apiKeySecretKeyRef`. The Agent's metrics mode does not support this yet, so `dedicatedMetricsPod.enabled` must be `false` when this is set. Ref: https://docs.warpstream.com/warpstream/kafka/advanced-agent-deployment-options/workload-identity-federation |
 | config.agentGroup | string | ` ` | The optional agent group to use Ref: https://docs.warpstream.com/warpstream/byoc/advanced-agent-deployment-options/agent-groups |
 | config.ingestionBucketURL | string | ` ` | The optional ingestion bucket URL, usually used for low latency clusters https://docs.warpstream.com/warpstream/byoc/advanced-agent-deployment-options/low-latency-clusters |
 | config.compactionBucketURL | string | ` ` | The optional compaction bucket URL, usually used for low latency clusters https://docs.warpstream.com/warpstream/byoc/advanced-agent-deployment-options/low-latency-clusters |
