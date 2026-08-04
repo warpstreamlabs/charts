@@ -736,6 +736,35 @@ customDeployments:
 
 This will create three warpstream deployments each with their own HPA and the ability to autoscale each zone independently.
 
+#### Resources Per Deployment
+
+By default every custom deployment inherits the root `resources` (and `goMaxProcs`). When custom deployments run
+differently-sized workloads — for example a small dedicated pool for managed pipelines next to a large proxy fleet —
+each deployment can override them:
+
+```yaml
+customDeployments:
+  - name: proxy
+    overrides:
+      roles: proxy
+  - name: pipelines
+    overrides:
+      roles: pipelines
+      resources:
+        requests:
+          cpu: 2
+          memory: 8Gi
+        limits:
+          memory: null
+      # Optional; when omitted, GOMAXPROCS is derived from the overridden CPU
+      # request (unless a root-level goMaxProcs is set, which takes precedence
+      # over derivation but not over this override).
+      goMaxProcs: 2
+```
+
+The `enforceProductionResourceRequirements` check (4 GiB of memory per CPU) applies to overridden resources the same
+way it applies to the root `resources`.
+
 ### Playground Mode
 
 Use playground mode to easily test WarpStream without needing to first create a WarpStream account. See WarpStream's ["Hello World"](https://docs.warpstream.com/warpstream/getting-started/hello-world-using-kafka) to learn more.

@@ -16,6 +16,16 @@ image:
 #     zone: "us-east-1a"
 #     roles: proxy
 #     agentGroup: default
+#     # Optional: override the pod resources for this deployment only. When
+#     # unset, the deployment uses the root `resources`. When set and
+#     # `goMaxProcs` is not overridden or set at the root, GOMAXPROCS is
+#     # derived from this CPU request.
+#     resources:
+#       requests:
+#         cpu: 2
+#         memory: 8Gi
+#     # Optional: override GOMAXPROCS for this deployment only.
+#     goMaxProcs: 2
 #     autoscaling:
 #       enabled: true
 #       minReplicas: 5
