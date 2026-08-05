@@ -754,8 +754,6 @@ customDeployments:
         requests:
           cpu: 2
           memory: 8Gi
-        limits:
-          memory: null
       # Optional; when omitted, GOMAXPROCS is derived from the overridden CPU
       # request (unless a root-level goMaxProcs is set, which takes precedence
       # over derivation but not over this override).
