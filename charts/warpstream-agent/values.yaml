@@ -24,6 +24,8 @@ image:
 #       requests:
 #         cpu: 2
 #         memory: 8Gi
+#       limits:
+#         memory: 8Gi
 #     # Optional: override GOMAXPROCS for this deployment only.
 #     goMaxProcs: 2
 #     autoscaling:
