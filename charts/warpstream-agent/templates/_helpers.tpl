@@ -204,6 +204,20 @@ apikey
 {{- end }}
 
 {{/*
+Fail fast when config.workloadIdentityTokenSource is combined with any static-key setting.
+The Agent rejects the combination at startup; the chart-time check surfaces it earlier with a
+clearer message.
+*/}}
+{{- define "warpstream-agent.validateWorkloadIdentity" -}}
+{{- if .Values.config.workloadIdentityTokenSource }}
+{{- if .Values.config.agentKey }}{{- fail "config.workloadIdentityTokenSource cannot be combined with config.agentKey" }}{{- end }}
+{{- if .Values.config.apiKey }}{{- fail "config.workloadIdentityTokenSource cannot be combined with config.apiKey" }}{{- end }}
+{{- if .Values.config.agentKeySecretKeyRef }}{{- fail "config.workloadIdentityTokenSource cannot be combined with config.agentKeySecretKeyRef" }}{{- end }}
+{{- if .Values.config.apiKeySecretKeyRef }}{{- fail "config.workloadIdentityTokenSource cannot be combined with config.apiKeySecretKeyRef" }}{{- end }}
+{{- end }}
+{{- end }}
+
+{{/*
 Return the agent hostname override
 */}}
 {{- define "warpstream-agent.hostnameOverride" -}}

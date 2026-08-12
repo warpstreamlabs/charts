@@ -70,7 +70,11 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           args:
             - metrics
+            {{- if .Values.config.workloadIdentityTokenSource }}
+            - -workloadIdentityTokenSource={{ .Values.config.workloadIdentityTokenSource }}
+            {{- else }}
             - -agentKeyPath=/app/agent-key/{{ include "warpstream-agent.agentKey.secretKey" . }}
+            {{- end }}
             {{- range .Values.dedicatedMetricsPod.extraArgs }}
             - {{ . }}
             {{- end }}
@@ -126,9 +130,11 @@ spec:
               protocol: TCP
           {{- if or (.Values.volumeMounts) (not .Values.config.playground) (.Values.certificate) }}
           volumeMounts:
+            {{- if and (not .Values.config.playground) (not .Values.config.workloadIdentityTokenSource) }}
             - name: agent-key
               mountPath: /app/agent-key
               readOnly: true
+            {{- end }}
             {{- with .Values.volumeMounts }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
@@ -158,9 +164,11 @@ spec:
       {{- end }}
       {{- if or (.Values.volumes) (not .Values.config.playground) (.Values.certificate) }}
       volumes:
+        {{- if and (not .Values.config.playground) (not .Values.config.workloadIdentityTokenSource) }}
         - name: agent-key
           secret:
             secretName: {{ include "warpstream-agent.agentKey.secretName" . }}
+        {{- end }}
         {{- with .Values.volumes }}
         {{- toYaml . | nindent 8 }}
         {{- end }}

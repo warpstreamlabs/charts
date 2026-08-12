@@ -374,6 +374,12 @@ config:
   #   name:
   #   key:
   #
+  # OIDC workload identity token source. When set, the Agent authenticates by exchanging
+  # a platform OIDC token for a short-lived credential from the WarpStream control plane
+  # instead of using a static agent key. Supported values: "aws", "gcp".
+  # Mutually exclusive with apiKey / agentKey / apiKeySecretKeyRef / agentKeySecretKeyRef.
+  # workloadIdentityTokenSource: ""
+  #
   # Agent Groups configuration https://docs.warpstream.com/warpstream/byoc/advanced-agent-deployment-options/agent-groups
   # Leave empty for Default group
   agentGroup: ""
