@@ -347,6 +347,23 @@ extraEnv:
     value: "true"
 ```
 
+### Workload Identity Federation
+
+By default the Agent authenticates to the WarpStream control plane with a static agent key stored in a Kubernetes secret. As an alternative, the Agent can exchange a platform OIDC token for a short-lived credential from the WarpStream control plane, so no static agent key needs to be mounted into the pod. See the [Workload Identity Federation](https://docs.warpstream.com/warpstream/kafka/advanced-agent-deployment-options/workload-identity-federation) documentation for the full setup, including creating the federation binding on the virtual cluster and the required cloud-side identity preparation.
+
+To enable it in the chart, set `config.workloadIdentityTokenSource` to the platform your workload runs on:
+
+```yaml
+config:
+  workloadIdentityTokenSource: "aws"  # or "gcp"
+```
+
+`config.workloadIdentityTokenSource` is mutually exclusive with `config.agentKey`, `config.apiKey`, `config.agentKeySecretKeyRef`, and `config.apiKeySecretKeyRef`; the chart will fail to render if any of those are set alongside it.
+
+This setting applies to both the main deployment and the [dedicated metrics pod](#metrics). When enabled, the chart passes `-workloadIdentityTokenSource=<value>` to the Agent and skips creating and mounting the agent key secret entirely.
+
+The pod itself must be able to obtain a platform OIDC token — this is arranged out-of-band by annotating the chart's service account (see `serviceAccount.annotations`) so it maps to an AWS IAM role or a GCP service account per the linked docs.
+
 ### Kafka LoadBalancer Service
 
 The stateless nature of the WarpStream agents allows them to be deployed behind a network load balancer using `type: LoadBalancer` in your Service configuration. See the [Kubernetes Service documentation](https://kubernetes.io/docs/concepts/services-networking/service/#loadbalancer) for details.
@@ -1046,6 +1063,7 @@ It is important to note that if you were already using our charts and you want t
 | config.agentKey | string | ` ` | The agent key, the helm chart will manage the Kubernetes secret that the key is stored in | 
 | config.agentKeySecretKeyRef.name | string | ` ` | The Kubernetes secret name that contains the agent key |
 | config.agentKeySecretKeyRef.key | string | ` ` | The Kubernetes secret key that contains the agent key |
+| config.workloadIdentityTokenSource | string | ` ` | Enable OIDC workload identity federation with the given platform token source (`aws` or `gcp`); mutually exclusive with `config.agentKey`/`config.apiKey`/`config.agentKeySecretKeyRef`/`config.apiKeySecretKeyRef`. Ref: https://docs.warpstream.com/warpstream/kafka/advanced-agent-deployment-options/workload-identity-federation |
 | config.agentGroup | string | ` ` | The optional agent group to use Ref: https://docs.warpstream.com/warpstream/byoc/advanced-agent-deployment-options/agent-groups |
 | config.ingestionBucketURL | string | ` ` | The optional ingestion bucket URL, usually used for low latency clusters https://docs.warpstream.com/warpstream/byoc/advanced-agent-deployment-options/low-latency-clusters |
 | config.compactionBucketURL | string | ` ` | The optional compaction bucket URL, usually used for low latency clusters https://docs.warpstream.com/warpstream/byoc/advanced-agent-deployment-options/low-latency-clusters |
