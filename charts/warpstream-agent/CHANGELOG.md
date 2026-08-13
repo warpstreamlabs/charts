@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.79] - 2026-08-13
+- Update WarpStream Agent to v830
+
 ## [1.0.78] - 2026-08-12
 - Support OIDC workload identity federation via `config.workloadIdentityTokenSource` (`"aws"` or `"gcp"`). When set, the Agent authenticates by exchanging a platform OIDC token for a short-lived credential and no static agent key secret is mounted. Applies to both the main deployment and the dedicated metrics pod.
 
