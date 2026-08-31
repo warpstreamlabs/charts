@@ -35,9 +35,22 @@ jobs:
         if: steps.list-changed.outputs.changed == 'true'
         run: ct lint --target-branch ${{ github.event.repository.default_branch }}
 
+  # Agent release PRs bump appVersion before the image has finished publishing.
+  # Wait here (in parallel with lint) so the sharded kind tests do not start
+  # until the tags in Chart.yaml are pullable.
+  wait-for-images:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Wait for chart images to be published
+        run: python3 ./hack/ci/scripts/wait-for-images.py
+
   test:
     runs-on: ubuntu-latest
-    needs: lint
+    needs: [lint, wait-for-images]
     if: needs.lint.outputs.changed
     strategy:
       matrix:
