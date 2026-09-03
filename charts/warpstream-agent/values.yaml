@@ -632,6 +632,13 @@ networkPolicy:
 
 dedicatedMetricsPod:
   enabled: true
+  # Name of an existing Kubernetes service account to use for the dedicated
+  # metrics pod. When empty, the pod uses the same service account as the
+  # agent pods. The named account must exist in the release namespace.
+  # Top-level serviceAccount.annotations apply only to the chart-managed
+  # account. Users selecting an override are responsible for configuring its
+  # workload-identity annotations and token-mounting behavior.
+  serviceAccountName: ""
   # Enable/disable Prometheus metrics in agents.
   prometheusEnabled: true
   # Enable/disable Datadog metrics in metrics mode pod.
