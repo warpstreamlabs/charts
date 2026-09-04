@@ -632,6 +632,12 @@ networkPolicy:
 
 dedicatedMetricsPod:
   enabled: true
+  # Name of a Kubernetes service account to use for the dedicated metrics pod.
+  # When empty, the pod uses the namespace's default service account. To share
+  # the chart-managed account, set serviceAccount.name and this value to the
+  # same name. Any other named account must exist in the release namespace and
+  # be configured separately.
+  serviceAccountName: ""
   # Enable/disable Prometheus metrics in agents.
   prometheusEnabled: true
   # Enable/disable Datadog metrics in metrics mode pod.
