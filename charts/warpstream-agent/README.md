@@ -362,7 +362,9 @@ config:
 
 This setting applies to both the main deployment and the [dedicated metrics pod](#metrics). When enabled, the chart passes `-workloadIdentityTokenSource=<value>` to the Agent and skips creating and mounting the agent key secret entirely.
 
-The pod itself must be able to obtain a platform OIDC token — this is arranged out-of-band by annotating the chart's service account (see `serviceAccount.annotations`) so it maps to an AWS IAM role or a GCP service account per the linked docs.
+Each pod must be able to obtain a platform OIDC token. Agent pods use the chart's service account, which can be mapped to an AWS IAM role or a GCP service account with `serviceAccount.annotations` per the linked docs.
+
+The dedicated metrics pod uses the namespace's `default` service account unless `dedicatedMetricsPod.serviceAccountName` is set. For workload identity, set it to an appropriately configured account. To share the chart-managed account, set `serviceAccount.name` explicitly and use the same name for `dedicatedMetricsPod.serviceAccountName`; otherwise, the selected account must exist in the release namespace and be configured separately.
 
 ### Kafka LoadBalancer Service
 
@@ -1092,6 +1094,7 @@ It is important to note that if you were already using our charts and you want t
 | networkPolicy.ingressRules | object | `{}` | The network policy ingress rules |
 | networkPolicy.egressRules | object | `{}` | The network policy egress rules |
 | dedicatedMetricsPod.enabled | bool | `false` | Enable/disable the metrics mode where there is one dedicated pod to handle cluster level metrics publishing |
+| dedicatedMetricsPod.serviceAccountName | string | `` | Name of a service account for the dedicated metrics pod. When empty, the pod uses the namespace's `default` service account. |
 | dedicatedMetricsPod.prometheusEnabled | bool | `true` | Enable/disable Prometheus metrics in agents |
 | dedicatedMetricsPod.datadogEnabled | bool | `false` | Enable/disable Datadog metrics in agents |
 | dedicatedMetricsPod.datadogDefaultAgentHost| bool | `true` | Enable/disable setting the env var DD_AGENT_HOST derived from the underlying host IP when Datadog metrics is enabled |
