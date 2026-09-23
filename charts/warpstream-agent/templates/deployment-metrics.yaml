@@ -147,11 +147,23 @@ spec:
       initContainers:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.affinity }}
+      {{- $affinity := .Values.affinity }}
+      {{- if hasKey .Values.dedicatedMetricsPod "affinity" }}
+      {{- $affinity = .Values.dedicatedMetricsPod.affinity }}
+      {{- end }}
+      {{- $tolerations := .Values.tolerations }}
+      {{- if hasKey .Values.dedicatedMetricsPod "tolerations" }}
+      {{- $tolerations = .Values.dedicatedMetricsPod.tolerations }}
+      {{- end }}
+      {{- with .Values.dedicatedMetricsPod.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $affinity }}
       affinity:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.tolerations }}
+      {{- with $tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}

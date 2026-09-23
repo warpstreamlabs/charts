@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.94] - 2026-09-23
+- Allow per-component pod scheduling. Each `customDeployments[].overrides` and the `dedicatedMetricsPod` can now set `nodeSelector`, `tolerations`, and `affinity` independently instead of sharing the root values. Custom deployments fall back to the root value for any override left unset (a zone override is still merged into the effective `nodeSelector`). The metrics pod inherits the root `tolerations`/`affinity` when unset (set them, or `[]`/`{}`, to override or clear), and applies `dedicatedMetricsPod.nodeSelector` only when set.
+
 ## [1.0.93] - 2026-09-21
 - Update WarpStream Agent to v843
 

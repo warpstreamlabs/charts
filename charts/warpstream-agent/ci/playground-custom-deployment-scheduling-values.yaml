@@ -1,0 +1,69 @@
+config:
+  playground: true
+
+  # Set to 80s for tests so the tests don't take forever
+  gracefulShutdownDuration: 80s
+
+deploymentStrategy:
+  type: RollingUpdate
+  rollingUpdate: null  # setting rollingUpdate to null so helm will fail if pod doesn't start
+
+# overriding resources so the deployments fit on the kind workers used in CI.
+# Kept small (this test is about scheduling, not resources) so the extra
+# deployment does not risk exhausting the runner's capacity.
+resources:
+  requests:
+    cpu: 250m
+    memory: 1Gi
+    ephemeral-storage: "100Mi"
+  limits:
+    memory: 1Gi
+
+# Root scheduling that every deployment inherits unless it overrides. The
+# selectors and affinity are intentionally benign so pods still schedule on the
+# kind workers used in CI.
+nodeSelector:
+  kubernetes.io/os: linux
+tolerations: []
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+    - weight: 100
+      podAffinityTerm:
+        labelSelector:
+          matchLabels:
+            app.kubernetes.io/name: warpstream-agent
+        topologyKey: kubernetes.io/hostname
+
+# One deployment inheriting the root scheduling, one overriding
+# nodeSelector / tolerations / affinity — exercises the per-deployment
+# scheduling override path next to the inheritance path.
+customDeployments:
+  - name: inherits-scheduling
+  - name: overrides-scheduling
+    overrides:
+      nodeSelector:
+        kubernetes.io/os: linux
+      tolerations:
+      - key: node-role.kubernetes.io/control-plane
+        operator: Exists
+        effect: NoSchedule
+      # Clear the root pod anti-affinity for this deployment only.
+      affinity: {}
+
+kafkaService:
+  enabled: true
+
+extraEnv:
+  - name: WARPSTREAM_ADVERTISE_HOSTNAME_STRATEGY
+    value: auto-ip4  # playground mode defaults to local so we need to override it for tests to pass
+
+# Test resource settings
+test:
+  resources:
+    requests:
+      cpu: 1m
+      memory: 128Mi
+    limits:
+      cpu: 100m
+      memory: 256Mi

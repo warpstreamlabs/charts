@@ -273,12 +273,24 @@ spec:
       initContainers:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- $hasNodeSelector := not (empty $.Values.nodeSelector) -}}
+      {{- $nodeSelector := $.Values.nodeSelector }}
+      {{- if and (hasKey . "overrides") (hasKey .overrides "nodeSelector") }}
+      {{- $nodeSelector = .overrides.nodeSelector }}
+      {{- end }}
+      {{- $affinity := $.Values.affinity }}
+      {{- if and (hasKey . "overrides") (hasKey .overrides "affinity") }}
+      {{- $affinity = .overrides.affinity }}
+      {{- end }}
+      {{- $tolerations := $.Values.tolerations }}
+      {{- if and (hasKey . "overrides") (hasKey .overrides "tolerations") }}
+      {{- $tolerations = .overrides.tolerations }}
+      {{- end }}
+      {{- $hasNodeSelector := not (empty $nodeSelector) -}}
       {{- $hasAZSelector := $.Values.availabilityZoneSelector.enabled -}}
       {{- $hasOverrideZone := and (hasKey . "overrides") (hasKey .overrides "zone") -}}
       {{- if or $hasNodeSelector $hasAZSelector $hasOverrideZone }}
       nodeSelector:
-        {{- with $.Values.nodeSelector }}
+        {{- with $nodeSelector }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
         {{- if $hasOverrideZone }}
@@ -287,11 +299,11 @@ spec:
         {{ $.Values.availabilityZoneSelector.nodeZoneLabel }}: {{ $.Values.availabilityZoneSelector.zone }}
         {{- end }}
       {{- end }}
-      {{- with $.Values.affinity }}
+      {{- with $affinity }}
       affinity:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with $.Values.tolerations }}
+      {{- with $tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
