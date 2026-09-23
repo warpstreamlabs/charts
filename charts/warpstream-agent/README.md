@@ -784,6 +784,52 @@ customDeployments:
 The `enforceProductionResourceRequirements` check (4 GiB of memory per CPU) applies to overridden resources the same
 way it applies to the root `resources`.
 
+#### Scheduling Per Deployment
+
+By default every custom deployment inherits the root `nodeSelector`, `tolerations`, and `affinity`. When different
+deployments should land on different node pools — for example a `jobs` pool separate from the network-optimized pool
+used by the `proxy` fleet — each deployment can override them:
+
+```yaml
+customDeployments:
+  - name: proxy
+    overrides:
+      roles: proxy
+      # inherits the root nodeSelector / tolerations / affinity
+  - name: jobs
+    overrides:
+      roles: jobs
+      nodeSelector:
+        workload: warpstream-jobs
+      tolerations:
+      - key: workload
+        operator: Equal
+        value: warpstream-jobs
+        effect: NoSchedule
+      # Clear the root pod anti-affinity for this deployment only.
+      affinity: {}
+```
+
+Each of `nodeSelector`, `tolerations`, and `affinity` replaces the corresponding root value for that deployment only
+when set; anything left unset falls back to the root value. Set a value to `{}` (or `[]` for `tolerations`) to clear
+the inherited value. A `zone` override is still merged into whichever `nodeSelector` applies.
+
+The `dedicatedMetricsPod` can be scheduled independently the same way, which is useful because the small metrics pod
+usually should not consume a slot on the network-optimized nodes reserved for the agents:
+
+```yaml
+dedicatedMetricsPod:
+  enabled: true
+  nodeSelector:
+    workload: general-purpose
+  # Drop the agents' pod anti-affinity so the metrics pod isn't affected by their bin-packing.
+  affinity: {}
+```
+
+The metrics pod inherits the root `tolerations` and `affinity` when they are not set under `dedicatedMetricsPod`
+(set them, or `[]` / `{}`, to override or clear). Its `nodeSelector` is applied only when set under
+`dedicatedMetricsPod` — it does not inherit the root `nodeSelector`.
+
 ### Playground Mode
 
 Use playground mode to easily test WarpStream without needing to first create a WarpStream account. See WarpStream's ["Hello World"](https://docs.warpstream.com/warpstream/getting-started/hello-world-using-kafka) to learn more.
@@ -1098,6 +1144,9 @@ It is important to note that if you were already using our charts and you want t
 | dedicatedMetricsPod.prometheusEnabled | bool | `true` | Enable/disable Prometheus metrics in agents |
 | dedicatedMetricsPod.datadogEnabled | bool | `false` | Enable/disable Datadog metrics in agents |
 | dedicatedMetricsPod.datadogDefaultAgentHost| bool | `true` | Enable/disable setting the env var DD_AGENT_HOST derived from the underlying host IP when Datadog metrics is enabled |
+| dedicatedMetricsPod.nodeSelector | object | `` | Optional `nodeSelector` for the metrics pod. Applied only when set; does not inherit the root `nodeSelector`. |
+| dedicatedMetricsPod.tolerations | list | `` | Optional `tolerations` for the metrics pod. Inherits the root `tolerations` when unset; set (or `[]`) to override or clear. |
+| dedicatedMetricsPod.affinity | object | `` | Optional `affinity` for the metrics pod. Inherits the root `affinity` when unset; set (or `{}`) to override or clear. |
 | dedicatedMetricsPod.service.externalTrafficPolicy | string | `` | Optional `externalTrafficPolicy` (`Cluster` or `Local`). Only valid for type `NodePort` or `LoadBalancer`. Ref: https://kubernetes.io/docs/reference/networking/virtual-ips/#external-traffic-policy |
 | dedicatedMetricsPod.service.nodePort | number | `` | Optional static nodePort. Only valid for type `NodePort` or `LoadBalancer`. |
 

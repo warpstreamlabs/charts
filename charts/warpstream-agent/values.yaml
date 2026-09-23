@@ -28,6 +28,19 @@ image:
 #         memory: 8Gi
 #     # Optional: override GOMAXPROCS for this deployment only.
 #     goMaxProcs: 2
+#     # Optional: override the pod scheduling for this deployment only. Each of
+#     # these replaces the root value (`nodeSelector`, `tolerations`, `affinity`)
+#     # when set, so different deployments (e.g. jobs vs. pipelines) can target
+#     # different node pools. When unset, the deployment uses the root value.
+#     # A zone override (above) is still merged into whichever nodeSelector applies.
+#     nodeSelector:
+#       workload: warpstream-jobs
+#     tolerations:
+#     - key: workload
+#       operator: Equal
+#       value: warpstream-jobs
+#       effect: NoSchedule
+#     affinity: {}
 #     autoscaling:
 #       enabled: true
 #       minReplicas: 5
@@ -645,6 +658,19 @@ dedicatedMetricsPod:
   datadogEnabled: false
   # Enable/disable setting the env var DD_AGENT_HOST derived from the underlying host IP when Datadog metrics is enabled.
   datadogDefaultAgentHost: true
+  # Optional: dedicate scheduling for the metrics pod. This small pod usually
+  # does not belong on the network-optimized nodes reserved for the agents, so
+  # you can point it somewhere else here.
+  # - `nodeSelector` is only applied to the metrics pod when set (it does not
+  #   inherit the root `nodeSelector`).
+  # - `tolerations` and `affinity` inherit the root value when unset. Set them
+  #   here to replace the root value for the metrics pod, or set to `[]` / `{}`
+  #   to clear the inherited value (for example to drop the agents' pod
+  #   anti-affinity so the metrics pod is not affected by their bin-packing).
+  # nodeSelector:
+  #   workload: general-purpose
+  # tolerations: []
+  # affinity: {}
   resources:
     # This pod should not require too much memory.
     requests:
