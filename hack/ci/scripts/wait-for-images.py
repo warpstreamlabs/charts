@@ -96,7 +96,8 @@ def index_has_platform(manifest: dict, os_name: str, arch: str) -> bool:
     return False
 
 
-def image_is_ready(image: str) -> bool:
+def image_is_ready(image: str) -> tuple[bool, int | None]:
+    """Return whether the image is ready, and the HTTP status when it is not."""
     global _extra_backoff_seconds
     host, repo, tag = split_image(image)
     if host != PUBLIC_ECR_HOST:
@@ -107,7 +108,7 @@ def image_is_ready(image: str) -> bool:
     except Exception as exc:
         print(f"  token error for {image}: {exc}", file=sys.stderr)
         _TOKEN_CACHE.pop(repo, None)
-        return False
+        return False, None
 
     request = urllib.request.Request(
         f"https://{host}/v2/{repo}/manifests/{urllib.parse.quote(tag, safe='')}",
@@ -132,16 +133,16 @@ def image_is_ready(image: str) -> bool:
                 f"  rate limited checking {image}; backing off {_extra_backoff_seconds}s",
                 file=sys.stderr,
             )
-            return False
-        if exc.code in (404, 401, 403):
-            return False
-        print(f"  manifest error for {image}: HTTP {exc.code}", file=sys.stderr)
-        return False
+        elif exc.code not in (404, 401, 403):
+            print(f"  manifest error for {image}: HTTP {exc.code}", file=sys.stderr)
+        return False, exc.code
     except Exception as exc:
         print(f"  manifest error for {image}: {exc}", file=sys.stderr)
-        return False
+        return False, None
 
-    return index_has_platform(manifest, REQUIRED_OS, REQUIRED_ARCH)
+    if index_has_platform(manifest, REQUIRED_OS, REQUIRED_ARCH):
+        return True, None
+    return False, None
 
 
 def utc_now() -> str:
@@ -167,11 +168,17 @@ def main() -> int:
 
     while pending:
         still_pending: list[str] = []
-        for image in pending:
-            if image_is_ready(image):
+        for index, image in enumerate(pending):
+            ready, status = image_is_ready(image)
+            if ready:
                 print(f"{utc_now()} ready: {image}")
-            else:
-                still_pending.append(image)
+                continue
+            still_pending.append(image)
+            if status == 429:
+                # A 429 limits this client, so leave the remaining tags pending
+                # and sleep before the next registry request.
+                still_pending.extend(pending[index + 1 :])
+                break
 
         if not still_pending:
             print("all chart images are available")
