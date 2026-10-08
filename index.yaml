@@ -7114,4 +7114,21 @@ entries:
     urls:
     - https://github.com/warpstreamlabs/charts/releases/download/warpstream-benchmark-0.1.0/warpstream-benchmark-0.1.0.tgz
     version: 0.1.0
-generated: "2026-10-08T13:20:54.422189221Z"
+  warpstream-self-hosted-control-plane:
+  - apiVersion: v2
+    created: "2026-10-08T18:53:00.72327143Z"
+    description: WarpStream self-hosted control plane for Kubernetes.
+    digest: 52365bae3c32d8a6b9183f3e3cf1e9097be63eab304e5cb05eddbec1142c8138
+    home: https://docs.warpstream.com/warpstream/
+    icon: https://avatars.githubusercontent.com/u/132156278
+    maintainers:
+    - email: founders@warpstreamlabs.com
+      name: WarpStream
+    name: warpstream-self-hosted-control-plane
+    sources:
+    - https://github.com/warpstreamlabs/charts/warpstream-self-hosted-control-plane
+    type: application
+    urls:
+    - https://github.com/warpstreamlabs/charts/releases/download/warpstream-self-hosted-control-plane-0.1.0/warpstream-self-hosted-control-plane-0.1.0.tgz
+    version: 0.1.0
+generated: "2026-10-08T18:53:00.723948185Z"
