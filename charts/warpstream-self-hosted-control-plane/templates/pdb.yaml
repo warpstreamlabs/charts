@@ -1,0 +1,18 @@
+{{- if .Values.pdb.create }}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "wscp.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "wscp.labels" . | nindent 4 }}
+  {{- with .Values.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  maxUnavailable: {{ .Values.pdb.maxUnavailable }}
+  selector:
+    matchLabels:
+      {{- include "wscp.selectorLabels" . | nindent 6 }}
+{{- end }}

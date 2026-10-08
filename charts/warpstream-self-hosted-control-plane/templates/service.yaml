@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "wscp.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "wscp.labels" . | nindent 4 }}
+  {{- with (mergeOverwrite (dict) (default (dict) .Values.annotations) (default (dict) .Values.service.annotations)) }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - name: http
+      port: {{ .Values.ports.http }}
+      targetPort: http
+      protocol: TCP
+  selector:
+    {{- include "wscp.selectorLabels" . | nindent 4 }}

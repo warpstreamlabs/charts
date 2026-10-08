@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "image": {
+      "type": "object",
+      "properties": {
+        "repository": { "type": "string" },
+        "tag": { "type": "string" },
+        "pullPolicy": { "type": "string", "enum": ["Always", "IfNotPresent", "Never"] }
+      }
+    },
+    "replicas": { "type": "integer", "minimum": 3 },
+    "config": {
+      "type": "object",
+      "properties": {
+        "clusterConf": { "type": "string" },
+        "existingSecret": { "type": "string" },
+        "existingSecretKey": { "type": "string" },
+        "expandEnv": { "type": "boolean" },
+        "snapshotBucketURL": { "type": "string" },
+        "clusterMode": { "type": "string", "enum": ["dynamodb-production"] }
+      }
+    },
+    "license": {
+      "type": "object",
+      "properties": {
+        "key": { "type": "string" },
+        "existingSecret": { "type": "string" },
+        "existingSecretKey": { "type": "string" }
+      }
+    },
+    "ports": {
+      "type": "object",
+      "properties": {
+        "http": { "type": "integer" },
+        "clusterRegistry": { "type": "integer" },
+        "clusterEnvironment": { "type": "integer" }
+      }
+    },
+    "metrics": {
+      "type": "object",
+      "properties": {
+        "prometheus": { "type": "boolean" },
+        "datadog": {
+          "type": "object",
+          "properties": {
+            "metrics": { "type": "boolean" },
+            "profiling": { "type": "boolean" },
+            "tracing": { "type": "boolean" }
+          }
+        }
+      }
+    },
+    "ingress": {
+      "type": "object",
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "className": { "type": "string" },
+        "annotations": { "type": "object" },
+        "host": { "type": "string" }
+      }
+    },
+    "terminationGracePeriodSeconds": { "type": "integer", "minimum": 0 },
+    "minReadySeconds": { "type": "integer", "minimum": 0 }
+  }
+}

@@ -1,0 +1,161 @@
+image:
+  # Required. The repository to pull the control plane image from
+  repository: ""
+  # Required. The release to run, e.g. 2026-w41. There is no default: always pin a release.
+  tag: ""
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+
+nameOverride: ""
+fullnameOverride: ""
+
+# Number of control plane replicas. At least 3 are required.
+replicas: 3
+
+config:
+  # Contents of the control plane configuration file (TOML). See the README for a reference. Ignored if
+  # existingSecret is set.
+  clusterConf: ""
+  # Name of an existing Secret that holds the configuration file, instead of setting clusterConf.
+  existingSecret: ""
+  # Key of the configuration file in existingSecret.
+  existingSecretKey: config.toml
+  # When true, ${VAR} and ${VAR:default} references in the configuration file are replaced with environment variable
+  # values, e.g. to keep SASL passwords or agent keys in their own Secrets and inject them with extraEnv.
+  expandEnv: false
+  # Required. Object storage URL where the control plane stores metadata snapshots, e.g.
+  # s3://my-bucket?region=us-east-1&prefix=warpstream-control-plane/snapshots/
+  snapshotBucketURL: ""
+  # Metadata store backend. Only dynamodb-production is supported
+  clusterMode: dynamodb-production
+
+license:
+  # Enterprise license key provided by WarpStream. Ignored if existingSecret is set.
+  key: ""
+  # Name of an existing Secret that holds the license key, instead of setting key.
+  existingSecret: ""
+  # Key of the license key in existingSecret.
+  existingSecretKey: license-key
+
+ports:
+  # Agents connect to this port (use it as the agents' metadataURL). It also serves health checks and metrics.
+  http: 8080
+  # Used between control plane replicas.
+  clusterRegistry: 8081
+  clusterEnvironment: 8082
+
+metrics:
+  # Expose Prometheus metrics on /metrics.
+  prometheus: true
+  datadog:
+    metrics: false
+    profiling: false
+    tracing: false
+
+service:
+  type: ClusterIP
+  annotations: {}
+
+ingress:
+  # Create an Ingress for the agent port, e.g. to put an AWS Application Load Balancer in front of the control plane.
+  enabled: false
+  className: ""
+  annotations: {}
+  # Only route requests for this host. Leave empty to route all requests.
+  host: ""
+
+serviceMonitor:
+  # Create a Prometheus Operator ServiceMonitor that scrapes /metrics.
+  enabled: false
+  interval: 30s
+  scrapeTimeout: 10s
+  labels: {}
+
+serviceAccount:
+  create: true
+  # The name of the service account to use. If not set and create is true, a name is generated from the fullname.
+  name: ""
+  # Annotations to add to the service account, e.g. eks.amazonaws.com/role-arn for IRSA. The role needs access to the
+  # DynamoDB tables and the snapshot bucket, see the README.
+  annotations: {}
+  # Required for the Kubernetes API lookups below.
+  automountServiceAccountToken: true
+
+rbac:
+  # Allow the control plane to read its pod and node, which is how it determines its availability zone.
+  create: true
+
+# Annotations added to every resource.
+annotations: {}
+podAnnotations: {}
+podLabels: {}
+
+resources:
+  requests:
+    cpu: 2
+    memory: 16Gi
+  limits:
+    memory: 16Gi
+
+podSecurityContext: {}
+securityContext: {}
+
+# Control plane replicas coordinate their shutdown one at a time, which can take several minutes.
+terminationGracePeriodSeconds: 720
+minReadySeconds: 120
+
+strategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxSurge: 1
+    maxUnavailable: 0
+
+startupProbe:
+  httpGet:
+    path: /v1/status
+    port: http
+  periodSeconds: 10
+  failureThreshold: 30
+livenessProbe:
+  httpGet:
+    path: /v1/status
+    port: http
+readinessProbe:
+  httpGet:
+    # Starts failing as soon as a replica begins shutting down, so it is removed from the Service first.
+    path: /v1/readiness
+    port: http
+  periodSeconds: 5
+  failureThreshold: 2
+
+pdb:
+  create: true
+  maxUnavailable: 1
+
+# Spread replicas across availability zones. Set to false to use topologySpreadConstraints instead.
+zoneSpread:
+  enabled: true
+  maxSkew: 1
+  whenUnsatisfiable: DoNotSchedule
+topologySpreadConstraints: []
+
+nodeSelector: {}
+tolerations: []
+affinity: {}
+priorityClassName: ""
+
+networkPolicy:
+  # Only allow ingress on the agent port, and replica-to-replica traffic on the cluster ports.
+  enabled: false
+  # Sources allowed to reach the agent port. Leave empty to allow all sources.
+  agentIngressFrom: []
+  # - podSelector:
+  #     matchLabels:
+  #       app.kubernetes.io/name: warpstream-agent
+
+extraEnv: []
+extraEnvFrom: []
+extraArgs: []
+extraVolumes: []
+extraVolumeMounts: []
