@@ -42,10 +42,13 @@ def collect_images() -> list[str]:
     for chart in sorted((ROOT_DIR / "charts").glob("*/Chart.yaml")):
         text = chart.read_text()
         values = (chart.parent / "values.yaml").read_text()
-        repo_match = re.search(r'^  repository:\s*"([^"]+)"', values, re.M)
+        repo_match = re.search(r'^  repository:\s*"([^"]*)"', values, re.M)
         if not repo_match:
             raise SystemExit(f"could not find image.repository in {chart.parent / 'values.yaml'}")
         repo = repo_match.group(1)
+        if not repo:
+            # Charts without a default image (e.g. a private one the user must set) aren't installed in CI.
+            continue
 
         app_match = re.search(r"^appVersion:\s*(\S+)", text, re.M)
         if app_match:

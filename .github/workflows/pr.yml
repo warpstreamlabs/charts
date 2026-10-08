@@ -184,4 +184,4 @@ jobs:
           if [[ "${CT_ALL}" == "true" ]]; then
             extra_args+=(--all)
           fi
-          ~/go/bin/ct install install --namespace default --target-branch ${{ github.event.repository.default_branch }} --upgrade --skip-missing-values --shard-count 9 --shard-num ${{ matrix.shard }} "${extra_args[@]}"
+          ~/go/bin/ct install install --namespace default --target-branch ${{ github.event.repository.default_branch }} --upgrade --skip-missing-values --shard-count 9 --shard-num ${{ matrix.shard }} --excluded-charts warpstream-self-hosted-control-plane "${extra_args[@]}"

@@ -1,0 +1,37 @@
+# Only used by `ct lint`. The chart is excluded from `ct install` because CI can't pull the private image.
+image:
+  repository: registry.example.com/warpstream-control-plane
+  tag: 2026-w41
+
+config:
+  snapshotBucketURL: s3://example-bucket?region=us-east-1&prefix=snapshots/
+  clusterConf: |
+    version = 2
+    warpstream_cluster_name = "ci"
+    cloud_provider = "aws"
+    region = "us-east-1"
+
+    [[virtual_clusters]]
+    id = "vci_00000000_0000_0000_0000_000000000000"
+    name = "vcn_ci"
+    target_state_machine_version_max = true
+
+    [[api_keys]]
+    key = "aks_example"
+    name = "akn_example"
+
+license:
+  key: example-license-key
+
+serviceMonitor:
+  enabled: true
+
+ingress:
+  enabled: true
+  className: alb
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internal
+    alb.ingress.kubernetes.io/target-type: ip
+
+networkPolicy:
+  enabled: true

@@ -1,0 +1,8 @@
+The WarpStream control plane is running {{ .Values.replicas }} replicas of {{ .Values.image.repository }}:{{ .Values.image.tag }}.
+
+Point your agents at it with:
+
+  metadataURL: http://{{ include "wscp.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.ports.http }}
+
+plus an agent key from the [[api_keys]] section of your configuration file and the ID of one of its
+[[virtual_clusters]].

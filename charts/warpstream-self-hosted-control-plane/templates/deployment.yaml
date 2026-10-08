@@ -1,0 +1,180 @@
+{{- include "wscp.validate" . }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "wscp.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "wscp.labels" . | nindent 4 }}
+  {{- with .Values.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  replicas: {{ .Values.replicas }}
+  minReadySeconds: {{ .Values.minReadySeconds }}
+  {{- with .Values.strategy }}
+  strategy:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "wscp.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        {{- /* The control plane only reads its configuration at startup, so roll the pods when it changes. */}}
+        {{- if not .Values.config.existingSecret }}
+        checksum/config: {{ include (print $.Template.BasePath "/secret-config.yaml") . | sha256sum }}
+        {{- end }}
+        {{- if not .Values.license.existingSecret }}
+        checksum/license: {{ include (print $.Template.BasePath "/secret-license.yaml") . | sha256sum }}
+        {{- end }}
+        {{- with .Values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        {{- include "wscp.labels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      serviceAccountName: {{ include "wscp.serviceAccountName" . }}
+      automountServiceAccountToken: {{ .Values.serviceAccount.automountServiceAccountToken }}
+      terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.priorityClassName }}
+      priorityClassName: {{ . }}
+      {{- end }}
+      {{- with .Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: control-plane
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- with .Values.extraArgs }}
+          args:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          env:
+            # Used to determine the availability zone from the Kubernetes API.
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: WARPSTREAM_CLUSTER_MODE
+              value: {{ .Values.config.clusterMode | quote }}
+            - name: WARPSTREAM_CLUSTER_CONF_FILE_PATH
+              value: /etc/warpstream/config.toml
+            - name: WARPSTREAM_CLUSTER_CONF_EXPAND_ENV
+              value: {{ .Values.config.expandEnv | quote }}
+            - name: WARPSTREAM_METADATA_STORE_SNAPSHOT_BUCKET_URL
+              value: {{ .Values.config.snapshotBucketURL | quote }}
+            - name: WARPSTREAM_ENTERPRISE_LICENSE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "wscp.licenseSecretName" . }}
+                  key: {{ include "wscp.licenseSecretKey" . }}
+            - name: WARPSTREAM_HTTP_PORT
+              value: {{ .Values.ports.http | quote }}
+            - name: WARPSTREAM_CLUSTER_REGISTRY_PORT
+              value: {{ .Values.ports.clusterRegistry | quote }}
+            - name: WARPSTREAM_VIRTUAL_ENV_PORT
+              value: {{ .Values.ports.clusterEnvironment | quote }}
+            - name: WARPSTREAM_ENABLE_PROMETHEUS_METRICS
+              value: {{ .Values.metrics.prometheus | quote }}
+            - name: WARPSTREAM_ENABLE_DATADOG_METRICS
+              value: {{ .Values.metrics.datadog.metrics | quote }}
+            - name: WARPSTREAM_ENABLE_DATADOG_PROFILING
+              value: {{ .Values.metrics.datadog.profiling | quote }}
+            - name: WARPSTREAM_ENABLE_DATADOG_TRACING
+              value: {{ .Values.metrics.datadog.tracing | quote }}
+            {{- with .Values.extraEnv }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          {{- with .Values.extraEnvFrom }}
+          envFrom:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.ports.http }}
+              protocol: TCP
+            - name: registry
+              containerPort: {{ .Values.ports.clusterRegistry }}
+              protocol: TCP
+            - name: environment
+              containerPort: {{ .Values.ports.clusterEnvironment }}
+              protocol: TCP
+          {{- with .Values.startupProbe }}
+          startupProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.livenessProbe }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.readinessProbe }}
+          readinessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: config
+              mountPath: /etc/warpstream
+              readOnly: true
+            {{- with .Values.extraVolumeMounts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+      volumes:
+        - name: config
+          secret:
+            secretName: {{ include "wscp.configSecretName" . }}
+            items:
+              - key: {{ include "wscp.configSecretKey" . }}
+                path: config.toml
+        {{- with .Values.extraVolumes }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- if or .Values.zoneSpread.enabled .Values.topologySpreadConstraints }}
+      topologySpreadConstraints:
+        {{- if .Values.zoneSpread.enabled }}
+        - maxSkew: {{ .Values.zoneSpread.maxSkew }}
+          topologyKey: topology.kubernetes.io/zone
+          whenUnsatisfiable: {{ .Values.zoneSpread.whenUnsatisfiable }}
+          labelSelector:
+            matchLabels:
+              {{- include "wscp.selectorLabels" . | nindent 14 }}
+        {{- end }}
+        {{- with .Values.topologySpreadConstraints }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
