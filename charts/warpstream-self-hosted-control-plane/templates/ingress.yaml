@@ -28,5 +28,5 @@ spec:
               service:
                 name: {{ include "wscp.fullname" . }}
                 port:
-                  name: http
+                  name: {{ ternary "https" "http" .Values.tls.enabled }}
 {{- end }}

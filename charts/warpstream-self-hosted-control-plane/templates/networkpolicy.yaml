@@ -21,6 +21,10 @@ spec:
     - ports:
         - port: {{ .Values.ports.http }}
           protocol: TCP
+        {{- if .Values.tls.enabled }}
+        - port: {{ .Values.ports.https }}
+          protocol: TCP
+        {{- end }}
       {{- with .Values.networkPolicy.agentIngressFrom }}
       from:
         {{- toYaml . | nindent 8 }}

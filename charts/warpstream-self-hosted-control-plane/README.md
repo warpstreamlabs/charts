@@ -254,11 +254,79 @@ name = "akn_agents"
 | virtual_clusters[].id | string | `vci_<uuid with underscores>`. Must stay the same for the life of the cluster |
 | virtual_clusters[].name | string | `vcn_<name>` |
 | virtual_clusters[].target_state_machine_version_max | bool | Keeps the virtual cluster on the newest metadata version the release supports. Recommended |
-| virtual_clusters[].sasl_credentials[] | list | `username`, `password` and `is_superuser` for Kafka SASL/PLAIN clients |
+| virtual_clusters[].acls_enabled | bool | Enforces Kafka ACLs on the virtual cluster. See [Kafka ACLs](#kafka-acls) |
+| virtual_clusters[].acl_shadowing_enabled | bool | Logs what ACLs would deny without enforcing them. See [Kafka ACLs](#kafka-acls) |
+| virtual_clusters[].external_superusers | list | Superusers that don't authenticate with SASL credentials, such as mTLS certificates. See [Superusers Without SASL Credentials](#superusers-without-sasl-credentials) |
+| virtual_clusters[].sasl_credentials[] | list | `username`, `password` and `is_superuser` for Kafka SASL/PLAIN clients. Usernames must be unique across all virtual clusters |
 | api_keys[].key | string | `aks_<secret>`. Agent key |
 | api_keys[].name | string | `akn_<name>` |
 
 Only set other fields, such as `feature_flags`, rate limits or `state_machine_config`, when WarpStream asks you to.
+
+#### Multiple Virtual Clusters
+
+Add a `[[virtual_clusters]]` entry per virtual cluster. A `[[virtual_clusters.sasl_credentials]]` entry belongs to the `[[virtual_clusters]]` entry above it, so put each virtual cluster's options directly under its `[[virtual_clusters]]` line, before its SASL credentials. An option placed after a `[[virtual_clusters.sasl_credentials]]` entry belongs to that credential instead.
+
+```toml
+[[virtual_clusters]]
+id = "vci_0f1c2d3e_4a5b_4c6d_8e7f_9a0b1c2d3e4f"
+name = "vcn_orders"
+target_state_machine_version_max = true
+
+[[virtual_clusters.sasl_credentials]]
+username = "orders-app"
+password = "${ORDERS_APP_PASSWORD}"
+
+[[virtual_clusters]]
+id = "vci_5a6b7c8d_9e0f_4a1b_8c2d_3e4f5a6b7c8d"
+name = "vcn_payments"
+target_state_machine_version_max = true
+
+[[virtual_clusters.sasl_credentials]]
+username = "payments-app"
+password = "${PAYMENTS_APP_PASSWORD}"
+```
+
+#### Kafka ACLs
+
+Kafka ACLs are off by default. Turn them on per virtual cluster with `acls_enabled`, and manage ACLs with any Kafka admin client authenticated as a superuser:
+
+```toml
+[[virtual_clusters]]
+id = "vci_0f1c2d3e_4a5b_4c6d_8e7f_9a0b1c2d3e4f"
+name = "vcn_orders"
+target_state_machine_version_max = true
+acls_enabled = true
+
+[[virtual_clusters.sasl_credentials]]
+username = "admin"
+password = "${ADMIN_PASSWORD}"
+is_superuser = true
+
+[[virtual_clusters.sasl_credentials]]
+username = "orders-app"
+password = "${ORDERS_APP_PASSWORD}"
+```
+
+- `acls_enabled = true` requires at least one superuser: a SASL credential with `is_superuser = true`, or an [external superuser](#superusers-without-sasl-credentials). Superusers bypass ACLs, so they can create the ACLs everyone else needs.
+- `acl_shadowing_enabled = true` logs the requests ACLs would deny, without denying them. Use it to check your ACLs before enforcing them. It can't be combined with `acls_enabled = true`.
+- The control plane applies these options when it starts. Removing them leaves the virtual cluster as it is, so set `acls_enabled = false` to turn ACLs off.
+
+##### Superusers Without SASL Credentials
+
+Clients that authenticate without SASL credentials, such as with mTLS or OAuth, can be superusers too. List their principals in `external_superusers`:
+
+```toml
+[[virtual_clusters]]
+id = "vci_0f1c2d3e_4a5b_4c6d_8e7f_9a0b1c2d3e4f"
+name = "vcn_orders"
+target_state_machine_version_max = true
+acls_enabled = true
+external_superusers = ["CN=kafka-admin,O=acme"]
+```
+
+- For mTLS, use the client certificate's distinguished name, which `warpstream cli certificate-to-dn -tls-client-cert-file <certificate>` prints. If the agents set `-tlsPrincipalMappingRule`, use the mapped principal instead.
+- The same principal can be a superuser in several virtual clusters: list it in each of them.
 
 #### Keeping Secrets Out of the Configuration File
 
@@ -294,7 +362,7 @@ config:
   bucketURL: <WARPSTREAM_BUCKET_URL>
 ```
 
-Use the agent version WarpStream recommends with your control plane release.
+Use the agent version WarpStream recommends with your control plane release. With [TLS](#tls), use `https://` and port `8443` in `metadataURL` instead.
 
 The agent chart's dedicated metrics pod scrapes cluster metrics from the control plane. Agents up to v847 scrape WarpStream Cloud instead by default and fail with `401 invalid username/password`. For those versions, set:
 
@@ -310,7 +378,7 @@ dedicatedMetricsPod:
 
 ### Metrics
 
-The control plane exposes Prometheus metrics on `/metrics` on the agent port (`8080` by default). Datadog metrics, profiling and tracing can be enabled with `metrics.datadog`.
+The control plane exposes Prometheus metrics on `/metrics` on `ports.http` (`8080` by default), over plain HTTP even with [TLS](#tls). Datadog metrics, profiling and tracing can be enabled with `metrics.datadog`.
 
 #### Prometheus Operator
 
@@ -325,7 +393,7 @@ serviceMonitor:
 
 ### Network Policy
 
-Setting `networkPolicy.enabled` to `true` creates a NetworkPolicy that only allows the agent port from `networkPolicy.agentIngressFrom` (or from anywhere if it is empty), and the replica-to-replica ports (`8081` and `8082` by default) from other control plane pods.
+Setting `networkPolicy.enabled` to `true` creates a NetworkPolicy that only allows the agent ports (`8080`, and `8443` with [TLS](#tls)) from `networkPolicy.agentIngressFrom` (or from anywhere if it is empty), and the replica-to-replica ports (`8081` and `8082` by default) from other control plane pods.
 
 ```yaml
 networkPolicy:
@@ -335,6 +403,87 @@ networkPolicy:
         matchLabels:
           app.kubernetes.io/name: warpstream-agent
 ```
+
+### TLS
+
+The control plane can encrypt its traffic with agents (`tls`) and between its replicas (`internalTLS`). Both read the certificates from Secrets and reload them when the Secrets change, e.g. when cert-manager renews them.
+
+#### Agent Traffic
+
+With `tls.enabled`, agents connect over HTTPS on `ports.https` (`8443` by default). `ports.http` (`8080`) keeps serving health checks and `/metrics` over plain HTTP, so probes and Prometheus don't need TLS, but no longer serves agents.
+
+`tls.secretName` is a Secret with `tls.crt` and `tls.key`. The certificate must be valid for the hostname in the agents' `metadataURL`, e.g. the Service's DNS name:
+
+```shell
+kubectl create secret tls control-plane-tls \
+    --namespace $YOUR_NAMESPACE \
+    --cert=<PATH_TO_CERT> \
+    --key=<PATH_TO_KEY>
+```
+
+```yaml
+tls:
+  enabled: true
+  secretName: control-plane-tls
+```
+
+Point the agents at `https://` and port `8443`. If the certificate isn't signed by a publicly trusted CA, mount the CA in the agents and pass it with `WARPSTREAM_HTTPS_PROXY_CA_CERT_FILE`, which adds it to the CAs the agents trust:
+
+```yaml
+config:
+  metadataURL: https://warpstream-control-plane-warpstream-self-hosted-control-plane.<YOUR_NAMESPACE>.svc.cluster.local:8443
+extraEnv:
+  - name: WARPSTREAM_HTTPS_PROXY_CA_CERT_FILE
+    value: /etc/private/ssl/control-plane-ca/ca.crt
+volumes:
+  - name: control-plane-ca
+    secret:
+      secretName: control-plane-ca
+volumeMounts:
+  - name: control-plane-ca
+    mountPath: /etc/private/ssl/control-plane-ca
+    readOnly: true
+dedicatedMetricsPod:
+  extraEnv:
+    - name: WARPSTREAM_HTTPS_PROXY_CA_CERT_FILE
+      value: /etc/private/ssl/control-plane-ca/ca.crt
+```
+
+The dedicated metrics pod doesn't inherit `extraEnv`, so it's set again under `dedicatedMetricsPod`. Agents up to v850 don't support `WARPSTREAM_HTTPS_PROXY_CA_CERT_FILE` in the metrics pod; set `SSL_CERT_FILE` to the same path there instead.
+
+#### Traffic Between Replicas
+
+With `internalTLS.enabled`, replicas talk to each other over HTTPS on `ports.clusterRegistry` and `ports.clusterEnvironment` (`8081` and `8082`).
+
+`internalTLS.secretName` is a Secret with `tls.crt`, `tls.key` and `ca.crt`. Replicas verify each other's certificates against `ca.crt` but not their hostnames, so the certificate doesn't need the pods' names or IPs. With `internalTLS.requireMTLS`, each replica also presents `tls.crt` as its client certificate and rejects replicas without one signed by `ca.crt`. `internalTLS.spiffe` additionally requires the client certificate to have the SPIFFE ID `spiffe://<trustDomain>/<workloadID>`:
+
+```yaml
+internalTLS:
+  enabled: true
+  secretName: control-plane-internal-tls
+  requireMTLS: true
+  spiffe:
+    trustDomain: example.com
+    workloadID: warpstream-control-plane
+```
+
+Replicas with and without `internalTLS` can't talk to each other, so turning it on or off can't be a rolling update. Scale the control plane to 0 first, then upgrade, which sets the replicas back:
+
+```shell
+kubectl scale deployment/warpstream-control-plane-warpstream-self-hosted-control-plane \
+    --namespace $YOUR_NAMESPACE \
+    --replicas=0
+kubectl wait pod \
+    --namespace $YOUR_NAMESPACE \
+    --selector app.kubernetes.io/instance=warpstream-control-plane \
+    --for=delete \
+    --timeout=15m
+helm upgrade warpstream-control-plane warpstream/warpstream-self-hosted-control-plane \
+    --namespace $YOUR_NAMESPACE \
+    --values warpstream-values.yaml
+```
+
+Agents keep running, but can't reach the control plane until the replicas are back. Changing the certificates themselves doesn't need a restart.
 
 ### Application Load Balancer
 
@@ -354,6 +503,8 @@ ingress:
 ```
 
 Set `ingress.className` to the name of the ALB IngressClass in your cluster.
+
+With [TLS](#tls), the Ingress routes to port `8443`. Add `alb.ingress.kubernetes.io/backend-protocol: HTTPS` so the load balancer connects to the control plane over HTTPS.
 
 Use the load balancer's DNS name as the agents' `metadataURL`:
 
@@ -377,6 +528,12 @@ The control plane determines its availability zone by reading its pod and node f
 - **DynamoDB `AccessDeniedException`**: the table names in the IAM policy don't match `warpstream_cluster_name`.
 - **Pods stuck not ready**: check the logs of all replicas. They need to reach each other on ports `8081` and `8082`.
 - **Agent metrics pod logs `401 invalid username/password`**: the agent version predates scraping the control plane by default. See [Connecting Agents](#connecting-agents).
+- **`acls_enabled requires an external superuser or a SASL credential with is_superuser = true`**: add a superuser to that virtual cluster. See [Kafka ACLs](#kafka-acls).
+- **An mTLS client listed in `external_superusers` isn't treated as a superuser**: check that the entry matches the output of `warpstream cli certificate-to-dn` for its certificate exactly, or the mapped principal if the agents set `-tlsPrincipalMappingRule`.
+- **`SASL usernames must be unique`**: a username is used by more than one SASL credential, possibly in different virtual clusters.
+- **Agents or the agent metrics pod log `x509: certificate signed by unknown authority`**: they don't trust the CA of the `tls` certificate. See [Agent Traffic](#agent-traffic).
+- **`client sent an HTTP request to an HTTPS server`**: with `tls`, agents use `http://` in `metadataURL`. With `internalTLS`, replicas with and without it are running at the same time; see [Traffic Between Replicas](#traffic-between-replicas).
+- **`tls: client didn't provide a certificate`** or **`invalid spiffe uri`**: with `internalTLS.requireMTLS`, a replica's certificate isn't signed by `ca.crt` or doesn't have the SPIFFE ID in `internalTLS.spiffe`.
 
 Contact WarpStream support with the control plane logs and your release version for anything else.
 
@@ -401,16 +558,24 @@ Contact WarpStream support with the control plane logs and your release version 
 | license.key | string | ` ` | The enterprise license key |
 | license.existingSecret | string | ` ` | The name of an existing secret holding the license key, instead of `license.key` |
 | license.existingSecretKey | string | `license-key` | The key of the license key in `license.existingSecret` |
-| ports.http | number | `8080` | The agent, health check and metrics port |
+| ports.http | number | `8080` | The agent, health check and metrics port. Only health checks and metrics with `tls.enabled` |
+| ports.https | number | `8443` | The agent port with `tls.enabled` |
 | ports.clusterRegistry | number | `8081` | Replica-to-replica port |
 | ports.clusterEnvironment | number | `8082` | Replica-to-replica port |
+| tls.enabled | bool | `false` | Serve the agent API over HTTPS on `ports.https` |
+| tls.secretName | string | ` ` | Required with `tls.enabled`. The name of a secret with `tls.crt` and `tls.key` |
+| internalTLS.enabled | bool | `false` | Encrypt the traffic between replicas. Can't be turned on or off with a rolling update |
+| internalTLS.secretName | string | ` ` | Required with `internalTLS.enabled`. The name of a secret with `tls.crt`, `tls.key` and `ca.crt` |
+| internalTLS.requireMTLS | bool | `false` | Require replicas to present a client certificate signed by `ca.crt` |
+| internalTLS.spiffe.trustDomain | string | ` ` | Require the SPIFFE ID `spiffe://<trustDomain>/<workloadID>` on client certificates. Requires `internalTLS.requireMTLS` |
+| internalTLS.spiffe.workloadID | string | ` ` | |
 | metrics.prometheus | bool | `true` | Enable/disable Prometheus metrics |
 | metrics.datadog.metrics | bool | `false` | Enable/disable Datadog metrics |
 | metrics.datadog.profiling | bool | `false` | Enable/disable Datadog profiling |
 | metrics.datadog.tracing | bool | `false` | Enable/disable Datadog tracing |
 | service.type | string | `ClusterIP` | The service type |
 | service.annotations | object | `{}` | Additional annotations to add to the service |
-| ingress.enabled | bool | `false` | Create an Ingress for the agent port |
+| ingress.enabled | bool | `false` | Create an Ingress for the agent port (`ports.https` with `tls.enabled`) |
 | ingress.className | string | ` ` | The IngressClass to use, e.g. `alb` |
 | ingress.annotations | object | `{}` | Additional annotations to add to the Ingress |
 | ingress.host | string | ` ` | Only route requests for this host. Routes all requests when empty |

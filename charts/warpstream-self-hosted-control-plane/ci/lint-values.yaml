@@ -23,6 +23,18 @@ config:
 license:
   key: example-license-key
 
+tls:
+  enabled: true
+  secretName: control-plane-tls
+
+internalTLS:
+  enabled: true
+  secretName: control-plane-internal-tls
+  requireMTLS: true
+  spiffe:
+    trustDomain: example.com
+    workloadID: warpstream-control-plane
+
 serviceMonitor:
   enabled: true
 

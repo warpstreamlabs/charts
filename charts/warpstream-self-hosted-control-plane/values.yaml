@@ -39,11 +39,37 @@ license:
   existingSecretKey: license-key
 
 ports:
-  # Agents connect to this port (use it as the agents' metadataURL). It also serves health checks and metrics.
+  # Agents connect to this port (use it as the agents' metadataURL). It also serves health checks and metrics. With
+  # tls.enabled, it only serves health checks and metrics.
   http: 8080
+  # Agents connect to this port when tls.enabled is true.
+  https: 8443
   # Used between control plane replicas.
   clusterRegistry: 8081
   clusterEnvironment: 8082
+
+tls:
+  # Serve the agent API over HTTPS on ports.https. ports.http then only serves health checks and metrics.
+  enabled: false
+  # Required with enabled. Name of a Secret with tls.crt and tls.key, e.g. a kubernetes.io/tls Secret. Certificates are
+  # reloaded when the Secret changes.
+  secretName: ""
+
+internalTLS:
+  # Encrypt the traffic between control plane replicas on ports.clusterRegistry and ports.clusterEnvironment.
+  # Turning it on or off needs all the replicas restarted at once, see the README.
+  enabled: false
+  # Required with enabled. Name of a Secret with tls.crt, tls.key and ca.crt. Replicas verify each other's
+  # certificates against ca.crt, but not their hostnames.
+  secretName: ""
+  # Require the other replicas to present a client certificate signed by ca.crt. Each replica uses tls.crt as its
+  # client certificate.
+  requireMTLS: false
+  # Also require the other replicas' client certificates to have the SPIFFE ID spiffe://<trustDomain>/<workloadID>.
+  # Requires requireMTLS.
+  spiffe:
+    trustDomain: ""
+    workloadID: ""
 
 metrics:
   # Expose Prometheus metrics on /metrics.
@@ -58,7 +84,8 @@ service:
   annotations: {}
 
 ingress:
-  # Create an Ingress for the agent port, e.g. to put an AWS Application Load Balancer in front of the control plane.
+  # Create an Ingress for the agent port (ports.https with tls.enabled, otherwise ports.http), e.g. to put an AWS
+  # Application Load Balancer in front of the control plane.
   enabled: false
   className: ""
   annotations: {}
