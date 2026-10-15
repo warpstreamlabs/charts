@@ -16,5 +16,11 @@ spec:
       port: {{ .Values.ports.http }}
       targetPort: http
       protocol: TCP
+    {{- if .Values.tls.enabled }}
+    - name: https
+      port: {{ .Values.ports.https }}
+      targetPort: https
+      protocol: TCP
+    {{- end }}
   selector:
     {{- include "wscp.selectorLabels" . | nindent 4 }}

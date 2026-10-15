@@ -94,6 +94,36 @@ spec:
               value: {{ .Values.ports.clusterRegistry | quote }}
             - name: WARPSTREAM_VIRTUAL_ENV_PORT
               value: {{ .Values.ports.clusterEnvironment | quote }}
+            {{- if .Values.tls.enabled }}
+            - name: WARPSTREAM_HTTP_TLS_ENABLED
+              value: "true"
+            - name: WARPSTREAM_HTTPS_PORT
+              value: {{ .Values.ports.https | quote }}
+            - name: WARPSTREAM_HTTP_TLS_SERVER_CERT_FILE
+              value: /etc/private/ssl/control-plane/tls.crt
+            - name: WARPSTREAM_HTTP_TLS_SERVER_PRIVATE_KEY_FILE
+              value: /etc/private/ssl/control-plane/tls.key
+            {{- end }}
+            {{- if .Values.internalTLS.enabled }}
+            - name: WARPSTREAM_INTERNAL_TLS_ENABLED
+              value: "true"
+            - name: WARPSTREAM_INTERNAL_TLS_SERVER_CERT_FILE
+              value: /etc/private/ssl/control-plane-internal/tls.crt
+            - name: WARPSTREAM_INTERNAL_TLS_SERVER_PRIVATE_KEY_FILE
+              value: /etc/private/ssl/control-plane-internal/tls.key
+            - name: WARPSTREAM_INTERNAL_TLS_CLIENT_CA_CERT_FILE
+              value: /etc/private/ssl/control-plane-internal/ca.crt
+            - name: WARPSTREAM_REQUIRE_INTERNAL_MTLS_AUTHENTICATION
+              value: {{ .Values.internalTLS.requireMTLS | quote }}
+            {{- with .Values.internalTLS.spiffe }}
+            {{- if .trustDomain }}
+            - name: WARPSTREAM_INTERNAL_SPIFFE_TRUST_DOMAIN
+              value: {{ .trustDomain | quote }}
+            - name: WARPSTREAM_INTERNAL_SPIFFE_WORKLOAD_ID
+              value: {{ .workloadID | quote }}
+            {{- end }}
+            {{- end }}
+            {{- end }}
             - name: WARPSTREAM_ENABLE_PROMETHEUS_METRICS
               value: {{ .Values.metrics.prometheus | quote }}
             - name: WARPSTREAM_ENABLE_DATADOG_METRICS
@@ -113,6 +143,11 @@ spec:
             - name: http
               containerPort: {{ .Values.ports.http }}
               protocol: TCP
+            {{- if .Values.tls.enabled }}
+            - name: https
+              containerPort: {{ .Values.ports.https }}
+              protocol: TCP
+            {{- end }}
             - name: registry
               containerPort: {{ .Values.ports.clusterRegistry }}
               protocol: TCP
@@ -139,6 +174,16 @@ spec:
             - name: config
               mountPath: /etc/warpstream
               readOnly: true
+            {{- if .Values.tls.enabled }}
+            - name: tls
+              mountPath: /etc/private/ssl/control-plane
+              readOnly: true
+            {{- end }}
+            {{- if .Values.internalTLS.enabled }}
+            - name: internal-tls
+              mountPath: /etc/private/ssl/control-plane-internal
+              readOnly: true
+            {{- end }}
             {{- with .Values.extraVolumeMounts }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
@@ -149,6 +194,16 @@ spec:
             items:
               - key: {{ include "wscp.configSecretKey" . }}
                 path: config.toml
+        {{- if .Values.tls.enabled }}
+        - name: tls
+          secret:
+            secretName: {{ .Values.tls.secretName }}
+        {{- end }}
+        {{- if .Values.internalTLS.enabled }}
+        - name: internal-tls
+          secret:
+            secretName: {{ .Values.internalTLS.secretName }}
+        {{- end }}
         {{- with .Values.extraVolumes }}
         {{- toYaml . | nindent 8 }}
         {{- end }}

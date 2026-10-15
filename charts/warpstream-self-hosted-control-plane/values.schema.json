@@ -34,8 +34,31 @@
       "type": "object",
       "properties": {
         "http": { "type": "integer" },
+        "https": { "type": "integer" },
         "clusterRegistry": { "type": "integer" },
         "clusterEnvironment": { "type": "integer" }
+      }
+    },
+    "tls": {
+      "type": "object",
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "secretName": { "type": "string" }
+      }
+    },
+    "internalTLS": {
+      "type": "object",
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "secretName": { "type": "string" },
+        "requireMTLS": { "type": "boolean" },
+        "spiffe": {
+          "type": "object",
+          "properties": {
+            "trustDomain": { "type": "string" },
+            "workloadID": { "type": "string" }
+          }
+        }
       }
     },
     "metrics": {

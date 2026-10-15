@@ -111,4 +111,21 @@ Fail early on missing required values.
 {{- if and (not .Values.license.key) (not .Values.license.existingSecret) }}
 {{- fail "one of license.key or license.existingSecret is required" }}
 {{- end }}
+{{- if and .Values.tls.enabled (not .Values.tls.secretName) }}
+{{- fail "tls.secretName is required when tls.enabled is true" }}
+{{- end }}
+{{- with .Values.internalTLS }}
+{{- if and .enabled (not .secretName) }}
+{{- fail "internalTLS.secretName is required when internalTLS.enabled is true" }}
+{{- end }}
+{{- if and .requireMTLS (not .enabled) }}
+{{- fail "internalTLS.requireMTLS requires internalTLS.enabled" }}
+{{- end }}
+{{- if and (or .spiffe.trustDomain .spiffe.workloadID) (not (and .spiffe.trustDomain .spiffe.workloadID)) }}
+{{- fail "internalTLS.spiffe.trustDomain and internalTLS.spiffe.workloadID must be set together" }}
+{{- end }}
+{{- if and .spiffe.trustDomain (not .requireMTLS) }}
+{{- fail "internalTLS.spiffe requires internalTLS.requireMTLS" }}
+{{- end }}
+{{- end }}
 {{- end }}
