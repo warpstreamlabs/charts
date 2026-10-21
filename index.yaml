@@ -2,6 +2,25 @@ apiVersion: v1
 entries:
   warpstream-agent:
   - annotations:
+      appVersionStable: v842
+    apiVersion: v2
+    appVersion: v852
+    created: "2026-10-21T19:53:12.880754702Z"
+    description: WarpStream Agent for Kubernetes.
+    digest: 3b45b8d09afa62b062ca329e01bee7b02d053727a74233143c1a70f946e5e92f
+    home: https://docs.warpstream.com/warpstream/
+    icon: https://avatars.githubusercontent.com/u/132156278
+    maintainers:
+    - email: founders@warpstreamlabs.com
+      name: WarpStream
+    name: warpstream-agent
+    sources:
+    - https://github.com/warpstreamlabs/charts/warpstream-agent
+    type: application
+    urls:
+    - https://github.com/warpstreamlabs/charts/releases/download/warpstream-agent-1.0.104/warpstream-agent-1.0.104.tgz
+    version: 1.0.104
+  - annotations:
       appVersionStable: v840
     apiVersion: v2
     appVersion: v851
@@ -7204,4 +7223,4 @@ entries:
     urls:
     - https://github.com/warpstreamlabs/charts/releases/download/warpstream-self-hosted-control-plane-0.1.0/warpstream-self-hosted-control-plane-0.1.0.tgz
     version: 0.1.0
-generated: "2026-10-15T21:14:38.468901621Z"
+generated: "2026-10-21T19:53:12.88128949Z"
